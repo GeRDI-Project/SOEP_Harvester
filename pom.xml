@@ -27,6 +27,15 @@
         </developer>
     </developers>
 
+    <dependencies>
+        <!-- JGit: https://mvnrepository.com/artifact/org.eclipse.jgit/org.eclipse.jgit -->
+        <dependency>
+            <groupId>org.eclipse.jgit</groupId>
+            <artifactId>org.eclipse.jgit</artifactId>
+            <version>4.8.0.201706111038-r</version>
+        </dependency>
+    </dependencies>
+
     <!-- Define Sonatype repository for retrieving SNAPSHOT versions -->
     <repositories>
         <repository>
