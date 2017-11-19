@@ -1,4 +1,4 @@
-package jgit;
+package soep;
 
 import java.io.File;
 import java.io.IOException;

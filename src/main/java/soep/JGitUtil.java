@@ -1,4 +1,4 @@
-package jgit;
+package soep;
 
 import java.io.*;
 
@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.eclipse.jgit.api.CheckoutCommand; // Required for (a future) checking out certain directories from a Git project.
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.PullResult;
 import org.eclipse.jgit.api.ResetCommand;
