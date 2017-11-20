@@ -17,18 +17,9 @@
  *  under the License.
  */
 
-import de.gerdiproject.harvest.config.parameters.AbstractParameter;
-import de.gerdiproject.harvest.config.parameters.StringParameter;
-import harvester.SoepHarvester;
+package soep.json;
 
-import java.util.Arrays;
-import java.util.List;
+public class SoepDomain {
+    // Current attributes of importance
 
-import javax.servlet.annotation.WebListener;
-
-// This class initializes the FAOSTAT harvester and all objects that are required.
-
-@WebListener
-public class SoepContextListener <SoepHarvester> {
-    // To do...
 }

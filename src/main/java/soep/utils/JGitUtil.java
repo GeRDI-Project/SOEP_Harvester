@@ -1,4 +1,23 @@
-package soep;
+/*
+ *  Licensed to the Apache Software Foundation (ASF) under one
+ *  or more contributor license agreements.  See the NOTICE file
+ *  distributed with this work for additional information
+ *  regarding copyright ownership.  The ASF licenses this file
+ *  to you under the Apache License, Version 2.0 (the
+ *  "License"); you may not use this file except in compliance
+ *  with the License.  You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing,
+ *  software distributed under the License is distributed on an
+ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *  KIND, either express or implied.  See the License for the
+ *  specific language governing permissions and limitations
+ *  under the License.
+ */
+
+package soep.utils;
 
 import java.io.*;
 
@@ -45,13 +64,30 @@ public class JGitUtil {
 
     // Constructor
     public JGitUtil(String repoName, String repoRemoteUri, String datasetPath) throws IOException {
-        this.gitDir = HarvestUtil.createWorkingDir(); // The base GitHub directory created on [user.home] path
+        this.gitDir = SoepIO.createWorkingDir(); // The base GitHub directory created on [user.home] path
         this.repoName = repoName;
         this.datasetPath = datasetPath;
         this.repoRemoteUri = repoRemoteUri;
         localFileRepo = new File(gitDir + File.separator + repoName + File.separator + "local");
         remoteFileRepo = new File(gitDir + File.separator + repoName + File.separator + "remote");
         remoteGit = localGit = null;
+    }
+
+    public static void collect() throws IOException, GitAPIException {
+        // SOEP-core GitHub project attributes
+        String soepRemoteRepo = "https://github.com/paneldata/soep-core";
+        String soepDatasetPath = "ddionrails/datasets"; // SOEP directory of interest
+
+        // Init & clone a repository: ElasticSearch porject
+        JGitUtil gHubSoep = new JGitUtil("SOEP-core", soepRemoteRepo, soepDatasetPath);
+
+        // Setup, initialize and clone repository
+        gHubSoep.setUp();
+
+        // Synchronize local repository (when out of sync.)
+        if(gHubSoep.fetchRepo(gHubSoep.ORIGIN_MASTER)) {
+            gHubSoep.updateRepo();
+        }
     }
 
     // Set up the local repository: initialize and clone, if local repo does not exist
@@ -289,21 +325,7 @@ public class JGitUtil {
         String esRemoteRepo = "https://github.com/fidanLimani/ElasticSearch";
         String esDatasetPath = "dataset"; // ElasticSearch GitHub path: master/dataset
 
-        // SOEP-core GitHub project
-        String soepRemoteRepo = "https://github.com/paneldata/soep-core";
-        String soepDatasetPath = "ddionrails/datasets"; // SOEP directory of interest
-
-        // Init & clone a repository: ElasticSearch porject
-        // JGitTest gHubES = new JGitTest("ElasticSearch", esRemoteRepo, esDatasetPath);
-        JGitUtil gHubSoep = new JGitUtil("SOEP-core", soepRemoteRepo, soepDatasetPath);
-
-        gHubSoep.setUp();
-
-        if(gHubSoep.fetchRepo(gHubSoep.ORIGIN_MASTER)) { // Update local repo. if required
-            gHubSoep.updateRepo();
-        }
-
-        //gHubES.exploreRepo(gHubES.ORIGIN_MASTER);
+        JGitUtil.collect();
 
         System.out.printf("%n%nApplication completed.");
     }
