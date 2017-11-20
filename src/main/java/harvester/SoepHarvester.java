@@ -14,9 +14,7 @@ import java.util.List;
 * */
 public class SoepHarvester extends AbstractListHarvester<SoepDomain> {
     private String harvesterName;
-    /* As suggested, the constructor should be in a "default" style
-        @param harvesterName
-    */
+    // As suggested, the constructor should be in a "default" style
     public SoepHarvester(){
         super(1);
         this.harvesterName = "SOEP Harvester";
@@ -24,6 +22,7 @@ public class SoepHarvester extends AbstractListHarvester<SoepDomain> {
 
     @Override
     protected Collection<SoepDomain> loadEntries() {
+
         return null;
     }
 
