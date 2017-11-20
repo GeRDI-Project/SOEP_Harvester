@@ -1,19 +1,35 @@
 package harvester;
 
+import de.gerdiproject.harvest.IDocument;
 import de.gerdiproject.harvest.harvester.AbstractHarvester;
+import de.gerdiproject.harvest.harvester.AbstractListHarvester;
+import harvester.json.SoepDomain;
 
 import java.security.NoSuchAlgorithmException;
+import java.util.Collection;
+import java.util.List;
 
 /*
     The main harvester
 * */
-public class SoepHarvester extends AbstractHarvester {
+public class SoepHarvester extends AbstractListHarvester<SoepDomain> {
     private String harvesterName;
     /* As suggested, the constructor should be in a "default" style
         @param harvesterName
     */
-    public SoepHarvester(String harvesterName){
-        this.harvesterName = harvesterName;
+    public SoepHarvester(){
+        super(1);
+        this.harvesterName = "SOEP Harvester";
+    }
+
+    @Override
+    protected Collection<SoepDomain> loadEntries() {
+        return null;
+    }
+
+    @Override
+    protected List<IDocument> harvestEntry(SoepDomain soepDomain) {
+        return null;
     }
 
     @Override
