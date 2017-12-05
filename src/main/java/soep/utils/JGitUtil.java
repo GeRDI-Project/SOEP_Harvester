@@ -19,6 +19,9 @@
 
 package soep.utils;
 
+/** Interface with SOEP's GitHub repo: create, clone, update (if required) operations
+ * @author Fidan Limani
+ */
 import java.io.*;
 
 import java.util.List;
@@ -52,6 +55,7 @@ import org.eclipse.jgit.lib.ProgressMonitor;
 
 public class JGitUtil {
     private File gitDir; // local base GitHub dir
+    private SoepIO sIO;
     private String repoName;
     private String repoRemoteUri;
     private String datasetPath;
@@ -64,7 +68,8 @@ public class JGitUtil {
 
     // Constructor
     public JGitUtil(String repoName, String repoRemoteUri, String datasetPath) throws IOException {
-        this.gitDir = SoepIO.createWorkingDir(); // The base GitHub directory created on [user.home] path
+        this.sIO = new SoepIO();
+        this.gitDir = sIO.createWorkingDir(); // The base GitHub directory created on [user.home] path
         this.repoName = repoName;
         this.datasetPath = datasetPath;
         this.repoRemoteUri = repoRemoteUri;

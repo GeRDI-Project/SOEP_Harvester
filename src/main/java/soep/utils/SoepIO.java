@@ -21,12 +21,22 @@ package soep.utils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.*;
 
+/**
+ * A util-like class to support repo- and harvester-based operations.
+ *
+ * @author Fidan Limani
+ */
 public class SoepIO {
-    public static File createWorkingDir() throws IOException {
-        String path = System.getProperty("user.home") + File.separator + "GitHub" + File.separator;
-        // System.out.println("Path string: " + path);
-        File dir = new File(path);
+    public String gitHubPath; // Required in SoepHarvester class
+
+    public SoepIO(){
+        this.gitHubPath = System.getProperty("user.home") + File.separator + "GitHub" + File.separator;
+    }
+
+    public File createWorkingDir() throws IOException {
+        File dir = new File(gitHubPath);
         if (dir.exists()) {
             System.out.println(dir + " already exists");
             // System.out.println("Canonical path: " + dir.getCanonicalPath());
@@ -41,28 +51,49 @@ public class SoepIO {
         }
     }
 
-    // Does a repo already exist?
-    public static boolean repoExists(String repoName) throws IOException {
+    /** Does a repo already exist?
+     * @param repoName Path to the local SOEP repo (SOEP-core, in this case)
+     * @return
+     * @throws IOException
+     */
+    public boolean repoExists(String repoName) throws IOException {
         boolean status = false;
-        String[] fileList = SoepIO.createWorkingDir().list();
+        String[] fileList = createWorkingDir().list();
 
         for(String str : fileList){
             if(repoName.equals(str)){
                 System.out.println(repoName + " already exists!");
-                status = true; //return Git reference to it!
+                status = true;
             }
         }
 
         return status;
     }
 
-    public static void main(String[] args) throws IOException {
-        String repoName = "ElasticSearch";
-        File testFile = SoepIO.createWorkingDir();
-        System.out.println("File (canonical): " + testFile); // .getCanonicalFile()
-        File localFileRepo = new File(testFile + File.separator + repoName + File.separator + "local");
-        System.out.println("localFileRepo: " + localFileRepo);
+    /** IO operations to support the harvester
+     * @param folderPath The dataset of a GitHub repo
+     */
+    public ArrayList<File> listFiles(String folderPath){
+        ArrayList<File> theList;
+        File[] files = new File(folderPath).listFiles();
+        theList = new  ArrayList<>(Arrays.asList(files));
 
-        System.out.println("Project exists? " + SoepIO.repoExists("ElasticSearch"));
+        return theList;
+    }
+
+    // Demo the app.
+    public static void main(String[] args) throws IOException {
+        SoepIO test = new SoepIO();
+        String datasetPath = test.gitHubPath + "SOEP-core/local/ddionrails/datasets"; // prepend "user.home"
+
+        /* Simple method tests
+        File testFile = test.createWorkingDir();
+        System.out.println("File (canonical): " + testFile);
+
+        String repoName = "ElasticSearch";
+        System.out.println("Project exists? " + test.repoExists("ElasticSearch"));
+        */
+        ArrayList<File> myList = test.listFiles(datasetPath);
+        System.out.printf("%n# of files in the dataset: " + myList.size());
     }
 }

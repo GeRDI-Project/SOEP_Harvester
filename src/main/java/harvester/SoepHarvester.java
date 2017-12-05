@@ -21,31 +21,52 @@ package harvester;
 
 import de.gerdiproject.harvest.IDocument;
 import de.gerdiproject.harvest.harvester.AbstractListHarvester;
-import soep.json.SoepDomain;
 
+import org.eclipse.jgit.api.errors.GitAPIException;
+import soep.utils.JGitUtil;
+import soep.utils.SoepIO;
+
+import java.io.File;
+import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 /*
     The main harvester
 * */
-public class SoepHarvester extends AbstractListHarvester<SoepDomain> {
+public class SoepHarvester extends AbstractListHarvester<File> {
     private String harvesterName;
+    private String datasetPath; // The dataset location in a GitHub repo
+
     // As suggested, the constructor should be in a "default" style
     public SoepHarvester(){
         super(1);
         this.harvesterName = "SOEP Harvester";
+        this.datasetPath = "SOEP-core/local/ddionrails/datasets";
     }
 
     @Override
-    protected Collection<SoepDomain> loadEntries() {
+    protected Collection<File> loadEntries() {
+        // Repo-related operations based on JGit library.
+        try {
+            JGitUtil.collect();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (GitAPIException e) {
+            e.printStackTrace();
+        }
 
-        return null;
+        // Provide access to SOEP dataset files
+        SoepIO sIO = new SoepIO();
+        String datasetPath = sIO.gitHubPath + this.datasetPath;
+        ArrayList<File> soepFiles = sIO.listFiles(datasetPath);
+
+        return soepFiles;
     }
 
     @Override
-    protected List<IDocument> harvestEntry(SoepDomain soepDomain) {
+    protected List<IDocument> harvestEntry(File soepFile) {
+        // Which metadata elements from the dataset make sense for end users?
         return null;
     }
 
@@ -72,7 +93,7 @@ public class SoepHarvester extends AbstractListHarvester<SoepDomain> {
     }
 
     @Override
-    protected void abortHarvest() {
+    public void abortHarvest() { // its access was "protected" by default, but there was a compiler complaint...
 
     }
 
