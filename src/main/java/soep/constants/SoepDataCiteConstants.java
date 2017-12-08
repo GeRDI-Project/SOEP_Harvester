@@ -21,13 +21,10 @@ package soep.constants;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import de.gerdiproject.json.datacite.Creator;
 import de.gerdiproject.json.datacite.ResourceType;
-import de.gerdiproject.json.datacite.enums.DescriptionType;
 import de.gerdiproject.json.datacite.enums.NameType;
 import de.gerdiproject.json.datacite.enums.ResourceTypeGeneral;
 import de.gerdiproject.json.datacite.extension.WebLink;
@@ -64,24 +61,11 @@ public class SoepDataCiteConstants {
     public static final String META_DATA_TIME_COVERAGE = "Time coverage";
     public static final String META_DATA_LAST_UPDATE = "Metadata last update";
 
-    /* FAO-specific */
-    // public static final Pattern TIME_COVERAGE_PATTERN = Pattern.compile("\\D+(\\d\\d\\d\\d)\\D(\\d\\d\\d\\d)[\\d\\D]+$");
-    // public static final String DATE_PARSE_ERROR = "Could not parse date: %s";
-
     // DESCRIPTIONS
     public static final String DESCRIPTION_FORMAT = "%s:%n%s";
-    // public static final Map<String, DescriptionType> RELEVANT_DESCRIPTIONS = createRelevantDescriptions(); // FAO-specific
 
     // FORMATS
     public static final List<String> FORMATS = Collections.unmodifiableList(Arrays.asList("JSON"));
-
-    /* FAO-specific */
-    // DOCUMENTS
-    //public static final String DOCUMENT_URL = "http://fenixservices.fao.org/faostat/static/documents/%s";
-
-    // DIMENSIONS
-    //public static final String DIMENSION_URL = "http://fenixservices.fao.org/faostat/api/%s/%s%s%s/?show_lists=true";
-
 
     /**
      * Private constructor, because this is a static class.
@@ -106,9 +90,9 @@ public class SoepDataCiteConstants {
     */
 
     /**
-     * Initializes a WebLink that leads to the FAOSTAT logo.
+     * Initializes a WebLink that leads to SOEP logo.
      *
-     * @return a link to the FAOSTAT logo
+     * @return a link to the SOEP logo
      */
     private static WebLink createLogoWebLink(){
         WebLink logoLink = new WebLink("https://www.diw.de/documents/bildarchiv/37/diw_02.c.239717.de/soep-logo.jpg");

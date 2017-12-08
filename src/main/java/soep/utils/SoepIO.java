@@ -29,14 +29,14 @@ import java.util.*;
  * @author Fidan Limani
  */
 public class SoepIO {
-    public String gitHubPath; // Required in SoepHarvester class
+    private String gitHubPath; // Required in SoepHarvester class
 
     public SoepIO(){
         this.gitHubPath = System.getProperty("user.home") + File.separator + "GitHub" + File.separator;
     }
 
     public File createWorkingDir() throws IOException {
-        File dir = new File(gitHubPath);
+        File dir = new File(getGitHubPath());
         if (dir.exists()) {
             System.out.println(dir + " already exists");
             // System.out.println("Canonical path: " + dir.getCanonicalPath());
@@ -81,10 +81,15 @@ public class SoepIO {
         return theList;
     }
 
+    // Getter method for
+    public String getGitHubPath(){
+        return this.gitHubPath;
+    }
+
     // Demo the app.
     public static void main(String[] args) throws IOException {
         SoepIO test = new SoepIO();
-        String datasetPath = test.gitHubPath + "SOEP-core/local/ddionrails/datasets"; // prepend "user.home"
+        String datasetPath = test.getGitHubPath() + "SOEP-core/local/ddionrails/datasets"; // prepend "user.home"
 
         /* Simple method tests
         File testFile = test.createWorkingDir();

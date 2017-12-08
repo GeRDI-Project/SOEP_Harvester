@@ -49,7 +49,7 @@ import org.eclipse.jgit.lib.ProgressMonitor;
     in order to support the next step - repo. cloning.
     + 1. Clone SOEP locally:
     + 2. Check whether a repo. with certain name already exists
-    + 3. Fetch changes in remote repo: return a boolean value after comparing local and remote repos.
+    + 3. Fetch changes in remote repo
     + 4. Update local repo from remote URI
 * */
 
@@ -58,7 +58,7 @@ public class JGitUtil {
     private SoepIO sIO;
     private String repoName;
     private String repoRemoteUri;
-    private String datasetPath;
+    // private String datasetPath; // SOEP directory of interest: harvest certain paths of a GitHub repo (Future dev.)
     private File localFileRepo;
     private File remoteFileRepo;
     private Git remoteGit;
@@ -67,11 +67,11 @@ public class JGitUtil {
     private final String ORIGIN_MASTER = "refs/remotes/origin/master"; // HEAD in remote repo
 
     // Constructor
-    public JGitUtil(String repoName, String repoRemoteUri, String datasetPath) throws IOException {
+    public JGitUtil(String repoName, String repoRemoteUri) throws IOException { // Pass "String datasetPath" parameter
         this.sIO = new SoepIO();
         this.gitDir = sIO.createWorkingDir(); // The base GitHub directory created on [user.home] path
         this.repoName = repoName;
-        this.datasetPath = datasetPath;
+        // this.datasetPath = datasetPath;
         this.repoRemoteUri = repoRemoteUri;
         localFileRepo = new File(gitDir + File.separator + repoName + File.separator + "local");
         remoteFileRepo = new File(gitDir + File.separator + repoName + File.separator + "remote");
@@ -81,12 +81,10 @@ public class JGitUtil {
     public static void collect() throws IOException, GitAPIException {
         // SOEP-core GitHub project attributes
         String soepRemoteRepo = "https://github.com/paneldata/soep-core";
-        String soepDatasetPath = "ddionrails/datasets"; // SOEP directory of interest
+        // String soepDatasetPath = "ddionrails/datasets";
 
-        // Init & clone a repository: ElasticSearch porject
-        JGitUtil gHubSoep = new JGitUtil("SOEP-core", soepRemoteRepo, soepDatasetPath);
-
-        // Setup, initialize and clone repository
+        // Init a repository: then, setup, initialize and clone
+        JGitUtil gHubSoep = new JGitUtil("SOEP-core", soepRemoteRepo); // pass "soepDatasetPath", too!
         gHubSoep.setUp();
 
         // Synchronize local repository (when out of sync.)
@@ -95,7 +93,7 @@ public class JGitUtil {
         }
     }
 
-    // Set up the local repository: initialize and clone, if local repo does not exist
+    // Set up the local repository: initialize and clone if local repo does not exist
     public void setUp() throws GitAPIException, IOException {
         if(repoExists()) {
             System.out.println("Repo <" + repoName + "> exists.");
@@ -124,7 +122,7 @@ public class JGitUtil {
     }
 
     /* Future development
-    // 1.2 Checkout
+    // 1.2 Checkout certain GitHub project subdirectory
     public void checkOut() throws GitAPIException {
         // repoBranch: ORIGIN_MASTER; ElasticSearch project path: "origin/dataset"
         System.out.printf("%nCheck out path <%s> on branch <%s>.", datasetPath, ORIGIN_MASTER);
@@ -322,16 +320,9 @@ public class JGitUtil {
         }
     }
 
-    /*
-        Demo the application
-    */
+    // Demo the app
     public static void main(String[] args) throws IOException, GitAPIException {
-        // ElasticSearch GitHub project
-        String esRemoteRepo = "https://github.com/fidanLimani/ElasticSearch";
-        String esDatasetPath = "dataset"; // ElasticSearch GitHub path: master/dataset
-
         JGitUtil.collect();
-
         System.out.printf("%n%nApplication completed.");
     }
 }

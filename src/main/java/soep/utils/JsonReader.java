@@ -24,9 +24,14 @@ import com.google.gson.JsonParser;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.util.Date;
 
 public class JsonReader {
     private JsonParser jsonParser;
+
+    // Important SOEP Metadata elements
+    private String title;
+    private Date publicationDate;
 
     public JsonReader(){
         jsonParser = new JsonParser();
