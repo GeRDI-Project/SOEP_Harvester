@@ -23,6 +23,10 @@ import de.gerdiproject.harvest.IDocument;
 import de.gerdiproject.harvest.harvester.AbstractListHarvester;
 
 import de.gerdiproject.json.datacite.DataCiteJson;
+import de.gerdiproject.json.datacite.Title;
+import de.gerdiproject.json.datacite.Date;
+import de.gerdiproject.json.datacite.abstr.AbstractDate;
+import de.gerdiproject.json.datacite.enums.DateType;
 import de.gerdiproject.json.datacite.extension.ResearchData;
 import de.gerdiproject.json.datacite.extension.WebLink;
 import de.gerdiproject.json.datacite.extension.enums.WebLinkType;
@@ -87,17 +91,32 @@ public class SoepHarvester extends AbstractListHarvester<File> {
         // "Static" SOEP metadata
         document.setVersion(SoepParameterConstants.VERSION_KEY); // What would the version be for SOEP considering it is a longitudinal study?
         document.setLanguage(SoepParameterConstants.LANGUAGE_DEFAULT); // There are also some MD elements in German...
-        document.setPublisher(SoepDataCiteConstants.PROVIDER);
         document.setFormats(SoepDataCiteConstants.FORMATS);
+
+        /* GeRDI DataCite Mandatory properties
+        */
+        // #1 Identifier: example, <identifier identifierType="DOI">10.5072/example-full</identifier>
+
+        // #2 Creator
+        document.setCreators(SoepDataCiteConstants.CREATORS);
+
+        // #3 Title: The file name, for the time being...
+        Title title = new Title(soepFile.getName());
+        document.setTitles(Arrays.asList(title));
+
+        // #4 Publisher
+        document.setPublisher(SoepDataCiteConstants.PROVIDER);
+
+        // #5 PublicationYear: Under development! Set 1984 as (the first ever) publication year, and refine later on.
+        List<AbstractDate> dates = new LinkedList<>();
+        Date publicationYear = new Date("1984", DateType.Other);
+        dates.add(publicationYear);
+        document.setDates(dates);
+
+        // #10 ResourceType
         document.setResourceType(SoepDataCiteConstants.RESOURCE_TYPE);
-        document.setResearchDisciplines(SoepDataCiteConstants.DISCIPLINES);
-        document.setRepositoryIdentifier(SoepDataCiteConstants.REPOSITORY_ID);
 
-        /* "Dynamic" SOEP metadata */
-        // language {german, english}
-        // version
-
-        // GeRDI Extension
+        /* GeRDI Extension */
         List<WebLink> links = new LinkedList<>();
 
         // View SOEP dataset file on GitHub
@@ -120,6 +139,9 @@ public class SoepHarvester extends AbstractListHarvester<File> {
 
         document.setWebLinks(links); // Add all the links to the document;
 
+        /* E2: RepositoryIdentifier */
+        document.setRepositoryIdentifier(SoepDataCiteConstants.REPOSITORY_ID);
+
         /* E3. ResearchData{dataIdentifier, dataURL, dataLabel, dataType} */
         List<ResearchData> files = new LinkedList<>();
         ResearchData researchData = new ResearchData(String.format(BASE_PATH, File.separator, File.separator,
@@ -130,10 +152,8 @@ public class SoepHarvester extends AbstractListHarvester<File> {
         files.add(researchData);
         document.setResearchDataList(files);
 
-        // Test
-        System.out.printf("Base path: %s", String.format(BASE_PATH, File.separator, File.separator, File.separator,
-                                File.separator, File.separator, File.separator, soepFile.getName()));
-        System.out.printf("%nFile URL: %s", pageLink.getUrl());
+        /* E4: ResearchDiscipline */
+        document.setResearchDisciplines(SoepDataCiteConstants.DISCIPLINES);
 
         return Arrays.asList(document);
     }

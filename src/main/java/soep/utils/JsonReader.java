@@ -24,7 +24,9 @@ import com.google.gson.JsonParser;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class JsonReader {
     private JsonParser jsonParser;
@@ -33,30 +35,27 @@ public class JsonReader {
     private String title;
     private Date publicationDate;
 
-    public JsonReader(){
+    public JsonReader() {
         jsonParser = new JsonParser();
     }
 
-    /* This method returns SOEP metadata elements of interest from a dataset file.
-       The method should return the results, or assign every metadata element to the appropriate GeRDI Schema element.
-    */
-    public void getElements() throws FileNotFoundException {
-        Object obj = jsonParser.parse(new FileReader("e1.json"));
+    /*
+        Retrieve specific elements from a SOPE file
+    * */
+    public List<String> getSoepMetadata(String fileName) throws FileNotFoundException {
+        List<String> list = new ArrayList();
+        Object obj = jsonParser.parse(new FileReader(fileName));
         JsonObject jsonObject = (JsonObject) obj;
 
-        String study = jsonObject.get("study").getAsString();
+        String study = jsonObject.get("hhnrakt").getAsString();
         System.out.printf("%nStudy: %s", study);
+        // The study "wave" information: "hhnrakt" -> "label": "Current Wave HH Number (=AHHNR)".
 
-        String questionnaire = jsonObject.get("questionnaire").getAsString();
-        System.out.printf("%nStudy: %s", questionnaire);
-
-        JsonObject questions = jsonObject.get("questions").getAsJsonObject();
-        JsonObject q0Label = questions.get("0").getAsJsonObject();
-        System.out.printf("%nQuestion 0: %s", q0Label.get("label").getAsString());
+        return list;
     }
 
     public static void main(String[] args) throws FileNotFoundException {
         JsonReader reader = new JsonReader();
-        reader.getElements();
+        reader.getSoepMetadata("abroad.json");
     }
 }
