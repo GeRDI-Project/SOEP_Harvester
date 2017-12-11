@@ -23,6 +23,7 @@ import de.gerdiproject.harvest.IDocument;
 import de.gerdiproject.harvest.harvester.AbstractListHarvester;
 
 import de.gerdiproject.json.datacite.DataCiteJson;
+import de.gerdiproject.json.datacite.extension.ResearchData;
 import de.gerdiproject.json.datacite.extension.WebLink;
 import de.gerdiproject.json.datacite.extension.enums.WebLinkType;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -42,6 +43,8 @@ import java.util.*;
 public class SoepHarvester extends AbstractListHarvester<File> {
     private static final String BASE_URL = "https://github.com/paneldata/soep-core/%s/master/ddionrails/datasets/%s"; // tree
     private static final String RAW_FILE_URI = "https://github.com/paneldata/soep-core/%s/master/ddionrails/datasets/%s"; // blob
+    private static final String BASE_PATH = System.getProperty("user.home") +
+                                                "%sGitHub%sSOEP-core%slocal%sddionrails%sdatasets%s%s"; // Local repo. dataset
 
     private String harvesterName; // Required to ID GeRDI harvester instances
     private String datasetPath; // The dataset location in a GitHub repo
@@ -90,20 +93,12 @@ public class SoepHarvester extends AbstractListHarvester<File> {
         document.setResearchDisciplines(SoepDataCiteConstants.DISCIPLINES);
         document.setRepositoryIdentifier(SoepDataCiteConstants.REPOSITORY_ID);
 
-
         /* "Dynamic" SOEP metadata */
-
         // language {german, english}
         // version
 
         // GeRDI Extension
-        /* 1. WebLink: {linkName, linkURI, linkType}
-            - WebLink: (name, URI) pair value
-            - linkName: name of the link, most likely file name or sth similar;
-            - linkURI: access URI of the resource, i.e., GitHub path + dataset file;
-            - linkType: "SourceURL" for all SOEP cases
-        * */
-        List<WebLink> links = new ArrayList();
+        List<WebLink> links = new LinkedList<>();
 
         // View SOEP dataset file on GitHub
         WebLink pageLink = new WebLink(String.format(BASE_URL, "tree", soepFile.getName()));
@@ -112,7 +107,7 @@ public class SoepHarvester extends AbstractListHarvester<File> {
         links.add(pageLink);
 
         // View SOEP dataset file source ("raw" representation) on GitHub
-        WebLink sourceLink = new WebLink(String.format(BASE_URL, "blob", soepFile.getName()));
+        WebLink sourceLink = new WebLink(String.format(RAW_FILE_URI, "blob", soepFile.getName()));
         pageLink.setName("View raw file contents");
         pageLink.setType(WebLinkType.SourceURL);
         links.add(sourceLink);
@@ -123,14 +118,23 @@ public class SoepHarvester extends AbstractListHarvester<File> {
         logoLink.setType(WebLinkType.ProviderLogoURL);
         links.add(logoLink);
 
-        /* 3. ResearchData{dataIdentifier, dataURL, dataLabel, dataType}
-            - ResearchData (M): could be equal to <linkURI> property, or the raw version of the file from GitHub;
-            - dataIdentifier (M): same as above?
-         */
-
-        // 4. ResearchDiscipline
-
         document.setWebLinks(links); // Add all the links to the document;
+
+        /* E3. ResearchData{dataIdentifier, dataURL, dataLabel, dataType} */
+        List<ResearchData> files = new LinkedList<>();
+        ResearchData researchData = new ResearchData(String.format(BASE_PATH, File.separator, File.separator,
+                                        File.separator, File.separator, File.separator, File.separator,
+                                        soepFile.getName()), "JSON");
+        researchData.setUrl(pageLink.getUrl());
+        researchData.setType("JSON");
+        files.add(researchData);
+        document.setResearchDataList(files);
+
+        // Test
+        System.out.printf("Base path: %s", String.format(BASE_PATH, File.separator, File.separator, File.separator,
+                                File.separator, File.separator, File.separator, soepFile.getName()));
+        System.out.printf("%nFile URL: %s", pageLink.getUrl());
+
         return Arrays.asList(document);
     }
 

@@ -73,23 +73,6 @@ public class SoepDataCiteConstants {
     private SoepDataCiteConstants(){}
 
     /**
-     * Initializes a map of metadata names that contain descriptions that are relevant for documents.
-     *
-     * @return a map of {@linkplain MetadataResponse} metadata_label field values
-     */
-    /* FAO-specific
-    private static Map<String, DescriptionType> createRelevantDescriptions()
-    {
-        Map<String, DescriptionType> relavantDescriptions = new HashMap<>();
-        relavantDescriptions.put("Data description", DescriptionType.Abstract);
-        relavantDescriptions.put("Statistical concepts and definitions", DescriptionType.TechnicalInfo);
-        relavantDescriptions.put("Documentation on methodology", DescriptionType.Methods);
-        relavantDescriptions.put("Quality documentation", DescriptionType.Methods);
-        return relavantDescriptions;
-    }
-    */
-
-    /**
      * Initializes a WebLink that leads to SOEP logo.
      *
      * @return a link to the SOEP logo
