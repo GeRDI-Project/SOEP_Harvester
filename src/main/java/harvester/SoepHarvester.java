@@ -51,7 +51,6 @@ public class SoepHarvester extends AbstractListHarvester<File> {
                                                 "%sGitHub%sSOEP-core%slocal%sddionrails%sdatasets%s%s"; // Local repo. dataset
 
     private String harvesterName; // Required to ID GeRDI harvester instances
-    private String datasetPath; // The dataset location in a GitHub repo
     private ArrayList<File> soepFiles;
     private SoepIO soepIO;
 
@@ -60,13 +59,13 @@ public class SoepHarvester extends AbstractListHarvester<File> {
         super(1);
         this.harvesterName = "SOEP Harvester";
         soepIO = new SoepIO();
-        this.datasetPath = "SOEP-core/local/ddionrails/datasets/";
         soepFiles = new ArrayList();
     }
 
     @Override
     protected Collection<File> loadEntries() {
         // Repo-related operations based on JGit library.
+        /*
         try {
             JGitUtil.collect();
         } catch (IOException e) {
@@ -74,9 +73,14 @@ public class SoepHarvester extends AbstractListHarvester<File> {
         } catch (GitAPIException e) {
             e.printStackTrace();
         }
+        */
 
-        String datasetPath = soepIO.getGitHubPath() + this.datasetPath;
+        String datasetPath = String.format(BASE_PATH, File.separator, File.separator, File.separator,
+                File.separator, File.separator, File.separator, "");
+        // System.out.printf("%nCollection path: %s", datasetPath);
+
         soepFiles = soepIO.listFiles(datasetPath);
+        // System.out.printf("%nNumber of files in the collection: %s", soepFiles.size());
 
         return soepFiles;
     }
@@ -194,6 +198,5 @@ public class SoepHarvester extends AbstractListHarvester<File> {
         // 1. Invoke loadEntries()
 
         // 2. Invoke harvestEntry()
-        test.harvestEntry(soepFile);
     }
 }
