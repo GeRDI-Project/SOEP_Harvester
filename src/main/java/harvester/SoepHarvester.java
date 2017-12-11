@@ -65,7 +65,6 @@ public class SoepHarvester extends AbstractListHarvester<File> {
     @Override
     protected Collection<File> loadEntries() {
         // Repo-related operations based on JGit library.
-        /*
         try {
             JGitUtil.collect();
         } catch (IOException e) {
@@ -73,7 +72,6 @@ public class SoepHarvester extends AbstractListHarvester<File> {
         } catch (GitAPIException e) {
             e.printStackTrace();
         }
-        */
 
         String datasetPath = String.format(BASE_PATH, File.separator, File.separator, File.separator,
                 File.separator, File.separator, File.separator, "");
