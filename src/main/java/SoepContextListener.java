@@ -17,18 +17,20 @@
  *  under the License.
  */
 
-import de.gerdiproject.harvest.config.parameters.AbstractParameter;
-import de.gerdiproject.harvest.config.parameters.StringParameter;
+import de.gerdiproject.harvest.ContextListener;
 import harvester.SoepHarvester;
 
-import java.util.Arrays;
-import java.util.List;
 
 import javax.servlet.annotation.WebListener;
 
-// This class initializes the FAOSTAT harvester and all objects that are required.
 
+/**
+ * This class initializes the SSP harvester and its components.
+ *
+ * @author Fidan Limani
+ */
 @WebListener
-public class SoepContextListener <SoepHarvester> {
+public class SoepContextListener extends ContextListener<SoepHarvester>
+{
     // To do...
 }
