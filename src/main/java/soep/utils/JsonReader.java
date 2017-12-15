@@ -40,7 +40,7 @@ public class JsonReader {
     }
 
     /*
-        Retrieve specific elements from a SOPE file
+        Retrieve specific elements from a SOPE file (Future work)
     * */
     public List<String> getSoepMetadata(String fileName) throws FileNotFoundException {
         List<String> list = new ArrayList();
