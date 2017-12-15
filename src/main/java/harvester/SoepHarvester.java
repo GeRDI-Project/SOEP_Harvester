@@ -44,26 +44,27 @@ import java.util.*;
 /*
     The main harvester
 * */
-public class SoepHarvester extends AbstractListHarvester<File> {
+public class SoepHarvester extends AbstractListHarvester<File>
+{
     private static final String BASE_URL = "https://github.com/paneldata/soep-core/%s/master/ddionrails/datasets/%s"; // tree
     private static final String RAW_FILE_URI = "https://github.com/paneldata/soep-core/%s/master/ddionrails/datasets/%s"; // blob
     private static final String BASE_PATH = System.getProperty("user.home") +
-                                                "%sGitHub%sSOEP-core%slocal%sddionrails%sdatasets%s%s"; // Local repo. dataset
+                                            "%sGitHub%sSOEP-core%slocal%sddionrails%sdatasets%s%s"; // Local repo. dataset
 
-    private String harvesterName; // Required to ID GeRDI harvester instances
     private ArrayList<File> soepFiles;
-    private SoepIO soepIO;
+    private final SoepIO soepIO;
 
     // As suggested, the constructor should be in a "default" style
-    public SoepHarvester(){
-        super(1);
-        this.harvesterName = "SOEP Harvester";
+    public SoepHarvester()
+    {
+        super("SOEP Harvester", 1);
         soepIO = new SoepIO();
         soepFiles = new ArrayList();
     }
 
     @Override
-    protected Collection<File> loadEntries() {
+    protected Collection<File> loadEntries()
+    {
         // Repo-related operations based on JGit library.
         try {
             JGitUtil.collect();
@@ -74,7 +75,7 @@ public class SoepHarvester extends AbstractListHarvester<File> {
         }
 
         String datasetPath = String.format(BASE_PATH, File.separator, File.separator, File.separator,
-                File.separator, File.separator, File.separator, "");
+                                            File.separator, File.separator, File.separator, "");
         // System.out.printf("%nCollection path: %s", datasetPath);
 
         soepFiles = soepIO.listFiles(datasetPath);
@@ -86,7 +87,8 @@ public class SoepHarvester extends AbstractListHarvester<File> {
     @Override
     /*  This method is to be invoked after loadEntries()
     * */
-    protected List<IDocument> harvestEntry(File soepFile) {
+    protected List<IDocument> harvestEntry(File soepFile)
+    {
         // Create the document to contain SOEP metadata for every given file from its dataset
         DataCiteJson document = new DataCiteJson();
 
@@ -147,8 +149,8 @@ public class SoepHarvester extends AbstractListHarvester<File> {
         /* E3. ResearchData{dataIdentifier, dataURL, dataLabel, dataType} */
         List<ResearchData> files = new LinkedList<>();
         ResearchData researchData = new ResearchData(String.format(BASE_PATH, File.separator, File.separator,
-                                        File.separator, File.separator, File.separator, File.separator,
-                                        soepFile.getName()), "JSON");
+                                                                    File.separator, File.separator, File.separator, File.separator,
+                                                                    soepFile.getName()), "JSON");
         researchData.setUrl(pageLink.getUrl());
         researchData.setType("JSON");
         files.add(researchData);
@@ -160,35 +162,39 @@ public class SoepHarvester extends AbstractListHarvester<File> {
         return Arrays.asList(document);
     }
 
-    @Override
     /*
         From the utils-like class, provide access to a collection of SOEP dataset files;
         The overridden implementation should add documents to the search index by calling the addDocument() or
         addDocuments() methods;
     * */
-    protected boolean harvestInternal(int i, int i1) throws Exception {
+    @Override
+    protected boolean harvestInternal(int i, int i1) throws Exception
+    {
         boolean status = false;
 
         return false;
     }
 
     @Override
-    protected int initMaxNumberOfDocuments() {
+    protected int initMaxNumberOfDocuments()
+    {
         return 0;
     }
 
     @Override
-    protected String initHash() throws NoSuchAlgorithmException, NullPointerException {
+    protected String initHash() throws NoSuchAlgorithmException, NullPointerException
+    {
         return null;
     }
 
     @Override
-    public void abortHarvest() { // its access was "protected" by default, but there was a compiler complaint...
-
+    public void abortHarvest() // its access was "protected" by default, but there was a compiler complaint...
+    {
     }
 
     // Demo the app
-    public static void main(String[] args){
+    public static void main(String[] args)
+    {
         // Test harvester reference and path to SOEP exampl file
         File soepFile = new File("C:/Users/limani fidan/GitHub/SOEP Harvester/abroad.json");
         SoepHarvester test = new SoepHarvester();
