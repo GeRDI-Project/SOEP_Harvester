@@ -28,15 +28,19 @@ import java.util.*;
  *
  * @author Fidan Limani
  */
-public class SoepIO {
+public class SoepIO
+{
     private String gitHubPath; // Required in SoepHarvester class
 
-    public SoepIO(){
+    public SoepIO()
+    {
         this.gitHubPath = System.getProperty("user.home") + File.separator + "GitHub" + File.separator;
     }
 
-    public File createWorkingDir() throws IOException {
+    public File createWorkingDir() throws IOException
+    {
         File dir = new File(getGitHubPath());
+
         if (dir.exists()) {
             System.out.println(dir + " already exists");
             // System.out.println("Canonical path: " + dir.getCanonicalPath());
@@ -56,12 +60,13 @@ public class SoepIO {
      * @return
      * @throws IOException
      */
-    public boolean repoExists(String repoName) throws IOException {
+    public boolean repoExists(String repoName) throws IOException
+    {
         boolean status = false;
         String[] fileList = createWorkingDir().list();
 
-        for(String str : fileList){
-            if(repoName.equals(str)){
+        for (String str : fileList) {
+            if (repoName.equals(str)) {
                 System.out.println(repoName + " already exists!");
                 status = true;
             }
@@ -73,7 +78,8 @@ public class SoepIO {
     /** IO operations to support the harvester
      * @param folderPath The dataset of a GitHub repo
      */
-    public ArrayList<File> listFiles(String folderPath){
+    public ArrayList<File> listFiles(String folderPath)
+    {
         ArrayList<File> theList;
         File[] files = new File(folderPath).listFiles();
         theList = new  ArrayList<>(Arrays.asList(files));
@@ -82,12 +88,14 @@ public class SoepIO {
     }
 
     // Getter method for
-    public String getGitHubPath(){
+    public String getGitHubPath()
+    {
         return this.gitHubPath;
     }
 
     // Demo the app.
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException
+    {
         SoepIO test = new SoepIO();
         String datasetPath = test.getGitHubPath() + "SOEP-core/local/ddionrails/datasets"; // prepend "user.home"
 

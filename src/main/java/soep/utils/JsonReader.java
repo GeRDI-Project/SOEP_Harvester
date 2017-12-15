@@ -28,21 +28,24 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class JsonReader {
+public class JsonReader
+{
     private JsonParser jsonParser;
 
     // Important SOEP Metadata elements
     private String title;
     private Date publicationDate;
 
-    public JsonReader() {
+    public JsonReader()
+    {
         jsonParser = new JsonParser();
     }
 
     /*
         Retrieve specific elements from a SOPE file
     * */
-    public List<String> getSoepMetadata(String fileName) throws FileNotFoundException {
+    public List<String> getSoepMetadata(String fileName) throws FileNotFoundException
+    {
         List<String> list = new ArrayList();
         Object obj = jsonParser.parse(new FileReader(fileName));
         JsonObject jsonObject = (JsonObject) obj;
@@ -54,7 +57,8 @@ public class JsonReader {
         return list;
     }
 
-    public static void main(String[] args) throws FileNotFoundException {
+    public static void main(String[] args) throws FileNotFoundException
+    {
         JsonReader reader = new JsonReader();
         reader.getSoepMetadata("abroad.json");
     }
