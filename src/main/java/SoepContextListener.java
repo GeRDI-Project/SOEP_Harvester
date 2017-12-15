@@ -26,9 +26,11 @@ import javax.servlet.annotation.WebListener;
 // This class initializes the SOEP harvester and all objects that are required.
 
 @WebListener
-public class SoepContextListener extends ContextListener<SoepHarvester> {
+public class SoepContextListener extends ContextListener<SoepHarvester>
+{
     @Override
-    protected String getServiceName(){
+    protected String getServiceName()
+    {
         return "SOEP Harvester Service";
     }
 }

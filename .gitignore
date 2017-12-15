@@ -1,6 +1,4 @@
-<<<<<<< HEAD
 /.idea/
-=======
 /target/
 /lib/
 /scripts/
@@ -9,4 +7,3 @@
 .settings/
 /bin/
 **/*.orig
->>>>>>> ffc328bb902d0e8d42a5ca3a1e43d57c0cfde0a0
