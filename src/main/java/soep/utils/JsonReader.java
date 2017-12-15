@@ -22,8 +22,8 @@ package soep.utils;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -44,21 +44,23 @@ public class JsonReader
     /*
         Retrieve specific elements from a SOPE file (Future work)
     * */
-    public List<String> getSoepMetadata(String fileName) throws FileNotFoundException
-    {
+    public List<String> getSoepMetadata(String fileName) throws FileNotFoundException, UnsupportedEncodingException {
         List<String> list = new ArrayList();
-        Object obj = jsonParser.parse(new FileReader(fileName));
+        // Object obj = jsonParser.parse(new FileReader(fileName));
+        Object obj = jsonParser.parse(new InputStreamReader(new FileInputStream(fileName), StandardCharsets.UTF_8));
+
         JsonObject jsonObject = (JsonObject) obj;
 
-        String study = jsonObject.get("hhnrakt").getAsString();
-        System.out.printf("%nStudy: %s", study);
+        // Test: retrieve a certain element from the JSON file
+        JsonObject study = jsonObject.get("hhnr").getAsJsonObject();
+        String label = study.get("label").getAsString();
+        System.out.printf("%nStudy: %s", label);
         // The study "wave" information: "hhnrakt" -> "label": "Current Wave HH Number (=AHHNR)".
 
         return list;
     }
 
-    public static void main(String[] args) throws FileNotFoundException
-    {
+    public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException {
         JsonReader reader = new JsonReader();
         reader.getSoepMetadata("abroad.json");
     }
