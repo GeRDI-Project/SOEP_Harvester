@@ -24,7 +24,8 @@ package soep.constants;
  *
  * @author Fidan Limani
  */
-public class SoepParameterConstants {
+public class SoepParameterConstants
+{
     public static final String VERSION_KEY = "version";
     public static final String LANGUAGE_KEY = "language";
     public static final String VERSION_DEFAULT = "v1";

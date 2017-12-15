@@ -54,7 +54,7 @@ public class SoepHarvester extends AbstractListHarvester<File> {
     private ArrayList<File> soepFiles;
     private SoepIO soepIO;
 
-    // As suggested, a default constructor
+    // As suggested, the constructor should be in a "default" style
     public SoepHarvester(){
         super(1);
         this.harvesterName = "SOEP Harvester";
@@ -75,7 +75,10 @@ public class SoepHarvester extends AbstractListHarvester<File> {
 
         String datasetPath = String.format(BASE_PATH, File.separator, File.separator, File.separator,
                 File.separator, File.separator, File.separator, "");
+        // System.out.printf("%nCollection path: %s", datasetPath);
+
         soepFiles = soepIO.listFiles(datasetPath);
+        // System.out.printf("%nNumber of files in the collection: %s", soepFiles.size());
 
         return soepFiles;
     }
@@ -94,7 +97,7 @@ public class SoepHarvester extends AbstractListHarvester<File> {
 
         /* GeRDI DataCite Mandatory properties
         */
-        // #1 Identifier: How to handle this element?
+        // #1 Identifier: example, <identifier identifierType="DOI">10.5072/example-full</identifier>
 
         // #2 Creator
         document.setCreators(SoepDataCiteConstants.CREATORS);
@@ -191,9 +194,6 @@ public class SoepHarvester extends AbstractListHarvester<File> {
         SoepHarvester test = new SoepHarvester();
 
         // 1. Invoke loadEntries()
-        Collection<File> list = new ArrayList<>();
-        list = test.loadEntries();
-        System.out.printf("# of files harvested: " + list.size());
 
         // 2. Invoke harvestEntry()
     }

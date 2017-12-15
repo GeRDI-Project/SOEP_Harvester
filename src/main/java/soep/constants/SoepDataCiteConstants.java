@@ -34,7 +34,8 @@ import de.gerdiproject.json.datacite.nested.PersonName;
 /**
  * This static class contains constants that are used for creating DataCite documents of SOEP.
  */
-public class SoepDataCiteConstants {
+public class SoepDataCiteConstants
+{
     // Resource type
     public static final ResourceType RESOURCE_TYPE = createResourceType();
 
@@ -70,14 +71,15 @@ public class SoepDataCiteConstants {
     /**
      * Private constructor, because this is a static class.
      */
-    private SoepDataCiteConstants(){}
+    private SoepDataCiteConstants() {}
 
     /**
      * Initializes a WebLink that leads to SOEP logo.
      *
      * @return a link to the SOEP logo
      */
-    private static WebLink createLogoWebLink(){
+    private static WebLink createLogoWebLink()
+    {
         WebLink logoLink = new WebLink("https://www.diw.de/documents/bildarchiv/37/diw_02.c.239717.de/soep-logo.jpg");
         logoLink.setType(WebLinkType.ProviderLogoURL);
         return logoLink;
@@ -88,7 +90,8 @@ public class SoepDataCiteConstants {
      *
      * @return a Creator that has "SOEP" as name
      */
-    private static List<Creator> createCreators(){
+    private static List<Creator> createCreators()
+    {
         Creator creator = new Creator(new PersonName(PROVIDER, NameType.Organisational));
         return Arrays.asList(creator);
     }
