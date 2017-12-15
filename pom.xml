@@ -34,6 +34,13 @@
             <artifactId>org.eclipse.jgit</artifactId>
             <version>4.8.0.201706111038-r</version>
         </dependency>
+
+        <!-- JSON parser -->
+        <dependency>
+            <groupId>com.googlecode.json-simple</groupId>
+            <artifactId>json-simple</artifactId>
+            <version>1.1.1</version>
+        </dependency>
     </dependencies>
 
     <!-- Define Sonatype repository for retrieving SNAPSHOT versions -->
