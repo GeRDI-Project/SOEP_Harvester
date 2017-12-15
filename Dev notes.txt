@@ -1,0 +1,27 @@
+---------------
+SOEP Harvester
+---------------
+- Setting up Apache Glassfish App Server:
+http://www.ixiasoft.com/en/products/dita-cms/documentation/4-0/web-author-installation-guide/installing-cms-application-server-first-time/installing-oracle-glassfish-server/install-oracle-glassfish-server-windows/
+
+
+---------------------------------------
+(GeRDI/DataCite) Metadata markup: Notes
+---------------------------------------
+-> Contributor:
+<contributors>
+    <contributor contributorType="ResearchGroup">SOEP</contributor>
+</contributors>
+
+-> resourceType: <resourceType resourceTypeGeneral="Dataset"/>
+
+-> Dataset description
+<descriptions>
+    <description xml:lang="en" descriptionType="Abstract"> ... </description>
+    <description xml:lang="en" descriptionType="Methods"> ... </description>
+</descriptions>
+
+-> XML provides an xml:lang attribute that can be used on the properties Title, Subject, Rights, and Description.
+This provides a way to describe the language used for the content of the specified properties. The schema provides a
+Language (#9) property to be used to describe the language of the resource.
+
