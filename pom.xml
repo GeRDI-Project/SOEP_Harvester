@@ -16,7 +16,7 @@
 
     <packaging>war</packaging>
     <name>SOEP Harvester</name>
-    <description>A GeRDI harvester for SOEP</description>
+    <description>A GeRDI de.gerdiproject.harvest.harvester for SOEP</description>
 
     <developers>
         <developer>
