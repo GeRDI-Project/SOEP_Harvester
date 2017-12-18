@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: de.gerdi-project:RestfulHarvester-Library:5.1.1-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/de/gerdi-project/RestfulHarvester-Library/5.1.1-SNAPSHOT/RestfulHarvester-Library-5.1.1-20171215.095349-1.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/de/gerdi-project/RestfulHarvester-Library/5.1.1-SNAPSHOT/RestfulHarvester-Library-5.1.1-20171215.095349-1-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/de/gerdi-project/RestfulHarvester-Library/5.1.1-SNAPSHOT/RestfulHarvester-Library-5.1.1-20171215.095349-1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
