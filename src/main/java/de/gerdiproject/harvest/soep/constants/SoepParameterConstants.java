@@ -17,20 +17,23 @@
  *  under the License.
  */
 
-import de.gerdiproject.harvest.ContextListener;
-import harvester.SoepHarvester;
+package de.gerdiproject.harvest.soep.constants;
 
-
-import javax.servlet.annotation.WebListener;
-
-// This class initializes the SOEP harvester and all objects that are required.
-
-@WebListener
-public class SoepContextListener extends ContextListener<SoepHarvester>
+/**
+ * This static class contains constants of SOEP de.gerdiproject.harvest.harvester parameters.
+ *
+ * @author Fidan Limani
+ */
+public class SoepParameterConstants
 {
-    @Override
-    protected String getServiceName()
-    {
-        return "SOEP Harvester Service";
-    }
+    public static final String VERSION_KEY = "version";
+    public static final String LANGUAGE_KEY = "language";
+    public static final String VERSION_DEFAULT = "v1";
+    public static final String LANGUAGE_DEFAULT = "en"; // How to treat the support for 2 languages?
+
+
+    /**
+     * Private constructor, because this is a static class.
+     */
+    private SoepParameterConstants() {}
 }

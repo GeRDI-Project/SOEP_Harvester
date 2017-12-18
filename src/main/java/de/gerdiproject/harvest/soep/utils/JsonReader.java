@@ -17,7 +17,7 @@
  *  under the License.
  */
 
-package soep.utils;
+package de.gerdiproject.harvest.soep.utils;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -25,16 +25,16 @@ import com.google.gson.JsonParser;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class JsonReader
 {
     private JsonParser jsonParser;
 
-    // Important SOEP Metadata elements
-    private String title;
-    private Date publicationDate;
+    /* Important SOEP Metadata elements: TO be determined with SOEP community manager
+        private String title;
+        private Date publicationDate;
+    */
 
     public JsonReader()
     {

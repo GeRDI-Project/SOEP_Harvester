@@ -17,14 +17,14 @@
  *  under the License.
  */
 
-package soep.utils;
+package de.gerdiproject.harvest.soep.utils;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
 /**
- * A util-like class to support repo- and harvester-based operations.
+ * A util-like class to support repo- and de.gerdiproject.harvest.harvester-based operations.
  *
  * @author Fidan Limani
  */
@@ -63,26 +63,24 @@ public class SoepIO
     public boolean repoExists(String repoName) throws IOException
     {
         boolean status = false;
-        String[] fileList = createWorkingDir().list();
+        List fileList = Arrays.asList(createWorkingDir().list());
 
-        for (String str : fileList) {
-            if (repoName.equals(str)) {
-                System.out.println(repoName + " already exists!");
-                status = true;
-            }
+        if(fileList.contains(repoName))
+        {
+            System.out.println(repoName + " already exists!");
+            status = true;
         }
 
         return status;
     }
 
-    /** IO operations to support the harvester
+    /** IO operations to support the de.gerdiproject.harvest.harvester
      * @param folderPath The dataset of a GitHub repo
      */
     public ArrayList<File> listFiles(String folderPath)
     {
-        ArrayList<File> theList;
         File[] files = new File(folderPath).listFiles();
-        theList = new  ArrayList<>(Arrays.asList(files));
+        ArrayList<File> theList = new  ArrayList<>(Arrays.asList(files));
 
         return theList;
     }
@@ -97,16 +95,11 @@ public class SoepIO
     public static void main(String[] args) throws IOException
     {
         SoepIO test = new SoepIO();
-        String datasetPath = test.getGitHubPath() + "SOEP-core/local/ddionrails/datasets"; // prepend "user.home"
+        String repo = "SOEP-core";
+        /* Simple method tests */
+        test.repoExists(repo);
 
-        /* Simple method tests
-        File testFile = test.createWorkingDir();
-        System.out.println("File (canonical): " + testFile);
-
-        String repoName = "ElasticSearch";
-        System.out.println("Project exists? " + test.repoExists("ElasticSearch"));
-        */
-        ArrayList<File> myList = test.listFiles(datasetPath);
+        ArrayList<File> myList = test.listFiles(test.getGitHubPath() + repo);
         System.out.printf("%n# of files in the dataset: " + myList.size());
     }
 }

@@ -17,7 +17,7 @@
  *  under the License.
  */
 
-package soep.utils;
+package de.gerdiproject.harvest.soep.utils;
 
 /** Interface with SOEP's GitHub repo: create, clone, update (if required) operations
  * @author Fidan Limani
@@ -64,8 +64,8 @@ public class JGitUtil
     private File remoteFileRepo;
     private Git remoteGit;
     private Git localGit;
-    private final String MASTER = "refs/heads/master"; // HEAD of local (cloned) repo
-    private final String ORIGIN_MASTER = "refs/remotes/origin/master"; // HEAD in remote repo
+    // private final String MASTER = "refs/heads/master"; // HEAD of local (cloned) repo
+    private static final String ORIGIN_MASTER = "refs/remotes/origin/master"; // HEAD in remote repo
 
     // Constructor
     public JGitUtil(String repoName, String repoRemoteUri) throws IOException   // Pass "String datasetPath" parameter
@@ -83,7 +83,7 @@ public class JGitUtil
     public static void collect() throws IOException, GitAPIException
     {
         // SOEP-core GitHub project attributes
-        String soepRemoteRepo = "https://github.com/paneldata/soep-core";
+        String soepRemoteRepo = "https://github.com/paneldata/de.gerdiproject.harvest.soep-core";
         // String soepDatasetPath = "ddionrails/datasets";
 
         // Init a repository: then, setup, initialize and clone
@@ -142,7 +142,7 @@ public class JGitUtil
         boolean status = false;
 
         try {
-            Git tempGit = Git.open(remoteFileRepo);
+            Git.open(remoteFileRepo);
             status = true;
         } catch (RepositoryNotFoundException e) {
             System.err.println("Repository does not exist. To be created next.");
@@ -166,8 +166,8 @@ public class JGitUtil
 
             if (refUpdate != null) {
                 RefUpdate.Result result = refUpdate.getResult();
-                System.out.printf("%n\tUpdates available. Pull changes!"); // We represent this information via the
-                status = true;                                          // return value in <status> of the method.
+                System.out.printf("%n\tUpdates available. Pull changes! %s", result.toString()); // We represent this information via the
+                status = true;                                                                  // return value in <status> of the method.
             } else
                 System.out.printf("%n\t(Local) Repository up to date.");
         } catch (GitAPIException e) {
@@ -198,21 +198,21 @@ public class JGitUtil
                               .setRef(ORIGIN_MASTER)
                               .call()
                               .getName();
-                System.out.println("%nRepository successfully updated.");
+                System.out.printf("%nRepository successfully updated. Pull result: %s", head.toString());
             }
         }
     }
 
     /*
         Multiple methods that were used to assess different aspects of Git repositories; they could be used in the
-        future development of the harvester, hence their inclusion at this point.
+        future development of the de.gerdiproject.harvest.harvester, hence their inclusion at this point.
     * */
 
     // Exploring the remote repository
     public void exploreRepo(String repoBranch) throws IOException
     {
         Repository repo = getLocalGit().getRepository();
-        System.out.printf("\nExploring branch: %s%n%n", repoBranch);
+        System.out.printf("%nExploring branch: %s%n%n", repoBranch);
 
         try
             (RevWalk revWalk = new RevWalk(repo)) {

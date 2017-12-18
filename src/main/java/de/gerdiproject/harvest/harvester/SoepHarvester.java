@@ -17,10 +17,9 @@
  *  under the License.
  */
 
-package harvester;
+package de.gerdiproject.harvest.harvester;
 
 import de.gerdiproject.harvest.IDocument;
-import de.gerdiproject.harvest.harvester.AbstractListHarvester;
 
 import de.gerdiproject.json.datacite.DataCiteJson;
 import de.gerdiproject.json.datacite.Title;
@@ -31,10 +30,10 @@ import de.gerdiproject.json.datacite.extension.ResearchData;
 import de.gerdiproject.json.datacite.extension.WebLink;
 import de.gerdiproject.json.datacite.extension.enums.WebLinkType;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import soep.constants.SoepDataCiteConstants;
-import soep.constants.SoepParameterConstants;
-import soep.utils.JGitUtil;
-import soep.utils.SoepIO;
+import de.gerdiproject.harvest.soep.constants.SoepDataCiteConstants;
+import de.gerdiproject.harvest.soep.constants.SoepParameterConstants;
+import de.gerdiproject.harvest.soep.utils.JGitUtil;
+import de.gerdiproject.harvest.soep.utils.SoepIO;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,12 +41,12 @@ import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
 /*
-    The main harvester
+    The main de.gerdiproject.harvest.harvester
 * */
 public class SoepHarvester extends AbstractListHarvester<File>
 {
-    private static final String BASE_URL = "https://github.com/paneldata/soep-core/%s/master/ddionrails/datasets/%s"; // tree
-    private static final String RAW_FILE_URI = "https://github.com/paneldata/soep-core/%s/master/ddionrails/datasets/%s"; // blob
+    private static final String BASE_URL = "https://github.com/paneldata/de.gerdiproject.harvest.soep-core/%s/master/ddionrails/datasets/%s"; // tree
+    private static final String RAW_FILE_URI = "https://github.com/paneldata/de.gerdiproject.harvest.soep-core/%s/master/ddionrails/datasets/%s"; // blob
     private static final String BASE_PATH = System.getProperty("user.home") +
                                             "%sGitHub%sSOEP-core%slocal%sddionrails%sdatasets%s%s"; // Local repo. dataset
 
@@ -195,12 +194,13 @@ public class SoepHarvester extends AbstractListHarvester<File>
     // Demo the app
     public static void main(String[] args)
     {
-        // Test harvester reference and path to SOEP exampl file
+        /* Test de.gerdiproject.harvest.harvester reference and path to SOEP exampl file
         File soepFile = new File("C:/Users/limani fidan/GitHub/SOEP Harvester/abroad.json");
         SoepHarvester test = new SoepHarvester();
 
         // 1. Invoke loadEntries()
 
         // 2. Invoke harvestEntry()
+        */
     }
 }

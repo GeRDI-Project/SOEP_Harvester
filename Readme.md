@@ -1,1 +1,1 @@
-SOEP harvester implementation
+SOEP de.gerdiproject.harvest.harvester implementation

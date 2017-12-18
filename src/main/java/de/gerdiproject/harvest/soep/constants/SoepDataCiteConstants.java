@@ -17,7 +17,7 @@
  *  under the License.
  */
 
-package soep.constants;
+package de.gerdiproject.harvest.soep.constants;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -44,7 +44,7 @@ public class SoepDataCiteConstants
 
     // SOURCE
     public static final String PROVIDER = "German Socio-Economic Panel Study (SOEP)";
-    public static final String PROVIDER_URI = "https://github.com/paneldata/soep-core";
+    public static final String PROVIDER_URI = "https://github.com/paneldata/de.gerdiproject.harvest.soep-core";
     public static final String REPOSITORY_ID = "SOEP";
     public static final List<String> DISCIPLINES = Collections.unmodifiableList(Arrays.asList("Socio-Economic"));
 
@@ -54,7 +54,7 @@ public class SoepDataCiteConstants
     public static final short EARLIEST_PUBLICATION_YEAR = 1984;
 
     // WEB LINKS
-    public static final String VIEW_URL = "https://github.com/paneldata/soep-core/tree/master/ddionrails/datasets";
+    public static final String VIEW_URL = "https://github.com/paneldata/de.gerdiproject.harvest.soep-core/tree/master/ddionrails/datasets";
     public static final WebLink LOGO_WEB_LINK = createLogoWebLink();
     public static final String TEMPLATE_DOCUMENT_NAME = "About";
 
@@ -80,7 +80,7 @@ public class SoepDataCiteConstants
      */
     private static WebLink createLogoWebLink()
     {
-        WebLink logoLink = new WebLink("https://www.diw.de/documents/bildarchiv/37/diw_02.c.239717.de/soep-logo.jpg");
+        WebLink logoLink = new WebLink("https://www.diw.de/documents/bildarchiv/37/diw_02.c.239717.de/de.gerdiproject.harvest.soep-logo.jpg");
         logoLink.setType(WebLinkType.ProviderLogoURL);
         return logoLink;
     }
