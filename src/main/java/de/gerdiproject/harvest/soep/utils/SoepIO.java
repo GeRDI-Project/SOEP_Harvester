@@ -62,16 +62,9 @@ public class SoepIO
      */
     public boolean repoExists(String repoName) throws IOException
     {
-        boolean status = false;
-        List fileList = Arrays.asList(createWorkingDir().list());
+        File file = new File(this.getGitHubPath() + repoName);
 
-        if(fileList.contains(repoName))
-        {
-            System.out.println(repoName + " already exists!");
-            status = true;
-        }
-
-        return status;
+        return file.exists();
     }
 
     /** IO operations to support the de.gerdiproject.harvest.harvester
@@ -80,7 +73,11 @@ public class SoepIO
     public ArrayList<File> listFiles(String folderPath)
     {
         File[] files = new File(folderPath).listFiles();
-        ArrayList<File> theList = new  ArrayList<>(Arrays.asList(files));
+        ArrayList<File> theList = new ArrayList<>();
+
+        if(files != null){
+            theList = new ArrayList<>(Arrays.asList(files));
+        }
 
         return theList;
     }

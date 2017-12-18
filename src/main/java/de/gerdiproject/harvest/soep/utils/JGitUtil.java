@@ -120,7 +120,7 @@ public class JGitUtil
     {
         System.out.println("\nCloning remote repository from <" + repoRemoteUri + ">");
         return Git.cloneRepository()
-               .setProgressMonitor(new TextProgressMonitor(new PrintWriter(System.out)))
+               .setProgressMonitor(new TextProgressMonitor(new PrintWriter(new OutputStreamWriter(System.out, "UTF-8"))))
                .setURI(repoRemoteUri)
                .setDirectory(localFileRepo)
                .call();
@@ -158,7 +158,12 @@ public class JGitUtil
     {
         boolean status = false;
         System.out.printf("Repository updates from <%s> available?",  repoBranch);
-        ProgressMonitor monitor = new TextProgressMonitor(new PrintWriter(System.out));
+        ProgressMonitor monitor = null;
+        try {
+            monitor = new TextProgressMonitor(new PrintWriter(new OutputStreamWriter(System.out, "UTF-8")));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
 
         try {
             FetchResult fetch = getLocalGit().fetch().setCheckFetchedObjects(true).setProgressMonitor(monitor).call();
@@ -181,9 +186,14 @@ public class JGitUtil
     public void updateRepo()throws GitAPIException
     {
         System.out.println("\nUpdating local repository <" + localFileRepo.getAbsolutePath() + ">");
-        ProgressMonitor monitor = new TextProgressMonitor(new PrintWriter(System.out));
+        ProgressMonitor monitor = null;
+        try {
+            monitor = new TextProgressMonitor(new PrintWriter(new OutputStreamWriter(System.out, "UTF-8")));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
 
-        // checkOut(); // Check out the dataset of interest before pulling resources to local repo. (future work)
+        // checkOut(); // Check out the dataset of interest before pulling resources to local repo. (Future work!!!)
 
         try
             (Git git = getLocalGit()) {
