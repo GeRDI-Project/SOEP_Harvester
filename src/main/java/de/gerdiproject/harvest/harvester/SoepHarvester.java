@@ -29,7 +29,9 @@ import de.gerdiproject.json.datacite.enums.DateType;
 import de.gerdiproject.json.datacite.extension.ResearchData;
 import de.gerdiproject.json.datacite.extension.WebLink;
 import de.gerdiproject.json.datacite.extension.enums.WebLinkType;
+
 import org.eclipse.jgit.api.errors.GitAPIException;
+
 import de.gerdiproject.harvest.soep.constants.SoepDataCiteConstants;
 import de.gerdiproject.harvest.soep.constants.SoepParameterConstants;
 import de.gerdiproject.harvest.soep.utils.JGitUtil;
@@ -50,7 +52,7 @@ public class SoepHarvester extends AbstractListHarvester<File>
     private static final String BASE_PATH = System.getProperty("user.home") +
                                             "%sGitHub%sSOEP-core%slocal%sddionrails%sdatasets%s%s"; // Local repo. dataset
 
-    private ArrayList<File> soepFiles;
+    private List<File> soepFiles;
     private final SoepIO soepIO;
 
     // As suggested, the constructor should be in a "default" style
@@ -68,9 +70,9 @@ public class SoepHarvester extends AbstractListHarvester<File>
         try {
             JGitUtil.collect();
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Exception: ", e);
         } catch (GitAPIException e) {
-            e.printStackTrace();
+            logger.error("Exception: ", e);
         }
 
         String datasetPath = String.format(BASE_PATH, File.separator, File.separator, File.separator,
@@ -169,8 +171,6 @@ public class SoepHarvester extends AbstractListHarvester<File>
     @Override
     protected boolean harvestInternal(int i, int i1) throws Exception
     {
-        boolean status = false;
-
         return false;
     }
 

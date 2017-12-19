@@ -7,4 +7,5 @@
 /bin/
 **/*.orig
 Dev notes.txt
+SOEP-Harvesting.iml
 /.idea/

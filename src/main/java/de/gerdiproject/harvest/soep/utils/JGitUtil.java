@@ -27,6 +27,8 @@ import java.io.*;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.PullResult;
@@ -42,7 +44,6 @@ import org.eclipse.jgit.transport.FetchResult;
 import org.eclipse.jgit.transport.TrackingRefUpdate;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
-import org.eclipse.jgit.lib.ProgressMonitor;
 
 /* Notes
     + 0. Create local repository to hold SOEP dataset; in case there already is one, just get back the reference to it
@@ -64,6 +65,7 @@ public class JGitUtil
     private File remoteFileRepo;
     private Git remoteGit;
     private Git localGit;
+    private static final Logger logger = LoggerFactory.getLogger(JGitUtil.class);
     // private final String MASTER = "refs/heads/master"; // HEAD of local (cloned) repo
     private static final String ORIGIN_MASTER = "refs/remotes/origin/master"; // HEAD in remote repo
 
@@ -99,7 +101,7 @@ public class JGitUtil
     public void setUp() throws GitAPIException, IOException
     {
         if (repoExists()) {
-            System.out.println("Repo <" + repoName + "> exists.");
+            logger.info("Repo <" + repoName + "> exists.");
             setLocalGit(); // A repo exists during setUp()
         } else {
             remoteGit = initRepo(); // init and clone repo
@@ -111,14 +113,14 @@ public class JGitUtil
     // 0. Initialize repository: in case it exists, get a reference to it
     public Git initRepo() throws GitAPIException, IOException
     {
-        System.out.println("\nInitializing repository <" + repoName + ">");
+        logger.info("Initializing repository <" + repoName + ">");
         return Git.init().setDirectory(remoteFileRepo).call();
     }
 
     // 1. Clone (SOEP) repository
     public Git cloneRepo() throws GitAPIException, IOException
     {
-        System.out.println("\nCloning remote repository from <" + repoRemoteUri + ">");
+        logger.info("%nCloning remote repository from <" + repoRemoteUri +" >");
         return Git.cloneRepository()
                .setProgressMonitor(new TextProgressMonitor(new PrintWriter(new OutputStreamWriter(System.out, "UTF-8"))))
                .setURI(repoRemoteUri)
@@ -145,9 +147,9 @@ public class JGitUtil
             Git.open(remoteFileRepo);
             status = true;
         } catch (RepositoryNotFoundException e) {
-            System.err.println("Repository does not exist. To be created next.");
+            logger.error("Repository does not exist. To be created next.");
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("IOException from repoExists().");
         }
 
         return status;
@@ -157,12 +159,12 @@ public class JGitUtil
     public boolean fetchRepo(String repoBranch)
     {
         boolean status = false;
-        System.out.printf("Repository updates from <%s> available?",  repoBranch);
+        logger.info("Repository updates from <" + repoBranch + "> available?");
         ProgressMonitor monitor = null;
         try {
             monitor = new TextProgressMonitor(new PrintWriter(new OutputStreamWriter(System.out, "UTF-8")));
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+            logger.error("UnsupportedEncodingException from fetchRepo().");
         }
 
         try {
@@ -171,12 +173,12 @@ public class JGitUtil
 
             if (refUpdate != null) {
                 RefUpdate.Result result = refUpdate.getResult();
-                System.out.printf("%n\tUpdates available. Pull changes! %s", result.toString()); // We represent this information via the
-                status = true;                                                                  // return value in <status> of the method.
+                logger.info("Updates available. Pull changes! Result: " + result.toString()); // We represent this information via the return value in <status> of the method.
+                status = true;
             } else
-                System.out.printf("%n\t(Local) Repository up to date.");
+                logger.info("(Local) Repository up to date.");
         } catch (GitAPIException e) {
-            e.printStackTrace();
+            logger.error("GitAPIException from fetchrepo().");
         }
 
         return status;
@@ -185,12 +187,12 @@ public class JGitUtil
     // 4. Update local repo from remote URI
     public void updateRepo()throws GitAPIException
     {
-        System.out.println("\nUpdating local repository <" + localFileRepo.getAbsolutePath() + ">");
+        logger.info("Updating local repository <" + localFileRepo.getAbsolutePath() + ">");
         ProgressMonitor monitor = null;
         try {
             monitor = new TextProgressMonitor(new PrintWriter(new OutputStreamWriter(System.out, "UTF-8")));
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+            logger.error("UnsupportedEncodingException from updateRepo().");
         }
 
         // checkOut(); // Check out the dataset of interest before pulling resources to local repo. (Future work!!!)
@@ -208,7 +210,7 @@ public class JGitUtil
                               .setRef(ORIGIN_MASTER)
                               .call()
                               .getName();
-                System.out.printf("%nRepository successfully updated. Pull result: %s", head.toString());
+                logger.info("Repository successfully updated. Pull result: " + head);
             }
         }
     }
@@ -222,7 +224,7 @@ public class JGitUtil
     public void exploreRepo(String repoBranch) throws IOException
     {
         Repository repo = getLocalGit().getRepository();
-        System.out.printf("%nExploring branch: %s%n%n", repoBranch);
+        logger.info("Exploring branch: " + repoBranch);
 
         try
             (RevWalk revWalk = new RevWalk(repo)) {
@@ -231,7 +233,7 @@ public class JGitUtil
             revWalk.markStart(revWalk.parseCommit(commitId));
 
             for (RevCommit commit : revWalk)
-                System.out.println("Commit message: " + commit.getFullMessage());
+                logger.info("Commit message: " + commit.getFullMessage());
         }
     }
 
@@ -239,12 +241,12 @@ public class JGitUtil
     public void repoInfo()
     {
         Map<String, Ref> refs = getLocalGit().getRepository().getAllRefs();
-        System.out.printf("%nAll Refs (%d)%n", refs.size());
+        logger.info("%nAll Refs (%d)%n", refs.size());
 
         Ref head = refs.get(Constants.HEAD);
 
         if (head == null) {
-            System.out.println("HEAD ref is dead and/or non-existent?");
+            logger.info("HEAD ref is dead and/or non-existent?");
             return;
         }
 
@@ -266,23 +268,23 @@ public class JGitUtil
         for (String name : printRefs.keySet())
             maxLength = Math.max(maxLength, name.length());
 
-        System.out.printf("Refs (Heads/Remotes) (%d)%n", printRefs.size());
+        logger.info("Refs (Heads/Remotes) (%d)%n", printRefs.size());
 
         for (Map.Entry<String, Ref> e : printRefs.entrySet()) {
             Ref ref = e.getValue();
             ObjectId objectId = ref.getObjectId();
-            System.out.printf("%c %-" + maxLength + "s %s%n", (current.equals(ref.getName()) ? '*' : ' '), e.getKey(),
+            logger.info("%c %-" + maxLength + "s %s%n", (current.equals(ref.getName()) ? '*' : ' '), e.getKey(),
                               objectId.abbreviate(8).name()); // Could be abbreviated to any lenght;
         }
     }
 
     public void listBranches() throws GitAPIException
     {
-        System.out.println("\nListing remote branches for: " + getLocalGit().getRepository().toString());
+        logger.info("Listing remote branches for: " + getLocalGit().getRepository().toString());
         List<Ref> branches = localGit.branchList().call();
 
         for (Ref ref : branches) {
-            System.out.printf("<Branch> %s %n<Branch name> %s %n<Branch Object ID> %s",
+            logger.info("<Branch> %s %n<Branch name> %s %n<Branch Object ID> %s",
                               ref, ref.getName(), ref.getObjectId().getName());
         }
     }
@@ -336,12 +338,12 @@ public class JGitUtil
 
     public void setRepoName(String repoName)
     {
-        System.out.println("\nSetting the repository name to: " + repoName);
+        logger.info("Setting the repository name to: " + repoName);
         this.repoName = repoName;
     }
     public void setRepoRemoteUri(String repoRemoteUri)
     {
-        System.out.println("\nSetting the remote repository URI to: " + repoRemoteUri);
+        logger.info("Setting the remote repository URI to: " + repoRemoteUri);
         this.repoRemoteUri = repoRemoteUri;
     }
 
@@ -352,7 +354,7 @@ public class JGitUtil
             try {
                 localGit = Git.open(localFileRepo);
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.error("IOException from setLocalGit().");
             }
         }
     }
@@ -360,7 +362,9 @@ public class JGitUtil
     // Demo the app
     public static void main(String[] args) throws IOException, GitAPIException
     {
+        /*
         JGitUtil.collect();
         System.out.printf("%n%nApplication completed.");
+        */
     }
 }

@@ -22,6 +22,8 @@ package de.gerdiproject.harvest.soep.utils;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A util-like class to support repo- and de.gerdiproject.harvest.harvester-based operations.
@@ -31,6 +33,7 @@ import java.util.*;
 public class SoepIO
 {
     private String gitHubPath; // Required in SoepHarvester class
+    private static final Logger logger = LoggerFactory.getLogger(SoepIO.class);
 
     public SoepIO()
     {
@@ -42,15 +45,15 @@ public class SoepIO
         File dir = new File(getGitHubPath());
 
         if (dir.exists()) {
-            System.out.println(dir + " already exists");
+            logger.info(dir + " already exists");
             // System.out.println("Canonical path: " + dir.getCanonicalPath());
             // System.out.println("dir toString(): " + dir.toString());
             return dir;
         } else if (dir.mkdirs()) {
-            System.out.println(dir + " was created");
+            logger.info(dir + " was created");
             return dir;
         } else {
-            System.out.println(dir + " was not created");
+            logger.info(dir + " was not created");
             return null;
         }
     }
@@ -70,16 +73,16 @@ public class SoepIO
     /** IO operations to support the de.gerdiproject.harvest.harvester
      * @param folderPath The dataset of a GitHub repo
      */
-    public ArrayList<File> listFiles(String folderPath)
+    public List<File> listFiles(String folderPath)
     {
         File[] files = new File(folderPath).listFiles();
-        ArrayList<File> theList = new ArrayList<>();
+        List<File> fileList = new ArrayList<>();
 
         if(files != null){
-            theList = new ArrayList<>(Arrays.asList(files));
+            fileList = new ArrayList<>(Arrays.asList(files));
         }
 
-        return theList;
+        return fileList;
     }
 
     // Getter method for
@@ -96,7 +99,7 @@ public class SoepIO
         /* Simple method tests */
         test.repoExists(repo);
 
-        ArrayList<File> myList = test.listFiles(test.getGitHubPath() + repo);
-        System.out.printf("%n# of files in the dataset: " + myList.size());
+        List<File> myList = test.listFiles(test.getGitHubPath() + repo);
+        logger.info("# of files in the dataset: " + myList.size());
     }
 }

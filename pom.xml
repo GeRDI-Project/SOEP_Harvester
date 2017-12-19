@@ -35,6 +35,13 @@
             <version>4.8.0.201706111038-r</version>
         </dependency>
 
+        <!-- sl4j logger -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.21</version>
+        </dependency>
+
     </dependencies>
 
     <!-- Define Sonatype repository for retrieving SNAPSHOT versions -->

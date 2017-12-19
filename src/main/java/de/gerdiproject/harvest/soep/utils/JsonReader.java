@@ -19,6 +19,7 @@
 
 package de.gerdiproject.harvest.soep.utils;
 
+/*
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -26,42 +27,34 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+*/
 
 public class JsonReader
 {
-    private JsonParser jsonParser;
+    // private JsonParser jsonParser;
 
     /* Important SOEP Metadata elements: TO be determined with SOEP community manager
         private String title;
         private Date publicationDate;
     */
 
-    public JsonReader()
+    /* public JsonReader()
     {
         jsonParser = new JsonParser();
     }
+    */
 
-    /*
-        Retrieve specific elements from a SOPE file (Future work)
-    * */
+    /* Retrieve specific elements from a SOPE file (Future work)
     public List<String> getSoepMetadata(String fileName) throws FileNotFoundException, UnsupportedEncodingException {
         List<String> list = new ArrayList();
-        // Object obj = jsonParser.parse(new FileReader(fileName));
-        Object obj = jsonParser.parse(new InputStreamReader(new FileInputStream(fileName), StandardCharsets.UTF_8));
-
-        JsonObject jsonObject = (JsonObject) obj;
-
         // Test: retrieve a certain element from the JSON file
-        JsonObject study = jsonObject.get("hhnr").getAsJsonObject();
-        String label = study.get("label").getAsString();
-        System.out.printf("%nStudy: %s", label);
-        // The study "wave" information: "hhnrakt" -> "label": "Current Wave HH Number (=AHHNR)".
+            Object obj = jsonParser.parse(new InputStreamReader(new FileInputStream(fileName), StandardCharsets.UTF_8));
+            JsonObject jsonObject = (JsonObject) obj;
+            JsonObject study = jsonObject.get("hhnr").getAsJsonObject();
+            String label = study.get("label").getAsString();
+            System.out.printf("%nStudy: %s", label); // The study "wave" information: "hhnrakt" -> "label": "Current Wave HH Number (=AHHNR)".
 
         return list;
     }
-
-    public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException {
-        JsonReader reader = new JsonReader();
-        reader.getSoepMetadata("abroad.json");
-    }
+    */
 }
