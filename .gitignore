@@ -1,11 +1,22 @@
+# Maven et al.
 /target/
 /lib/
+/bin/
 /scripts/
+Dev notes.txt
+
+# Eclipse-realted
+.settings/
 .project
 .classpath
-.settings/
-/bin/
+
+# AStyle
 **/*.orig
-Dev notes.txt
+
+# IntelliJ-related
 .idea/*
 **/*.iml
+
+# Harvester Utilities
+/scripts/
+/bamboo-specs/
