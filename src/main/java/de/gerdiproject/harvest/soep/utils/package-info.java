@@ -16,22 +16,11 @@
  *  specific language governing permissions and limitations
  *  under the License.
  */
-package de.gerdiproject.harvest;
-
-import de.gerdiproject.harvest.harvester.SoepHarvester;
-
-import javax.servlet.annotation.WebListener;
 
 /**
- * This class initializes the SOEP de.gerdiproject.harvest.harvester and all objects that are required.
+ * This package contains a class that supports operations related to a local Git repository.
+ *
+ * @author Fidan Limani
  */
 
-@WebListener
-public class SoepContextListener extends ContextListener<SoepHarvester>
-{
-    @Override
-    protected String getServiceName()
-    {
-        return "SOEP Harvester Service";
-    }
-}
+package de.gerdiproject.harvest.soep.utils;

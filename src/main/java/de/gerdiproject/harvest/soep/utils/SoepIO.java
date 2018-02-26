@@ -22,46 +22,59 @@ package de.gerdiproject.harvest.soep.utils;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+
+import de.gerdiproject.harvest.soep.constants.SoepLoggingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A util-like class to support repo- and de.gerdiproject.harvest.harvester-based operations.
+ * A util-like class to support repo- and GeRDI harvester-based operations.
  *
  * @author Fidan Limani
  */
 public class SoepIO
 {
-    private String gitHubPath; // Required in SoepHarvester class
-    private static final Logger logger = LoggerFactory.getLogger(SoepIO.class);
+    // Required in SoepHarvester class
+    private String gitHubPath;
 
+    // User home path based on which the local repository will be created
+    public static final String USER_HOME = System.getProperty("user.home");
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SoepIO.class);
+
+    /**
+     * Constructor
+     */
     public SoepIO()
     {
-        this.gitHubPath = System.getProperty("user.home") + File.separator + "GitHub" + File.separator;
+        this.gitHubPath = USER_HOME + File.separator + "GitHub" + File.separator;
     }
 
+    /**
+     *  Create a local directory to contain the cloned GitHub repository.
+     *  @return File The file for the local GitHub repo., or null if the exception is thrown from this method
+     *  @throws IOException if the local Git directory cannot be created
+     */
     public File createWorkingDir() throws IOException
     {
         File dir = new File(getGitHubPath());
 
         if (dir.exists()) {
-            logger.info(dir + " already exists");
-            // System.out.println("Canonical path: " + dir.getCanonicalPath());
-            // System.out.println("dir toString(): " + dir.toString());
+            LOGGER.info(dir + SoepLoggingConstants.DIR_EXISTS);
             return dir;
         } else if (dir.mkdirs()) {
-            logger.info(dir + " was created");
+            LOGGER.info(dir + SoepLoggingConstants.DIR_CREATED);
             return dir;
         } else {
-            logger.info(dir + " was not created");
+            LOGGER.info(dir + SoepLoggingConstants.DIR_NOT_CREATED);
             return null;
         }
     }
 
     /** Does a repo already exist?
-     * @param repoName Path to the local SOEP repo (SOEP-core, in this case)
-     * @return
-     * @throws IOException
+     * @param repoName Path to the local SOEP repo. (SOEP-core, in this case)
+     * @return boolean Returns whether the repository exists
+     * @throws IOException if a local Git directory cannot be created
      */
     public boolean repoExists(String repoName) throws IOException
     {
@@ -70,8 +83,8 @@ public class SoepIO
         return file.exists();
     }
 
-    /** IO operations to support the de.gerdiproject.harvest.harvester
-     * @param folderPath The dataset of a GitHub repo
+    /** List all files from a given dataset
+     * @param folderPath Directory path of the dataset (GitHub repo)
      */
     public List<File> listFiles(String folderPath)
     {
@@ -85,21 +98,11 @@ public class SoepIO
         return fileList;
     }
 
-    // Getter method for
+    /**
+     * @return String GitHub path
+     */
     public String getGitHubPath()
     {
         return this.gitHubPath;
-    }
-
-    // Demo the app.
-    public static void main(String[] args) throws IOException
-    {
-        SoepIO test = new SoepIO();
-        String repo = "SOEP-core";
-        /* Simple method tests */
-        test.repoExists(repo);
-
-        List<File> myList = test.listFiles(test.getGitHubPath() + repo);
-        logger.info("# of files in the dataset: " + myList.size());
     }
 }

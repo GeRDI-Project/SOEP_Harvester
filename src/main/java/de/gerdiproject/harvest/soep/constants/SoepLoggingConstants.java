@@ -1,4 +1,4 @@
-package de.gerdiproject.harvest.soep.utils;
+package de.gerdiproject.harvest.soep.constants;
 
 /**
  * Constants used for logging for SOEP harvester classes

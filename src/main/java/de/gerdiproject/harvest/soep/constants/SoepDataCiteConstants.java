@@ -28,11 +28,14 @@ import de.gerdiproject.json.datacite.ResourceType;
 import de.gerdiproject.json.datacite.enums.NameType;
 import de.gerdiproject.json.datacite.enums.ResourceTypeGeneral;
 import de.gerdiproject.json.datacite.extension.WebLink;
+import de.gerdiproject.json.datacite.extension.abstr.AbstractResearch;
+import de.gerdiproject.json.datacite.extension.constants.ResearchDisciplineConstants;
 import de.gerdiproject.json.datacite.extension.enums.WebLinkType;
 import de.gerdiproject.json.datacite.nested.PersonName;
 
 /**
  * This static class contains constants that are used for creating DataCite documents of SOEP.
+ * @author Fidan Limani
  */
 public class SoepDataCiteConstants
 {
@@ -46,7 +49,7 @@ public class SoepDataCiteConstants
     public static final String PROVIDER = "German Socio-Economic Panel Study (SOEP)";
     public static final String PROVIDER_URI = "https://github.com/paneldata/de.gerdiproject.harvest.soep-core";
     public static final String REPOSITORY_ID = "SOEP";
-    public static final List<String> DISCIPLINES = Collections.unmodifiableList(Arrays.asList("Socio-Economic"));
+    public static final List<AbstractResearch> DISCIPLINES =  createResearchDisciplines();
 
     // CONTRIBUTORS
     public static final String METADATA_CONTACT_NAME = "Contact name";
@@ -81,6 +84,7 @@ public class SoepDataCiteConstants
     private static WebLink createLogoWebLink()
     {
         WebLink logoLink = new WebLink("https://www.diw.de/documents/bildarchiv/37/diw_02.c.239717.de/de.gerdiproject.harvest.soep-logo.jpg");
+        logoLink.setName("Logo");
         logoLink.setType(WebLinkType.ProviderLogoURL);
         return logoLink;
     }
@@ -102,7 +106,16 @@ public class SoepDataCiteConstants
      */
     private static ResourceType createResourceType()
     {
-        ResourceType resType = new ResourceType("JSON", ResourceTypeGeneral.Dataset);
-        return resType;
+        return  new ResourceType("JSON", ResourceTypeGeneral.Dataset);
+    }
+
+    /**
+     * This method assign the two closest matching research disciplines for SOEP
+     * @return A collection of research disciplines for SOEP
+     */
+    private static List<AbstractResearch> createResearchDisciplines(){
+        return Collections.unmodifiableList(Arrays.asList(
+                                                ResearchDisciplineConstants.EMPIRICAL_SOCIAL_RESEARCH,
+                                                ResearchDisciplineConstants.STATISTICS_AND_ECONOMETRICS));
     }
 }
