@@ -1,3 +1,19 @@
+/**
+ * Copyright © 2017 Fidan Limani (http://www.gerdi-project.de)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package de.gerdiproject.harvest.soep.constants;
 
 /**
@@ -28,6 +44,6 @@ public class SoepLoggingConstants
     public static final String UPDATE_LOCAL_REPO = "Updating local repository <%s>";
 
     public static final String REPO_MISSING_ERROR = "Repository does not exist. To be created next.";
-    public static final String IO_EXCEPTION_ERROR = "IOException";
-    public static final String GIT_API_EXCEPTION_ERROR = "GitAPIException";
+    public static final String IO_EXCEPTION_ERROR = "Exception while initializing/accessing the local repo.";
+    public static final String GIT_API_EXCEPTION_ERROR = "Exception while setting up/cloning the repo.";
 }

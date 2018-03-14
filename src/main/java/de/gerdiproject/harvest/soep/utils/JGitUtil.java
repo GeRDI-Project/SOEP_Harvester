@@ -1,20 +1,17 @@
-/*
- *  Licensed to the Apache Software Foundation (ASF) under one
- *  or more contributor license agreements.  See the NOTICE file
- *  distributed with this work for additional information
- *  regarding copyright ownership.  The ASF licenses this file
- *  to you under the Apache License, Version 2.0 (the
- *  "License"); you may not use this file except in compliance
- *  with the License.  You may obtain a copy of the License at
+/**
+ * Copyright © 2017 Fidan Limani (http://www.gerdi-project.de)
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *  Unless required by applicable law or agreed to in writing,
- *  software distributed under the License is distributed on an
- *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- *  KIND, either express or implied.  See the License for the
- *  specific language governing permissions and limitations
- *  under the License.
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package de.gerdiproject.harvest.soep.utils;
@@ -58,7 +55,7 @@ public class JGitUtil
      *  Constructor
      *  @param repoName Repository name
      *  @param repoRemoteUri The URI of the remote repository
-     *  @exception IOException thrown in case there are issues with creating the local repository
+     *  @throws IOException thrown in case there are issues with creating the local repository
      *  @see IOException
     */
     public JGitUtil(String repoName, String repoRemoteUri) throws IOException
@@ -70,15 +67,15 @@ public class JGitUtil
 
         this.repoName = repoName;
         this.repoRemoteUri = repoRemoteUri;
-        localFileRepo = new File(gitDir + File.separator + repoName + File.separator + "local");
-        remoteFileRepo = new File(gitDir + File.separator + repoName + File.separator + "remote");
+        localFileRepo = new File(gitDir + "/" + repoName + "/" + "local");
+        remoteFileRepo = new File(gitDir + "/" + repoName + "/" + "remote");
         remoteGit = localGit = null;
     }
 
     /**
      * This method sets up a local repository, then fetches and updates it from a remote repo. URI
-     * @exception IOException An issue while creating the local repo.
-     * @exception GitAPIException Issue accessing the remote repo.
+     * @throws IOException An issue while creating the local repo.
+     * @throws GitAPIException Issue accessing the remote repo.
      */
     public static void collect() throws IOException, GitAPIException
     {
@@ -93,8 +90,8 @@ public class JGitUtil
 
     /**
      * Set the local repository: initialize and clone if local repo does not exist.
-     * @exception IOException An issue while creating the local repo.
-     * @exception GitAPIException Issue accessing the remote repo.
+     * @throws IOException An issue while creating the local repo.
+     * @throws GitAPIException Issue accessing the remote repo.
      */
     public void setUp() throws GitAPIException, IOException
     {
@@ -116,8 +113,8 @@ public class JGitUtil
     /**
      * Initialize repository: in case it exists, get a reference to it
      * @return Git Reference to initialized local repo.
-     * @exception IOException An issue while creating the local repo.
-     * @exception GitAPIException Issue accessing the remote repo.
+     * @throws IOException An issue while creating the local repo.
+     * @throws GitAPIException Issue accessing the remote repo.
      */
     public Git initRepo() throws GitAPIException, IOException
     {
@@ -128,8 +125,8 @@ public class JGitUtil
     /**
      * Clone (SOEP) repository
      * @return Git Reference to local repo. after cloning
-     * @exception IOException An issue while creating the local repo.
-     * @exception GitAPIException Issue accessing the remote repo.
+     * @throws IOException An issue while creating the local repo.
+     * @throws GitAPIException Issue accessing the remote repo.
      */
     public Git cloneRepo() throws GitAPIException, IOException
     {
@@ -163,9 +160,9 @@ public class JGitUtil
             Git.open(remoteFileRepo);
             status = true;
         } catch (RepositoryNotFoundException e) {
-            LOGGER.error(String.format(SoepLoggingConstants.REPO_MISSING_ERROR), e);
+            LOGGER.error(SoepLoggingConstants.REPO_MISSING_ERROR, e);
         } catch (IOException e) {
-            LOGGER.error(String.format(SoepLoggingConstants.IO_EXCEPTION_ERROR), e);
+            LOGGER.error(SoepLoggingConstants.IO_EXCEPTION_ERROR, e);
         }
 
         return status;
@@ -191,9 +188,9 @@ public class JGitUtil
                 LOGGER.info(String.format(SoepLoggingConstants.UPDATES_AVAILABLE, result.toString()));
                 status = true;
             } else
-                LOGGER.info(String.format(SoepLoggingConstants.LOCAL_REPO_UPDATED));
+                LOGGER.info(SoepLoggingConstants.LOCAL_REPO_UPDATED);
         } catch (GitAPIException e) {
-            LOGGER.error(String.format(SoepLoggingConstants.GIT_API_EXCEPTION_ERROR), e);
+            LOGGER.error(SoepLoggingConstants.GIT_API_EXCEPTION_ERROR, e);
         }
 
         return status;
@@ -201,7 +198,7 @@ public class JGitUtil
 
     /**
      *  Update local repo.
-     *  @exception GitAPIException That stems from unsupported encoding while tracking the repo. update
+     *  @throws GitAPIException That stems from unsupported encoding while tracking the repo. update
      *
      */
     public void updateRepo()throws GitAPIException
@@ -220,7 +217,7 @@ public class JGitUtil
                                  .call();
 
             if (pullRes.isSuccessful()) {
-                LOGGER.info(String.format(SoepLoggingConstants.UPDATE_COMPLETE));
+                LOGGER.info(SoepLoggingConstants.UPDATE_COMPLETE);
             }
         }
     }
@@ -235,7 +232,7 @@ public class JGitUtil
             try {
                 localGit = Git.open(localFileRepo);
             } catch (IOException e) {
-                LOGGER.error(String.format(SoepLoggingConstants.IO_EXCEPTION_ERROR), e);
+                LOGGER.error(SoepLoggingConstants.IO_EXCEPTION_ERROR, e);
             }
         }
     }

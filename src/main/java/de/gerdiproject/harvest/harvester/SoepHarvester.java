@@ -1,20 +1,17 @@
-/*
- *  Licensed to the Apache Software Foundation (ASF) under one
- *  or more contributor license agreements.  See the NOTICE file
- *  distributed with this work for additional information
- *  regarding copyright ownership.  The ASF licenses this file
- *  to you under the Apache License, Version 2.0 (the
- *  "License"); you may not use this file except in compliance
- *  with the License.  You may obtain a copy of the License at
+/**
+ * Copyright © 2017 Fidan Limani (http://www.gerdi-project.de)
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *  Unless required by applicable law or agreed to in writing,
- *  software distributed under the License is distributed on an
- *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- *  KIND, either express or implied.  See the License for the
- *  specific language governing permissions and limitations
- *  under the License.
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package de.gerdiproject.harvest.harvester;
@@ -22,6 +19,7 @@ package de.gerdiproject.harvest.harvester;
 import de.gerdiproject.harvest.IDocument;
 
 import de.gerdiproject.harvest.soep.constants.SoepConstants;
+import de.gerdiproject.harvest.soep.constants.SoepLoggingConstants;
 import de.gerdiproject.json.datacite.DataCiteJson;
 import de.gerdiproject.json.datacite.Title;
 import de.gerdiproject.json.datacite.abstr.AbstractDate;
@@ -64,21 +62,20 @@ public class SoepHarvester extends AbstractListHarvester<File>
         try {
             JGitUtil.collect();
         } catch (IOException e) {
-            logger.error("Exception: ", e);
+            logger.error(SoepLoggingConstants.IO_EXCEPTION_ERROR, e);
         } catch (GitAPIException e) {
-            logger.error("Exception: ", e);
+            logger.error(SoepLoggingConstants.GIT_API_EXCEPTION_ERROR, e);
         }
 
-        String datasetPath = String.format(SoepConstants.BASE_PATH, File.separator, File.separator, File.separator,
-                                            File.separator, File.separator, File.separator, "");
+        String datasetPath = String.format(SoepConstants.BASE_PATH, "/", "");
 
         return soepIO.listFiles(datasetPath);
     }
 
-    @Override
     /**
      * This method is to be invoked after loadEntries()
     */
+    @Override
     protected List<IDocument> harvestEntry(File soepFile)
     {
         // Create the document to contain SOEP metadata for every given file from its dataset
@@ -87,7 +84,7 @@ public class SoepHarvester extends AbstractListHarvester<File>
         // "Static" SOEP metadata
         document.setFormats(SoepDataCiteConstants.FORMATS);
 
-        /**
+        /*
          * GeRDI DataCite Mandatory properties
          * (ID 1) Identifier: example, <identifier identifierType="DOI">10.5072/example-full</identifier> ...
          */
@@ -115,14 +112,14 @@ public class SoepHarvester extends AbstractListHarvester<File>
         List<WebLink> links = new LinkedList<>();
 
         // View SOEP dataset file on GitHub
-        WebLink pageLink = new WebLink(String.format(SoepConstants.BASE_URL, "tree", soepFileName));
-        pageLink.setName("View file: " + soepFileName);
+        WebLink pageLink = new WebLink(String.format(SoepConstants.ACCESS_FILE_URL, SoepConstants.TREE, soepFileName));
+        pageLink.setName(SoepConstants.VIEW_TREE);
         pageLink.setType(WebLinkType.ViewURL);
         links.add(pageLink);
 
         // View SOEP dataset file source ("raw" representation) on GitHub
-        WebLink sourceLink = new WebLink(String.format(SoepConstants.RAW_FILE_URI, "blob", soepFileName));
-        pageLink.setName("View raw file contents");
+        WebLink sourceLink = new WebLink(String.format(SoepConstants.ACCESS_FILE_URL, SoepConstants.BLOB, soepFileName));
+        pageLink.setName(SoepConstants.VIEW_RAW);
         pageLink.setType(WebLinkType.SourceURL);
         links.add(sourceLink);
 
@@ -138,9 +135,8 @@ public class SoepHarvester extends AbstractListHarvester<File>
 
         // E3. ResearchData{dataIdentifier, dataURL, dataLabel, dataType}
         List<ResearchData> files = new LinkedList<>();
-        ResearchData researchData = new ResearchData(String.format(SoepConstants.BASE_PATH, File.separator, File.separator,
-                                                                    File.separator, File.separator, File.separator, File.separator,
-                                                                    soepFileName), "JSON");
+        ResearchData researchData = new ResearchData(String.format(SoepConstants.BASE_PATH, "/", soepFileName),
+                                                                    "JSON");
         researchData.setUrl(pageLink.getUrl());
         researchData.setType("JSON");
         files.add(researchData);
