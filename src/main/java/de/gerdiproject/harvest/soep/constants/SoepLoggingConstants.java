@@ -44,6 +44,6 @@ public class SoepLoggingConstants
     public static final String UPDATE_LOCAL_REPO = "Updating local repository <%s>";
 
     public static final String REPO_MISSING_ERROR = "Repository does not exist. To be created next.";
-    public static final String IO_EXCEPTION_ERROR = "Exception while initializing/accessing the local repo.";
-    public static final String GIT_API_EXCEPTION_ERROR = "Exception while setting up/cloning the repo.";
+    public static final String IO_EXCEPTION_ERROR = "Exception while initializing/accessing the local repository";
+    public static final String GIT_API_EXCEPTION_ERROR = "Exception while setting up/cloning the repository.";
 }

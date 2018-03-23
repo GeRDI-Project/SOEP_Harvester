@@ -86,7 +86,6 @@ public class SoepIO
     public List<File> listFiles(String folderPath)
     {
         File[] files = new File(folderPath).listFiles();
-        // List<File> fileList = new ArrayList<>();
 
         if(files != null){
             return Arrays.asList(files);

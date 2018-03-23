@@ -29,8 +29,7 @@ public class SoepConstants
     /**
      * GitHub-related constants
      * */
-
-    public static final String TREE = "trees";
+    public static final String TREE = "tree";
     public static final String BLOB = "blob";
     public static final String VIEW_TREE = "View tree file";
     public static final String VIEW_RAW = "View raw file";
@@ -45,4 +44,10 @@ public class SoepConstants
 
     // Publication year: needs to be "refined"; here used only used provisory at this point to complete metadata schema
     public static final Date PUBLICATION_YEAR = new Date("1984", DateType.Other);
+
+    /**
+     * Local and remote repository paths
+     */
+    public static final String LOCAL_REPOSITORY_PATH = "%s/%s/local";
+    public static final String REMOTE_REPOSITORY_PATH = "%s/%s/remote";
 }

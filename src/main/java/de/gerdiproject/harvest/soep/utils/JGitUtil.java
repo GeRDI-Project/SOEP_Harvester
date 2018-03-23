@@ -19,6 +19,7 @@ package de.gerdiproject.harvest.soep.utils;
 import java.io.*;
 
 import de.gerdiproject.harvest.MainContext;
+import de.gerdiproject.harvest.soep.constants.SoepConstants;
 import de.gerdiproject.harvest.soep.constants.SoepLoggingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,8 +68,8 @@ public class JGitUtil
 
         this.repoName = repoName;
         this.repoRemoteUri = repoRemoteUri;
-        localFileRepo = new File(gitDir + "/" + repoName + "/" + "local");
-        remoteFileRepo = new File(gitDir + "/" + repoName + "/" + "remote");
+        localFileRepo = new File( String.format(SoepConstants.LOCAL_REPOSITORY_PATH, gitDir, repoName));
+        remoteFileRepo = new File( String.format(SoepConstants.REMOTE_REPOSITORY_PATH, gitDir, repoName));
         remoteGit = localGit = null;
     }
 
