@@ -20,13 +20,14 @@ import de.gerdiproject.harvest.IDocument;
 
 import de.gerdiproject.harvest.soep.constants.SoepConstants;
 import de.gerdiproject.harvest.soep.constants.SoepLoggingConstants;
-import de.gerdiproject.json.datacite.DataCiteJson;
-import de.gerdiproject.json.datacite.Title;
+import de.gerdiproject.json.datacite.*;
 import de.gerdiproject.json.datacite.abstr.AbstractDate;
+import de.gerdiproject.json.datacite.enums.*;
 import de.gerdiproject.json.datacite.extension.ResearchData;
 import de.gerdiproject.json.datacite.extension.WebLink;
 import de.gerdiproject.json.datacite.extension.enums.WebLinkType;
 
+import de.gerdiproject.json.datacite.nested.PersonName;
 import org.eclipse.jgit.api.errors.GitAPIException;
 
 import de.gerdiproject.harvest.soep.constants.SoepDataCiteConstants;
@@ -86,32 +87,54 @@ public class SoepHarvester extends AbstractListHarvester<File>
 
         /*
          * GeRDI DataCite Mandatory properties
-         * (ID 1) Identifier: example, <identifier identifierType="DOI">10.5072/example-full</identifier> ...
+         * (ID 1) Identifier: This is the DOI identifier for v33 of the dataset
          */
+        Identifier soepID = new Identifier("10.5684/soep.v33", IdentifierType.DOI);
+        document.setIdentifier(soepID);
 
         // (ID 2) Creator
         document.setCreators(SoepDataCiteConstants.CREATORS);
 
-        // (ID 3 Title) The file name, for the time being...
-        String soepFileName = soepFile.getName();
-        Title title = new Title(soepFileName);
+        // (ID 3 Title) SOEP study title for v33
+        Title title = new Title(SoepConstants.PUBLICATION_TITLE);
         document.setTitles(Arrays.asList(title));
 
         // (ID 4) Publisher
         document.setPublisher(SoepDataCiteConstants.PROVIDER);
 
-        // (ID 5) PublicationYear: Under development! Set 1984 as (the first ever) publication year, and refine later on.
+        // (ID 5) PublicationYear: Year 1984 is the earliest publication date, whereas 2017 is the latest.
         List<AbstractDate> dates = new LinkedList<>();
         dates.add(SoepConstants.PUBLICATION_YEAR);
         document.setDates(dates);
 
+        // (ID 7) Contributor
+        PersonName contributorName = new PersonName(SoepDataCiteConstants.CONTRIBUTOR_COLLECTOR, NameType.Organisational);
+        Contributor contributor = new Contributor(contributorName, ContributorType.DataCollector);
+        document.setContributors(Arrays.asList(contributor));
+
+        // (ID 8) Date: dateType="Collected" is from 1984 - 2016
+        DateRange dateCollected = new DateRange(SoepDataCiteConstants.DATE_COLLECTED, DateType.Collected);
+        document.setDates(Arrays.asList(dateCollected));
+
         // (ID 10) ResourceType
         document.setResourceType(SoepDataCiteConstants.RESOURCE_TYPE);
+
+        // (ID 15) Dataset version
+        document.setVersion(SoepDataCiteConstants.VERSION);
+
+        // (ID 16) Rights
+        Rights soepRights = new Rights(SoepDataCiteConstants.RIGHTS_VALUE);
+        document.setRightsList(Arrays.asList(soepRights));
+
+        // (ID 17) Description, type "Abstract"
+        Description soepDescription = new Description(SoepDataCiteConstants.DESCRIPTION_VALUE, DescriptionType.Abstract, SoepDataCiteConstants.DESCRIPTION_LANGUAGE);
+        document.setDescriptions(Arrays.asList(soepDescription));
 
         // GeRDI Extension
         List<WebLink> links = new LinkedList<>();
 
         // View SOEP dataset file on GitHub
+        String soepFileName = soepFile.getName();
         WebLink pageLink = new WebLink(String.format(SoepConstants.ACCESS_FILE_URL, SoepConstants.TREE, soepFileName));
         pageLink.setName(SoepConstants.VIEW_TREE);
         pageLink.setType(WebLinkType.ViewURL);

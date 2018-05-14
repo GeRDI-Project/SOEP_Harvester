@@ -42,8 +42,9 @@ public class SoepConstants
     public static final String BASE_PATH = SoepIO.USER_HOME
                                             + "%1$sGitHub%1$sSOEP-core%1$slocal%1$sddionrails%1$sdatasets%1$s%2$s";
 
-    // Publication year: needs to be "refined"; here used only used provisory at this point to complete metadata schema
-    public static final Date PUBLICATION_YEAR = new Date("1984", DateType.Other);
+    // Publication year: 2017; the collection period is from 1984-2016;
+    public static final Date PUBLICATION_YEAR = new Date("2017", DateType.Other);
+    public static final String PUBLICATION_TITLE = "Socio-Economic Panel (SOEP), data from 1984-2016";
 
     /**
      * Local and remote repository paths
