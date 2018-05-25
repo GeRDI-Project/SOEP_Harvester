@@ -92,7 +92,7 @@ public class SoepHarvester extends AbstractListHarvester<File>
     protected List<IDocument> harvestEntry(File soepFile)
     {
         // Specify source ID for harvested file
-        String sourceTitle = soepIO.getFileDescriptions().get(soepFile).getLabel();
+        String sourceTitle = soepIO.getFileDescriptions().get(soepFile.getName()).getLabel();
 
         // Create the document to contain SOEP metadata for every given file from its dataset
         DataCiteJson document = new DataCiteJson(sourceTitle);
@@ -130,7 +130,7 @@ public class SoepHarvester extends AbstractListHarvester<File>
         /** (ID 8) Date: dateType="Collected" with individual data collection dates. PublicationYear is too "matchy" ;)
          *  If year=0 or "long", set the "1984-2016" range.
          */
-        String tempPeriod = soepIO.getFileDescriptions().get(soepFile).getPeriodName();
+        String tempPeriod = soepIO.getFileDescriptions().get(soepFile.getName()).getPeriodName();
         AbstractDate dateCollected;
         dateCollected = tempPeriod.equals("0") || tempPeriod.equals("long") ?
                         SoepDataCiteConstants.PUBLICATION_RANGE : new Date(tempPeriod, DateType.Collected);
