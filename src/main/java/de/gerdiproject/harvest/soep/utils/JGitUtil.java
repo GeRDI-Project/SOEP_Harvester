@@ -221,9 +221,8 @@ public class JGitUtil
                                  .setStrategy(MergeStrategy.THEIRS)
                                  .call();
 
-            if (pullRes.isSuccessful()) {
+            if (pullRes.isSuccessful())
                 LOGGER.info(SoepLoggingConstants.UPDATE_COMPLETE);
-            }
         }
     }
 

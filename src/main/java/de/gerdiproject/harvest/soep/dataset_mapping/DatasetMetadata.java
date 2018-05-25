@@ -23,7 +23,7 @@ import com.opencsv.bean.CsvBindByName;
  */
 public class DatasetMetadata
 {
-    @CsvBindByName (column = "study_name", required = true)
+    @CsvBindByName(column = "study_name", required = true)
     private String studyName;
 
     @CsvBindByName(column = "dataset_name", required = true)
@@ -45,71 +45,86 @@ public class DatasetMetadata
     private String description;
 
     // Getters
-    public String getStudyName() {
+    public String getStudyName()
+    {
         return studyName;
     }
 
-    public String getDatasetName() {
+    public String getDatasetName()
+    {
         return datasetName;
     }
 
-    public String getPeriodName() {
+    public String getPeriodName()
+    {
         return periodName;
     }
 
-    public String getAnalysisUnitName() {
+    public String getAnalysisUnitName()
+    {
         return analysisUnitName;
     }
 
-    public String getConceptualDatasetName() {
+    public String getConceptualDatasetName()
+    {
         return conceptualDatasetName;
     }
 
-    public String getLabel() {
+    public String getLabel()
+    {
         return label;
     }
 
-    public String getDescription() {
+    public String getDescription()
+    {
         return description;
     }
 
     // Setters
-    public void setStudyName(String studyName) {
+    public void setStudyName(String studyName)
+    {
         this.studyName = studyName;
     }
 
-    public void setDatasetName(String datasetName) {
+    public void setDatasetName(String datasetName)
+    {
         this.datasetName = datasetName;
     }
 
-    public void setPeriodName(String periodName) {
+    public void setPeriodName(String periodName)
+    {
         this.periodName = periodName;
     }
 
-    public void setAnalysisUnitName(String analysisUnitName) {
+    public void setAnalysisUnitName(String analysisUnitName)
+    {
         this.analysisUnitName = analysisUnitName;
     }
 
-    public void setConceptualDatasetName(String conceptualDatasetName) {
+    public void setConceptualDatasetName(String conceptualDatasetName)
+    {
         this.conceptualDatasetName = conceptualDatasetName;
     }
 
-    public void setLabel(String label) {
+    public void setLabel(String label)
+    {
         this.label = label;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(String description)
+    {
         this.description = description;
     }
 
     @Override
-    public String toString(){
+    public String toString()
+    {
         return getStudyName() + "\n"
-                + getDatasetName() + "\n"
-                + getPeriodName() + "\n"
-                + getAnalysisUnitName() + "\n"
-                + getConceptualDatasetName() + "\n"
-                + getLabel() + "\n"
-                + getDescription();
+               + getDatasetName() + "\n"
+               + getPeriodName() + "\n"
+               + getAnalysisUnitName() + "\n"
+               + getConceptualDatasetName() + "\n"
+               + getLabel() + "\n"
+               + getDescription();
     }
 }

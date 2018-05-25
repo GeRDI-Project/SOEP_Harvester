@@ -61,7 +61,8 @@ public class SoepHarvester extends AbstractListHarvester<File>
     /**
      * Constructor As suggested, the constructor should be in a "default" style
      */
-    public SoepHarvester() throws IOException {
+    public SoepHarvester() throws IOException
+    {
         super("SOEP Harvester", 1);
         soepIO = new SoepIO();
         soepGitHub = new JGitUtil(SoepConstants.SOEP_REMOTE_REPO_NAME, SoepConstants.SOEP_REMOTE_REPO_URL);
@@ -179,7 +180,7 @@ public class SoepHarvester extends AbstractListHarvester<File>
         // E3. ResearchData{dataIdentifier, dataURL, dataLabel, dataType}
         List<ResearchData> files = new LinkedList<>();
         ResearchData researchData = new ResearchData(String.format(SoepConstants.BASE_PATH, "/", soepFileName),
-                                                                    "JSON");
+                                                     "JSON");
         researchData.setUrl(pageLink.getUrl());
         researchData.setType("JSON");
         files.add(researchData);

@@ -82,16 +82,17 @@ public class SoepIO
      */
     public void loadDatasetMetadata()
     {
-        try (Reader reader = Files.newBufferedReader(Paths.get(SoepConstants.FILE_TITLE_DATASET)))
-        {
+        try
+            (Reader reader = Files.newBufferedReader(Paths.get(SoepConstants.FILE_TITLE_DATASET))) {
             CsvToBean<DatasetMetadata> csvMapper = new CsvToBeanBuilder<DatasetMetadata>(reader)
-                    .withType(DatasetMetadata.class)
-                    .withIgnoreLeadingWhiteSpace(true)
-                    .build();
+            .withType(DatasetMetadata.class)
+            .withIgnoreLeadingWhiteSpace(true)
+            .build();
 
             // Read records one by one in a Map<String, DatasetMetadata>
             DatasetMetadata ds;
             Iterator<DatasetMetadata> csvIterator = csvMapper.iterator();
+
             while (csvIterator.hasNext()) {
                 ds = csvIterator.next();
                 fileDescriptions.put(ds.getDatasetName(), ds);
@@ -120,9 +121,8 @@ public class SoepIO
     {
         File[] files = new File(folderPath).listFiles();
 
-        if(files != null){
+        if (files != null)
             return Arrays.asList(files);
-        }
 
         return Collections.emptyList();
     }
