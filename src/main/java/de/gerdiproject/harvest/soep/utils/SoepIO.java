@@ -46,19 +46,15 @@ public class SoepIO
 {
     // A Map<String, String> field that stores descriptions for files
     private Map<String, DatasetMetadata> fileDescriptions;
-
-    // User home path based on which the local repository will be created
-    public static final String USER_HOME = System.getProperty("user.home");
-
-    // Required in SoepHarvester class
-    private final String gitHubPath = USER_HOME + File.separator + "GitHub" + File.separator;;
-
     private static final Logger LOGGER = LoggerFactory.getLogger(SoepIO.class);
 
     /**
      * Constructor
      */
-    public SoepIO() { this.fileDescriptions = new HashMap<>(); }
+    public SoepIO()
+    {
+        this.fileDescriptions = new HashMap<>();
+    }
 
     /**
      *  Create a local directory to contain the cloned GitHub repository.
@@ -67,7 +63,7 @@ public class SoepIO
      */
     public File createWorkingDir() throws IOException
     {
-        File dir = new File(getGitHubPath());
+        File dir = new File(SoepConstants.GIT_HUB_PATH);
 
         if (dir.exists()) {
             LOGGER.info(dir + SoepLoggingConstants.DIR_EXISTS);
@@ -88,7 +84,7 @@ public class SoepIO
     {
         try (Reader reader = Files.newBufferedReader(Paths.get(SoepConstants.FILE_TITLE_DATASET)))
         {
-            CsvToBean<DatasetMetadata> csvMapper = new CsvToBeanBuilder(reader)
+            CsvToBean<DatasetMetadata> csvMapper = new CsvToBeanBuilder<DatasetMetadata>(reader)
                     .withType(DatasetMetadata.class)
                     .withIgnoreLeadingWhiteSpace(true)
                     .build();
@@ -112,7 +108,7 @@ public class SoepIO
      */
     public boolean repoExists(String repoName) throws IOException
     {
-        File file = new File(this.getGitHubPath() + repoName);
+        File file = new File(SoepConstants.GIT_HUB_PATH + repoName);
 
         return file.exists();
     }
@@ -132,15 +128,10 @@ public class SoepIO
     }
 
     /**
-     * @return String GitHub path
-     */
-    public String getGitHubPath()
-    {
-        return this.gitHubPath;
-    }
-
-    /**
      * @return Map<String, String> file descriptions
      */
-    public Map<String, DatasetMetadata> getFileDescriptions() { return this.fileDescriptions; }
+    public Map<String, DatasetMetadata> getFileDescriptions()
+    {
+        return this.fileDescriptions;
+    }
 }

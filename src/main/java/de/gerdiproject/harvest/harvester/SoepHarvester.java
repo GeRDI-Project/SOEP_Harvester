@@ -72,7 +72,7 @@ public class SoepHarvester extends AbstractListHarvester<File>
     {
         // Repo-related operations based on JGit library.
         try {
-            soepGitHub.collect(soepGitHub);
+            soepGitHub.collect();
             soepIO.loadDatasetMetadata();
         } catch (IOException e) {
             logger.error(SoepLoggingConstants.IO_EXCEPTION_ERROR, e);

@@ -82,15 +82,15 @@ public class JGitUtil
      * @throws IOException An issue while creating the local repo.
      * @throws GitAPIException Issue accessing the remote repo.
      */
-    public void collect(JGitUtil soepGitHub) throws IOException, GitAPIException
+    public void collect() throws IOException, GitAPIException
     {
         // Init a repository: setup, initialize and clone
         // JGitUtil gHubSoep = new JGitUtil(SoepConstants.REPOSITORY_NAME, SoepLoggingConstants.SOEP_REMOTE_REPO);
-        soepGitHub.setUp();
+        setUp();
 
         // Synchronize local repository (if out of sync.)
-        if (soepGitHub.fetchRepo(SoepConstants.ORIGIN_MASTER))
-            soepGitHub.updateRepo();
+        if (fetchRepo(SoepConstants.ORIGIN_MASTER))
+            updateRepo();
     }
 
     /**
@@ -137,7 +137,6 @@ public class JGitUtil
     {
         LOGGER.info(String.format(SoepLoggingConstants.CLONE_REPO, repoRemoteUri));
         return Git.cloneRepository()
-                // .setProgressMonitor(new TextProgressMonitor(new PrintWriter(new OutputStreamWriter(System.out, MainContext.getCharset()))))
                .setProgressMonitor(new TextProgressMonitor(new PrintWriter(new OutputStreamWriter(System.out, MainContext.getCharset()))))
                .setURI(repoRemoteUri)
                .setDirectory(localFileRepo)
@@ -183,7 +182,6 @@ public class JGitUtil
     {
         boolean status = false;
         LOGGER.info(String.format(SoepLoggingConstants.REPO_BRANCH_UPDATE, repoBranch));
-        // ProgressMonitor monitor = new TextProgressMonitor(new PrintWriter(new OutputStreamWriter(System.out, MainContext.getCharset())));
         ProgressMonitor monitor = new TextProgressMonitor(new PrintWriter(new OutputStreamWriter(System.out, MainContext.getCharset())));
 
         try {
