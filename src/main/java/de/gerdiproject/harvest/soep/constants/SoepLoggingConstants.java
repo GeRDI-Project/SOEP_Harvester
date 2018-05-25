@@ -1,11 +1,11 @@
 /**
- * Copyright © 2017 Fidan Limani (http://www.gerdi-project.de)
+ * Copyright © ${project.inceptionYear} ${owner} (http://www.gerdi-project.de)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package de.gerdiproject.harvest.soep.constants;
 
 /**
@@ -23,9 +22,6 @@ package de.gerdiproject.harvest.soep.constants;
  */
 public class SoepLoggingConstants
 {
-    public static final String SOEP_REMOTE_REPO = "https://github.com/paneldata/de.gerdiproject.harvest.soep-core";
-    public static final String ORIGIN_MASTER = "refs/remotes/origin/master";
-
     public static final String DIR_EXISTS = " already exists";
     public static final String DIR_CREATED = " was created";
     public static final String DIR_NOT_CREATED = " was not created";
@@ -46,4 +42,5 @@ public class SoepLoggingConstants
     public static final String REPO_MISSING_ERROR = "Repository does not exist. To be created next.";
     public static final String IO_EXCEPTION_ERROR = "Exception while initializing/accessing the local repository";
     public static final String GIT_API_EXCEPTION_ERROR = "Exception while setting up/cloning the repository.";
+    public static final String ERROR_READING_FILE = "Exception while reading SOEP dataset files metadata.";
 }

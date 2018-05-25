@@ -1,11 +1,11 @@
 /**
- * Copyright © 2017 Fidan Limani (http://www.gerdi-project.de)
+ * Copyright © ${project.inceptionYear} ${owner} (http://www.gerdi-project.de)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,39 +13,52 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package de.gerdiproject.harvest.soep.utils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.io.Reader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
+import com.opencsv.bean.CsvToBean;
+
+import com.opencsv.bean.CsvToBeanBuilder;
+import de.gerdiproject.harvest.soep.constants.SoepConstants;
 import de.gerdiproject.harvest.soep.constants.SoepLoggingConstants;
+
+import de.gerdiproject.harvest.soep.dataset_mapping.DatasetMetadata;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A util-like class to support repo- and GeRDI harvester-based operations.
- *
+ * A util-like class to support repo- and GeRDI harvester-based operations. *
  * @author Fidan Limani
  */
 public class SoepIO
 {
-    // Required in SoepHarvester class
-    private String gitHubPath;
+    // A Map<String, String> field that stores descriptions for files
+    private Map<String, DatasetMetadata> fileDescriptions;
 
     // User home path based on which the local repository will be created
     public static final String USER_HOME = System.getProperty("user.home");
+
+    // Required in SoepHarvester class
+    private final String gitHubPath = USER_HOME + File.separator + "GitHub" + File.separator;;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SoepIO.class);
 
     /**
      * Constructor
      */
-    public SoepIO()
-    {
-        this.gitHubPath = USER_HOME + File.separator + "GitHub" + File.separator;
-    }
+    public SoepIO() { this.fileDescriptions = new HashMap<>(); }
 
     /**
      *  Create a local directory to contain the cloned GitHub repository.
@@ -65,6 +78,30 @@ public class SoepIO
         } else {
             LOGGER.info(dir + SoepLoggingConstants.DIR_NOT_CREATED);
             return null;
+        }
+    }
+
+    /**
+     * Load dataset file descriptions from a CSV spreadsheet to a Map
+     */
+    public void loadDatasetMetadata()
+    {
+        try (Reader reader = Files.newBufferedReader(Paths.get(SoepConstants.FILE_TITLE_DATASET)))
+        {
+            CsvToBean<DatasetMetadata> csvMapper = new CsvToBeanBuilder(reader)
+                    .withType(DatasetMetadata.class)
+                    .withIgnoreLeadingWhiteSpace(true)
+                    .build();
+
+            // Read records one by one in a Map<String, DatasetMetadata>
+            DatasetMetadata ds;
+            Iterator<DatasetMetadata> csvIterator = csvMapper.iterator();
+            while (csvIterator.hasNext()) {
+                ds = csvIterator.next();
+                fileDescriptions.put(ds.getDatasetName(), ds);
+            }
+        } catch (IOException e) {
+            LOGGER.error(SoepLoggingConstants.ERROR_READING_FILE, e);
         }
     }
 
@@ -101,4 +138,9 @@ public class SoepIO
     {
         return this.gitHubPath;
     }
+
+    /**
+     * @return Map<String, String> file descriptions
+     */
+    public Map<String, DatasetMetadata> getFileDescriptions() { return this.fileDescriptions; }
 }

@@ -1,11 +1,11 @@
 /**
- * Copyright © 2017 Fidan Limani (http://www.gerdi-project.de)
+ * Copyright © ${project.inceptionYear} ${owner} (http://www.gerdi-project.de)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,30 +13,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package de.gerdiproject.harvest.harvester;
 
 import de.gerdiproject.harvest.IDocument;
 
 import de.gerdiproject.harvest.soep.constants.SoepConstants;
 import de.gerdiproject.harvest.soep.constants.SoepLoggingConstants;
-import de.gerdiproject.json.datacite.*;
-import de.gerdiproject.json.datacite.abstr.AbstractDate;
-import de.gerdiproject.json.datacite.enums.*;
-import de.gerdiproject.json.datacite.extension.ResearchData;
-import de.gerdiproject.json.datacite.extension.WebLink;
-import de.gerdiproject.json.datacite.extension.enums.WebLinkType;
-
-import de.gerdiproject.json.datacite.nested.PersonName;
-import org.eclipse.jgit.api.errors.GitAPIException;
-
 import de.gerdiproject.harvest.soep.constants.SoepDataCiteConstants;
 import de.gerdiproject.harvest.soep.utils.JGitUtil;
 import de.gerdiproject.harvest.soep.utils.SoepIO;
 
+import de.gerdiproject.json.datacite.DataCiteJson;
+import de.gerdiproject.json.datacite.Identifier;
+import de.gerdiproject.json.datacite.Title;
+import de.gerdiproject.json.datacite.Rights;
+import de.gerdiproject.json.datacite.Date;
+import de.gerdiproject.json.datacite.Description;
+import de.gerdiproject.json.datacite.abstr.AbstractDate;
+import de.gerdiproject.json.datacite.extension.ResearchData;
+import de.gerdiproject.json.datacite.extension.WebLink;
+
+import de.gerdiproject.json.datacite.enums.IdentifierType;
+import de.gerdiproject.json.datacite.enums.DateType;
+import de.gerdiproject.json.datacite.enums.DescriptionType;
+import de.gerdiproject.json.datacite.extension.enums.WebLinkType;
+
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+
+import org.eclipse.jgit.api.errors.GitAPIException;
 
 /**
  *  The main de.gerdiproject.harvest.harvester for SOEP
@@ -46,14 +56,15 @@ import java.util.*;
 public class SoepHarvester extends AbstractListHarvester<File>
 {
     private final SoepIO soepIO;
+    private final JGitUtil soepGitHub;
 
     /**
      * Constructor As suggested, the constructor should be in a "default" style
      */
-    public SoepHarvester()
-    {
+    public SoepHarvester() throws IOException {
         super("SOEP Harvester", 1);
         soepIO = new SoepIO();
+        soepGitHub = new JGitUtil(SoepConstants.SOEP_REMOTE_REPO_NAME, SoepConstants.SOEP_REMOTE_REPO_URL);
     }
 
     @Override
@@ -61,7 +72,8 @@ public class SoepHarvester extends AbstractListHarvester<File>
     {
         // Repo-related operations based on JGit library.
         try {
-            JGitUtil.collect();
+            soepGitHub.collect(soepGitHub);
+            soepIO.loadDatasetMetadata();
         } catch (IOException e) {
             logger.error(SoepLoggingConstants.IO_EXCEPTION_ERROR, e);
         } catch (GitAPIException e) {
@@ -79,8 +91,11 @@ public class SoepHarvester extends AbstractListHarvester<File>
     @Override
     protected List<IDocument> harvestEntry(File soepFile)
     {
+        // Specify source ID for harvested file
+        String sourceTitle = soepIO.getFileDescriptions().get(soepFile).getLabel();
+
         // Create the document to contain SOEP metadata for every given file from its dataset
-        DataCiteJson document = new DataCiteJson();
+        DataCiteJson document = new DataCiteJson(sourceTitle);
 
         // "Static" SOEP metadata
         document.setFormats(SoepDataCiteConstants.FORMATS);
@@ -89,31 +104,36 @@ public class SoepHarvester extends AbstractListHarvester<File>
          * GeRDI DataCite Mandatory properties
          * (ID 1) Identifier: This is the DOI identifier for v33 of the dataset
          */
-        Identifier soepID = new Identifier("10.5684/soep.v33", IdentifierType.DOI);
+        Identifier soepID = new Identifier(SoepDataCiteConstants.IDENTIFIER, IdentifierType.DOI);
         document.setIdentifier(soepID);
 
-        // (ID 2) Creator
+        // (ID 2) Creators
         document.setCreators(SoepDataCiteConstants.CREATORS);
 
-        // (ID 3 Title) SOEP study title for v33
-        Title title = new Title(SoepConstants.PUBLICATION_TITLE);
+        /**
+         * (ID 3 Title) Individual file descriptions
+         */
+        Title title = new Title(sourceTitle);
         document.setTitles(Arrays.asList(title));
 
         // (ID 4) Publisher
         document.setPublisher(SoepDataCiteConstants.PROVIDER);
 
-        // (ID 5) PublicationYear: Year 1984 is the earliest publication date, whereas 2017 is the latest.
+        // (ID 5) PublicationYear: 2017
         List<AbstractDate> dates = new LinkedList<>();
-        dates.add(SoepConstants.PUBLICATION_YEAR);
+        dates.add(SoepDataCiteConstants.PUBLICATION_YEAR);
         document.setDates(dates);
 
         // (ID 7) Contributor
-        PersonName contributorName = new PersonName(SoepDataCiteConstants.CONTRIBUTOR_COLLECTOR, NameType.Organisational);
-        Contributor contributor = new Contributor(contributorName, ContributorType.DataCollector);
-        document.setContributors(Arrays.asList(contributor));
+        document.setContributors(Arrays.asList(SoepDataCiteConstants.COLLECTOR_CONTRIBUTOR));
 
-        // (ID 8) Date: dateType="Collected" is from 1984 - 2016
-        DateRange dateCollected = new DateRange(SoepDataCiteConstants.DATE_COLLECTED, DateType.Collected);
+        /** (ID 8) Date: dateType="Collected" with individual data collection dates. PublicationYear is too "matchy" ;)
+         *  If year=0 or "long", set the "1984-2016" range.
+         */
+        String tempPeriod = soepIO.getFileDescriptions().get(soepFile).getPeriodName();
+        AbstractDate dateCollected;
+        dateCollected = tempPeriod.equals("0") || tempPeriod.equals("long") ?
+                        SoepDataCiteConstants.PUBLICATION_RANGE : new Date(tempPeriod, DateType.Collected);
         document.setDates(Arrays.asList(dateCollected));
 
         // (ID 10) ResourceType

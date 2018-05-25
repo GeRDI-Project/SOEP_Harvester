@@ -1,11 +1,11 @@
 /**
- * Copyright © 2017 Fidan Limani (http://www.gerdi-project.de)
+ * Copyright © ${project.inceptionYear} ${owner} (http://www.gerdi-project.de)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,10 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package de.gerdiproject.harvest.soep.utils;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.OutputStreamWriter;
 
 import de.gerdiproject.harvest.MainContext;
 import de.gerdiproject.harvest.soep.constants.SoepConstants;
@@ -28,7 +30,9 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.PullResult;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.errors.RepositoryNotFoundException;
-import org.eclipse.jgit.lib.*;
+import org.eclipse.jgit.lib.ProgressMonitor;
+import org.eclipse.jgit.lib.TextProgressMonitor;
+import org.eclipse.jgit.lib.RefUpdate;
 import org.eclipse.jgit.merge.MergeStrategy;
 import org.eclipse.jgit.transport.FetchResult;
 import org.eclipse.jgit.transport.TrackingRefUpdate;
@@ -68,8 +72,8 @@ public class JGitUtil
 
         this.repoName = repoName;
         this.repoRemoteUri = repoRemoteUri;
-        localFileRepo = new File( String.format(SoepConstants.LOCAL_REPOSITORY_PATH, gitDir, repoName));
-        remoteFileRepo = new File( String.format(SoepConstants.REMOTE_REPOSITORY_PATH, gitDir, repoName));
+        localFileRepo = new File(String.format(SoepConstants.LOCAL_REPOSITORY_PATH, gitDir, repoName));
+        remoteFileRepo = new File(String.format(SoepConstants.REMOTE_REPOSITORY_PATH, gitDir, repoName));
         remoteGit = localGit = null;
     }
 
@@ -78,15 +82,15 @@ public class JGitUtil
      * @throws IOException An issue while creating the local repo.
      * @throws GitAPIException Issue accessing the remote repo.
      */
-    public static void collect() throws IOException, GitAPIException
+    public void collect(JGitUtil soepGitHub) throws IOException, GitAPIException
     {
         // Init a repository: setup, initialize and clone
-        JGitUtil gHubSoep = new JGitUtil("SOEP-core", SoepLoggingConstants.SOEP_REMOTE_REPO);
-        gHubSoep.setUp();
+        // JGitUtil gHubSoep = new JGitUtil(SoepConstants.REPOSITORY_NAME, SoepLoggingConstants.SOEP_REMOTE_REPO);
+        soepGitHub.setUp();
 
         // Synchronize local repository (if out of sync.)
-        if (gHubSoep.fetchRepo(SoepLoggingConstants.ORIGIN_MASTER))
-            gHubSoep.updateRepo();
+        if (soepGitHub.fetchRepo(SoepConstants.ORIGIN_MASTER))
+            soepGitHub.updateRepo();
     }
 
     /**
@@ -133,6 +137,7 @@ public class JGitUtil
     {
         LOGGER.info(String.format(SoepLoggingConstants.CLONE_REPO, repoRemoteUri));
         return Git.cloneRepository()
+                // .setProgressMonitor(new TextProgressMonitor(new PrintWriter(new OutputStreamWriter(System.out, MainContext.getCharset()))))
                .setProgressMonitor(new TextProgressMonitor(new PrintWriter(new OutputStreamWriter(System.out, MainContext.getCharset()))))
                .setURI(repoRemoteUri)
                .setDirectory(localFileRepo)
@@ -178,6 +183,7 @@ public class JGitUtil
     {
         boolean status = false;
         LOGGER.info(String.format(SoepLoggingConstants.REPO_BRANCH_UPDATE, repoBranch));
+        // ProgressMonitor monitor = new TextProgressMonitor(new PrintWriter(new OutputStreamWriter(System.out, MainContext.getCharset())));
         ProgressMonitor monitor = new TextProgressMonitor(new PrintWriter(new OutputStreamWriter(System.out, MainContext.getCharset())));
 
         try {

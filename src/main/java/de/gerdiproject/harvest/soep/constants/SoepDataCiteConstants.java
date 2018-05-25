@@ -1,11 +1,11 @@
 /**
- * Copyright © 2017 Fidan Limani (http://www.gerdi-project.de)
+ * Copyright © ${project.inceptionYear} ${owner} (http://www.gerdi-project.de)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,21 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package de.gerdiproject.harvest.soep.constants;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
-import de.gerdiproject.json.datacite.Creator;
 import de.gerdiproject.json.datacite.ResourceType;
+import de.gerdiproject.json.datacite.Creator;
+import de.gerdiproject.json.datacite.Contributor;
+import de.gerdiproject.json.datacite.Date;
+import de.gerdiproject.json.datacite.DateRange;
+
+import de.gerdiproject.json.datacite.enums.ContributorType;
+import de.gerdiproject.json.datacite.enums.DateType;
 import de.gerdiproject.json.datacite.enums.NameType;
 import de.gerdiproject.json.datacite.enums.ResourceTypeGeneral;
+
 import de.gerdiproject.json.datacite.extension.WebLink;
 import de.gerdiproject.json.datacite.extension.abstr.AbstractResearch;
 import de.gerdiproject.json.datacite.extension.constants.ResearchDisciplineConstants;
 import de.gerdiproject.json.datacite.extension.enums.WebLinkType;
+
 import de.gerdiproject.json.datacite.nested.PersonName;
 
 /**
@@ -36,39 +44,45 @@ import de.gerdiproject.json.datacite.nested.PersonName;
  */
 public class SoepDataCiteConstants
 {
+    // Resource identifier
+    public static final String IDENTIFIER = "10.5684/soep.v33";
+
     // Resource type
     public static final ResourceType RESOURCE_TYPE = createResourceType();
 
     // CREATOR
-    public static final List<Creator> CREATORS = createCreators();
+    public static final List<String> CREATOR_LIST = Collections.unmodifiableList(
+                                                        Arrays.asList("Jürgen Schupp", "Jan Goebel", "Martin Kroh",
+                                                        "Carsten Schröder", "Charlotte Bartels", "Klaudia Erhardt",
+                                                        "Alexandra Fedorets", "Andreas Franken", "Marco Giesselmann",
+                                                        "Markus Grabka", "Peter Krause", "Hannes Kröger", "Simon Kühne",
+                                                        "Maria Metzing", "Jana Nebelin", "David Richter", "Diana Schacht",
+                                                        "Paul Schmelzer", "Christian Schmitt", "Daniel Schnitzlein",
+                                                        "Rainer Siegers", "Knut Wenzig"));
+    public static final List<Creator> CREATORS = addCreators();
 
     // SOURCE
     public static final String PROVIDER = "German Socio-Economic Panel Study (SOEP)";
-    public static final String PROVIDER_URI = "https://github.com/paneldata/de.gerdiproject.harvest.soep-core";
     public static final String REPOSITORY_ID = "SOEP";
-    public static final List<AbstractResearch> DISCIPLINES =  createResearchDisciplines();
+    public static final List<AbstractResearch> DISCIPLINES = createResearchDisciplines();
 
     // CONTRIBUTORS
-    public static final String CONTRIBUTOR_COLLECTOR = "Kantar Deutschland GmbH";
-    public static final String METADATA_CONTACT_NAME = "Contact name";
-    public static final String METADATA_CONTACT_ORGANISATION = "Contact organisation";
-    public static final short EARLIEST_PUBLICATION_YEAR = 1984;
+    public static final String COLLECTOR_CONTRIBUTOR_NAME = "Kantar Deutschland GmbH";
+    public static final Contributor COLLECTOR_CONTRIBUTOR = createCollectorContributor();
 
     // WEB LINKS
     public static final String VIEW_URL = "https://github.com/paneldata/de.gerdiproject.harvest.soep-core/tree/master/ddionrails/datasets";
     public static final WebLink LOGO_WEB_LINK = createLogoWebLink();
-    public static final String TEMPLATE_DOCUMENT_NAME = "About";
 
     // DATES
-    public  static final String DATE_COLLECTED = "1984/2016";
-    public static final String META_DATA_TIME_COVERAGE = "Time coverage";
-    public static final String META_DATA_LAST_UPDATE = "Metadata last update";
+    public static final short EARLIEST_PUBLICATION_YEAR = 1984;
+    public static final Date PUBLICATION_YEAR = new Date("2017-11-29", DateType.Available);
+    public static final DateRange PUBLICATION_RANGE = new DateRange("1984/2016", DateType.Available);
 
     // Dataset version
     public static final String VERSION = "33";
 
     // DESCRIPTIONS
-    public static final String DESCRIPTION_FORMAT = "%s:%n%s";
     public static final String DESCRIPTION_VALUE = "The German Socio-Economic Panel (SOEP) study is a wide-ranging representative " +
                                                     "longitudinal study of private households, located at the German Institute for " +
                                                     "Economic Research, DIW Berlin. Every year, there were nearly 15,000 households, " +
@@ -84,6 +98,7 @@ public class SoepDataCiteConstants
                                                     "Further new samples were added in 1998, 2000, 2002, 2006, 2009, 2010, 2011, and 2012. The survey is constantly " +
                                                     "being adapted and developed in response to current social developments. The international version contains 95% of " +
                                                     "all cases surveyed (see 10.5684/soep.v33i).";
+
     public static final String DESCRIPTION_LANGUAGE = "EN";
 
     // Rights
@@ -121,10 +136,16 @@ public class SoepDataCiteConstants
      *
      * @return a Creator that has "SOEP" as name
      */
-    private static List<Creator> createCreators()
+    private static List<Creator> addCreators()
     {
-        Creator creator = new Creator(new PersonName(PROVIDER, NameType.Organisational));
-        return Arrays.asList(creator);
+        Creator creator;
+        List<Creator> tempCreatorList = new LinkedList();
+        for(String s : CREATOR_LIST){
+            creator = new Creator(new PersonName(s, NameType.Personal));
+            tempCreatorList.add(creator);
+        }
+
+        return tempCreatorList;
     }
 
     /**
@@ -144,5 +165,15 @@ public class SoepDataCiteConstants
         return Collections.unmodifiableList(Arrays.asList(
                                                 ResearchDisciplineConstants.EMPIRICAL_SOCIAL_RESEARCH,
                                                 ResearchDisciplineConstants.STATISTICS_AND_ECONOMETRICS));
+    }
+
+    /**
+     * Create a Contributor instance specifying SOEP dataset collector
+     * @return A Contributor
+     */
+    private static Contributor createCollectorContributor()
+    {
+        PersonName contributorName = new PersonName(SoepDataCiteConstants.COLLECTOR_CONTRIBUTOR_NAME, NameType.Organisational);
+        return new Contributor(contributorName, ContributorType.DataCollector);
     }
 }
