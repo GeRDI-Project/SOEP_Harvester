@@ -15,8 +15,6 @@
  */
 package de.gerdiproject.harvest.soep.constants;
 
-import de.gerdiproject.harvest.soep.utils.SoepIO;
-
 import java.io.File;
 
 /**
