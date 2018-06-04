@@ -81,7 +81,7 @@ public class SoepHarvester extends AbstractListHarvester<File>
             logger.error(SoepLoggingConstants.GIT_API_EXCEPTION_ERROR, e);
         }
 
-        String datasetPath = String.format(SoepConstants.BASE_PATH, "/", "");
+        String datasetPath = String.format(SoepConstants.BASE_PATH, File.separator, "");
 
         return soepIO.listFiles(datasetPath);
     }

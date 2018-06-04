@@ -50,7 +50,9 @@ public class SoepConstants
 
     // Study title and the path to the file that contains file descriptions
     public static final String STUDY_TITLE = "Socio-Economic Panel (SOEP), data from 1984-2016";
-    public static final String FILE_TITLE_DATASET = USER_HOME + "\\GitHub\\SOEP-core\\local\\ddionrails\\datasets.csv";
+    public static final String FILE_TITLE_DATASET = GIT_HUB_PATH + "SOEP-core" + File.separator + "local" +
+                                                    File.separator + "ddionrails" +
+                                                    File.separator + "datasets.csv";
 
     // Local and remote repository paths
     public static final String LOCAL_REPOSITORY_PATH = "%s/%s/local";
