@@ -39,7 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A util-like class to support repo- and GeRDI harvester-based operations. *
+ * A util-like class to support repository- and GeRDI harvester-based operations. *
  * @author Fidan Limani
  */
 public class SoepIO
@@ -83,7 +83,8 @@ public class SoepIO
     public void loadDatasetMetadata()
     {
         try
-            (Reader reader = Files.newBufferedReader(Paths.get(SoepConstants.FILE_TITLE_DATASET))) {
+            (Reader reader = Files.newBufferedReader(Paths.get(SoepConstants.FILE_TITLE_DATASET)))
+        {
             CsvToBean<DatasetMetadata> csvMapper = new CsvToBeanBuilder<DatasetMetadata>(reader)
             .withType(DatasetMetadata.class)
             .withIgnoreLeadingWhiteSpace(true)

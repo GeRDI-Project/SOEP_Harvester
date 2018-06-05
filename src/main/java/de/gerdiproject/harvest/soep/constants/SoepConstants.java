@@ -43,7 +43,7 @@ public class SoepConstants
     public static final String ACCESS_FILE_URL =
         "https://github.com/paneldata/de.gerdiproject.harvest.soep-core/%s/master/ddionrails/datasets/%s";
 
-    // Local repo. dataset path
+    // Local repository dataset path
     public static final String BASE_PATH = USER_HOME
                                            + "%1$sGitHub%1$sSOEP-core%1$slocal%1$sddionrails%1$sdatasets%1$s%2$s";
 

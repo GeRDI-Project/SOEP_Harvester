@@ -15,10 +15,7 @@
  */
 package de.gerdiproject.harvest.soep.utils;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.OutputStreamWriter;
+import java.io.*;
 
 import de.gerdiproject.harvest.MainContext;
 import de.gerdiproject.harvest.soep.constants.SoepConstants;
@@ -85,10 +82,9 @@ public class JGitUtil
     public void collect() throws IOException, GitAPIException
     {
         // Init a repository: setup, initialize and clone
-        // JGitUtil gHubSoep = new JGitUtil(SoepConstants.REPOSITORY_NAME, SoepLoggingConstants.SOEP_REMOTE_REPO);
         setUp();
 
-        // Synchronize local repository (if out of sync.)
+        // Update local repository (if outdated) if it already exists
         if (fetchRepo(SoepConstants.ORIGIN_MASTER))
             updateRepo();
     }
@@ -133,7 +129,7 @@ public class JGitUtil
      * @throws IOException An issue while creating the local repo.
      * @throws GitAPIException Issue accessing the remote repo.
      */
-    public Git cloneRepo() throws GitAPIException, IOException
+    public Git cloneRepo() throws GitAPIException
     {
         LOGGER.info(String.format(SoepLoggingConstants.CLONE_REPO, repoRemoteUri));
         return Git.cloneRepository()
@@ -178,8 +174,7 @@ public class JGitUtil
      *  @param repoBranch The repo. branch of interest
      *  @return boolean Denotes whether there were any updates from the remote repo. fetched
      */
-    public boolean fetchRepo(String repoBranch)
-    {
+    public boolean fetchRepo(String repoBranch) {
         boolean status = false;
         LOGGER.info(String.format(SoepLoggingConstants.REPO_BRANCH_UPDATE, repoBranch));
         ProgressMonitor monitor = new TextProgressMonitor(new PrintWriter(new OutputStreamWriter(System.out, MainContext.getCharset())));
@@ -206,12 +201,11 @@ public class JGitUtil
      *  @throws GitAPIException That stems from unsupported encoding while tracking the repo. update
      *
      */
-    public void updateRepo()throws GitAPIException
-    {
+    public void updateRepo() throws GitAPIException {
         LOGGER.info(String.format(SoepLoggingConstants.UPDATE_LOCAL_REPO, localFileRepo.getAbsolutePath()));
         ProgressMonitor monitor = new TextProgressMonitor(new PrintWriter(new OutputStreamWriter(System.out, MainContext.getCharset())));
 
-        // Check out the dataset of interest before pulling resources to local repo. (Future work!!!)
+        // Check out the dataset of interest before pulling resources to local repo. (Future work!)
         // checkOut();
 
         try
