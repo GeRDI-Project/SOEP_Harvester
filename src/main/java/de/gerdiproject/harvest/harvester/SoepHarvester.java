@@ -83,18 +83,25 @@ public class SoepHarvester extends AbstractListHarvester<File>
         return soepIO.listFiles(datasetPath);
     }
 
+
     /**
      * This method is to be invoked after loadEntries()
     */
     @Override
     protected List<IDocument> harvestEntry(File soepFile)
     {
+
         // Specify source ID for harvested file
-        final DatasetMetadata metadata = soepIO.getFileDescriptions().get(soepFile.getName());
+        final DatasetMetadata metadata = soepIO.getFileMetadata(soepFile);
+
+        // abort if there is no metadata
+        if (metadata == null)
+            return null;
+
         String sourceTitle = metadata.getLabel();
 
         // Create the document to contain SOEP metadata for every given file from its dataset
-        DataCiteJson document = new DataCiteJson(sourceTitle);
+        final DataCiteJson document = new DataCiteJson(soepFile.getAbsolutePath());
 
         // "Static" SOEP metadata
         document.setFormats(SoepDataCiteConstants.FORMATS);
@@ -166,8 +173,7 @@ public class SoepHarvester extends AbstractListHarvester<File>
         links.add(sourceLink);
 
         // The logo link
-        WebLink logoLink = SoepDataCiteConstants.LOGO_WEB_LINK;
-        links.add(logoLink);
+        links.add(SoepDataCiteConstants.LOGO_WEB_LINK);
 
         // Add all the links to the document;
         document.setWebLinks(links);
@@ -186,7 +192,6 @@ public class SoepHarvester extends AbstractListHarvester<File>
 
         // E4: ResearchDiscipline
         document.setResearchDisciplines(SoepDataCiteConstants.DISCIPLINES);
-
         return Arrays.asList(document);
     }
 }

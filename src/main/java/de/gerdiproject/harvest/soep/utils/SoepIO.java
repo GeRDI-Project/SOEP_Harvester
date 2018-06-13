@@ -20,23 +20,22 @@ import java.io.IOException;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
-
-import com.opencsv.bean.CsvToBean;
-
-import com.opencsv.bean.CsvToBeanBuilder;
-import de.gerdiproject.harvest.soep.constants.SoepConstants;
-import de.gerdiproject.harvest.soep.constants.SoepLoggingConstants;
-
-import de.gerdiproject.harvest.soep.dataset_mapping.DatasetMetadata;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.opencsv.bean.CsvToBean;
+import com.opencsv.bean.CsvToBeanBuilder;
+
+import de.gerdiproject.harvest.soep.constants.SoepConstants;
+import de.gerdiproject.harvest.soep.constants.SoepLoggingConstants;
+import de.gerdiproject.harvest.soep.dataset_mapping.DatasetMetadata;
 
 /**
  * A util-like class to support repository- and GeRDI harvester-based operations. *
@@ -44,9 +43,10 @@ import org.slf4j.LoggerFactory;
  */
 public class SoepIO
 {
-    // A Map<String, String> field that stores descriptions for files
-    private Map<String, DatasetMetadata> fileDescriptions;
     private static final Logger LOGGER = LoggerFactory.getLogger(SoepIO.class);
+
+    private final Map<String, DatasetMetadata> fileDescriptions;
+
 
     /**
      * Constructor
@@ -55,6 +55,7 @@ public class SoepIO
     {
         this.fileDescriptions = new HashMap<>();
     }
+
 
     /**
      *  Create a local directory to contain the cloned GitHub repository.
@@ -76,6 +77,7 @@ public class SoepIO
             return null;
         }
     }
+
 
     /**
      * Load dataset file descriptions from a CSV spreadsheet to a Map
@@ -102,6 +104,7 @@ public class SoepIO
         }
     }
 
+
     /** Does a repo already exist?
      * @param repoName Path to the local SOEP repo. (SOEP-core, in this case)
      * @return boolean Returns whether the repository exists
@@ -113,6 +116,7 @@ public class SoepIO
 
         return file.exists();
     }
+
 
     /** List all files from a given dataset
      * @param folderPath Directory path of the dataset (GitHub repo)
@@ -127,11 +131,17 @@ public class SoepIO
         return Collections.emptyList();
     }
 
+
     /**
-     * @return Map<String, String> file descriptions
+     * Returns metadata for a specified file.
+     *
+     * @param file the file for which metadata is to be retrieved
+     *
+     * @return the metadata of the file
      */
-    public Map<String, DatasetMetadata> getFileDescriptions()
+    public DatasetMetadata getFileMetadata(final File file)
     {
-        return this.fileDescriptions;
+        final String datasetName = file.getName().substring(0, file.getName().lastIndexOf('.'));
+        return fileDescriptions.get(datasetName);
     }
 }
