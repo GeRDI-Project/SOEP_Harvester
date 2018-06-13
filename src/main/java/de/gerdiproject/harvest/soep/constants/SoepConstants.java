@@ -36,7 +36,7 @@ public class SoepConstants
 
     // GitHub "tree" and "blob" access URL
     public static final String ACCESS_FILE_URL =
-        "https://github.com/paneldata/de.gerdiproject.harvest.soep-core/%s/master/ddionrails/datasets/%s";
+        "https://github.com/paneldata/soep-core/%s/master/ddionrails/datasets/%s";
 
     // Local repository dataset path
     public static final String BASE_PATH = GIT_HUB_PATH
