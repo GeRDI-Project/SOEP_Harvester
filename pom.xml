@@ -28,9 +28,9 @@
     </developers>
 
     <scm>
-        <connection>scm:git:git://scm:git:git://https://code.gerdi-project.de/scm/har/ssp.git</connection>
-        <developerConnection>scm:git:ssh://https://code.gerdi-project.de/scm/har/ssp.git</developerConnection>
-        <url>https://code.gerdi-project.de/projects/HAR/repos/ssp/browse</url>
+        <connection>scm:git:git://scm:git:git://https://code.gerdi-project.de/scm/har/soep.git</connection>
+        <developerConnection>scm:git:ssh://https://code.gerdi-project.de/scm/har/soep.git</developerConnection>
+        <url>https://code.gerdi-project.de/projects/HAR/repos/soep/browse</url>
     </scm>
 
     <dependencies>
