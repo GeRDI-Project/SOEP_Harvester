@@ -183,8 +183,8 @@ public class SoepHarvester extends AbstractListHarvester<File>
 
         // View SOEP dataset file source ("raw" representation) on GitHub
         WebLink sourceLink = new WebLink(String.format(SoepConstants.ACCESS_FILE_URL, SoepConstants.BLOB, soepFileName));
-        pageLink.setName(SoepConstants.VIEW_RAW);
-        pageLink.setType(WebLinkType.SourceURL);
+        sourceLink.setName(SoepConstants.VIEW_RAW);
+        sourceLink.setType(WebLinkType.SourceURL);
         links.add(sourceLink);
 
         // The logo link
