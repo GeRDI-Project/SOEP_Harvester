@@ -44,17 +44,18 @@ import de.gerdiproject.harvest.soep.constants.SoepLoggingConstants;
 public class JGitUtil
 {
     // Local base GitHub dir
-    private File gitDir;
+    private final File gitDir;
 
-    private SoepIO sIO;
-    private String repoName;
-    private String repoRemoteUri;
-    private File localFileRepo;
-    private File remoteFileRepo;
+    private final SoepIO sIO;
+    private final String repoName;
+    private final String repoRemoteUri;
+    private final File localFileRepo;
+    private final File remoteFileRepo;
     private Git remoteGit;
     private Git localGit;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JGitUtil.class);
+
 
     /**
      *  Constructor
@@ -72,10 +73,13 @@ public class JGitUtil
 
         this.repoName = repoName;
         this.repoRemoteUri = repoRemoteUri;
-        localFileRepo = new File(String.format(SoepConstants.LOCAL_REPOSITORY_PATH, gitDir, repoName));
-        remoteFileRepo = new File(String.format(SoepConstants.REMOTE_REPOSITORY_PATH, gitDir, repoName));
-        remoteGit = localGit = null;
+        this.localFileRepo = new File(String.format(SoepConstants.LOCAL_REPOSITORY_PATH, gitDir, repoName));
+        this.remoteFileRepo = new File(String.format(SoepConstants.REMOTE_REPOSITORY_PATH, gitDir, repoName));
+
+        this.remoteGit = null;
+        this.localGit = null;
     }
+
 
     /**
      * This method sets up a local repository, then fetches and updates it from a remote repo. URI
@@ -85,19 +89,20 @@ public class JGitUtil
     public void collect() throws IOException, GitAPIException
     {
         // Init a repository: setup, initialize and clone
-        setUp();
+        init();
 
         // Update local repository (if outdated) if it already exists
         if (fetchRepo(SoepConstants.ORIGIN_MASTER))
             updateRepo();
     }
 
+
     /**
      * Set the local repository: initialize and clone if local repo does not exist.
      * @throws IOException An issue while creating the local repo.
      * @throws GitAPIException Issue accessing the remote repo.
      */
-    public void setUp() throws GitAPIException, IOException
+    private void init() throws GitAPIException, IOException
     {
         if (repoExists()) {
             LOGGER.info(String.format(SoepLoggingConstants.REPO_EXISTS, repoName));
@@ -114,17 +119,19 @@ public class JGitUtil
         }
     }
 
+
     /**
      * Initialize repository: in case it exists, get a reference to it
      * @return Git Reference to initialized local repo.
      * @throws IOException An issue while creating the local repo.
      * @throws GitAPIException Issue accessing the remote repo.
      */
-    public Git initRepo() throws GitAPIException, IOException
+    private Git initRepo() throws GitAPIException, IOException
     {
         LOGGER.info(String.format(SoepLoggingConstants.INIT_REPO, repoName));
         return Git.init().setDirectory(remoteFileRepo).call();
     }
+
 
     /**
      * Clone (SOEP) repository
@@ -132,7 +139,7 @@ public class JGitUtil
      * @throws IOException An issue while creating the local repo.
      * @throws GitAPIException Issue accessing the remote repo.
      */
-    public Git cloneRepo() throws GitAPIException
+    private Git cloneRepo() throws GitAPIException
     {
         LOGGER.info(String.format(SoepLoggingConstants.CLONE_REPO, repoRemoteUri));
         return Git.cloneRepository()
@@ -142,8 +149,9 @@ public class JGitUtil
                .call();
     }
 
+
     /**
-     * Future development: Checkout certain GitHub project subdirectory. This might be required especially if we have
+     * TODO Future development: Checkout certain GitHub project subdirectory. This might be required especially if we have
      * research communities that use GitHub to share their datasets.
      * public void checkOut() throws GitAPIException {
             // repoBranch: ORIGIN_MASTER; ElasticSearch project path: "origin/dataset"
@@ -152,11 +160,12 @@ public class JGitUtil
         }
     */
 
+
     /**
      *  Checks whether a certain local repository already exists, or needs to be set up.
      *  @return boolean If a certain local repo. exists or not
      */
-    public boolean repoExists()
+    private boolean repoExists()
     {
         boolean status = false;
 
@@ -172,12 +181,13 @@ public class JGitUtil
         return status;
     }
 
+
     /**
      *  Fetch changes from remote repo.
      *  @param repoBranch The repo. branch of interest
      *  @return boolean Denotes whether there were any updates from the remote repo. fetched
      */
-    public boolean fetchRepo(String repoBranch)
+    private boolean fetchRepo(String repoBranch)
     {
         boolean status = false;
         LOGGER.info(String.format(SoepLoggingConstants.REPO_BRANCH_UPDATE, repoBranch));
@@ -200,12 +210,13 @@ public class JGitUtil
         return status;
     }
 
+
     /**
      *  Update local repo.
      *  @throws GitAPIException That stems from unsupported encoding while tracking the repo. update
      *
      */
-    public void updateRepo() throws GitAPIException
+    private void updateRepo() throws GitAPIException
     {
         LOGGER.info(String.format(SoepLoggingConstants.UPDATE_LOCAL_REPO, localFileRepo.getAbsolutePath()));
         ProgressMonitor monitor = new TextProgressMonitor(new PrintWriter(new OutputStreamWriter(System.out, MainContext.getCharset())));
@@ -225,11 +236,12 @@ public class JGitUtil
         }
     }
 
+
     /**
      * If field <localGit> is null, assign it a Git reference;
      * In case <b>localGit</b> field is {@code null}, assign it a Git reference
      */
-    public void setLocalGit()
+    private void setLocalGit()
     {
         if (localGit == null) {
             try {
@@ -240,6 +252,7 @@ public class JGitUtil
         }
     }
 
+
     /**
      * @return Git Getter for local git repo.
      */
@@ -247,6 +260,7 @@ public class JGitUtil
     {
         return localGit;
     }
+
 
     /**
      * @return Git Getter for remote git repo.
@@ -256,26 +270,12 @@ public class JGitUtil
         return remoteGit;
     }
 
+
     /**
      * @return String Getter for remote repo. URI
      */
-    public String getRepoRemoteUri() { return repoRemoteUri; }
-
-    /**
-     * @param repoName Set repo. name
-     */
-    public void setRepoName(String repoName)
+    public String getRepoRemoteUri()
     {
-        LOGGER.info(String.format(SoepLoggingConstants.SET_REPO_NAME, repoName));
-        this.repoName = repoName;
-    }
-
-    /**
-     * @param repoRemoteUri Set remote repo. URI
-     */
-    public void setRepoRemoteUri(String repoRemoteUri)
-    {
-        LOGGER.info(String.format(SoepLoggingConstants.SET_REMOTE_REPO_URL, repoRemoteUri));
-        this.repoRemoteUri = repoRemoteUri;
+        return repoRemoteUri;
     }
 }
