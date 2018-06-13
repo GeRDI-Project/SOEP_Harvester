@@ -36,6 +36,7 @@ import de.gerdiproject.json.datacite.Date;
 import de.gerdiproject.json.datacite.Description;
 import de.gerdiproject.json.datacite.Identifier;
 import de.gerdiproject.json.datacite.Rights;
+import de.gerdiproject.json.datacite.Subject;
 import de.gerdiproject.json.datacite.Title;
 import de.gerdiproject.json.datacite.abstr.AbstractDate;
 import de.gerdiproject.json.datacite.enums.DateType;
@@ -153,8 +154,22 @@ public class SoepHarvester extends AbstractListHarvester<File>
         document.setRightsList(Arrays.asList(soepRights));
 
         // (ID 17) Description, type "Abstract"
-        Description soepDescription = new Description(SoepDataCiteConstants.DESCRIPTION_VALUE, DescriptionType.Abstract, SoepDataCiteConstants.DESCRIPTION_LANGUAGE);
-        document.setDescriptions(Arrays.asList(soepDescription));
+        final List<Description> descriptions = new LinkedList<>();
+        descriptions.add(
+            new Description(
+                SoepDataCiteConstants.DESCRIPTION_VALUE,
+                DescriptionType.Abstract,
+                SoepDataCiteConstants.DESCRIPTION_LANGUAGE));
+
+        // add optional description from metadata
+        if (metadata.getDescription() != null && !metadata.getDescription().isEmpty())
+            descriptions.add(
+                new Description(
+                    metadata.getDescription(),
+                    DescriptionType.Other,
+                    SoepDataCiteConstants.DESCRIPTION_LANGUAGE));
+
+        document.setDescriptions(descriptions);
 
         // GeRDI Extension
         List<WebLink> links = new LinkedList<>();
@@ -192,6 +207,14 @@ public class SoepHarvester extends AbstractListHarvester<File>
 
         // E4: ResearchDiscipline
         document.setResearchDisciplines(SoepDataCiteConstants.DISCIPLINES);
+
+        // Subjects
+        List<Subject> subjects = new LinkedList<>();
+        subjects.add(new Subject(metadata.getStudyName()));
+        subjects.add(new Subject(metadata.getDatasetName()));
+        subjects.add(new Subject(metadata.getConceptualDatasetName()));
+        document.setSubjects(subjects);
+
         return Arrays.asList(document);
     }
 }
