@@ -15,38 +15,35 @@
  */
 package de.gerdiproject.harvest.harvester;
 
-import de.gerdiproject.harvest.IDocument;
-
-import de.gerdiproject.harvest.soep.constants.SoepConstants;
-import de.gerdiproject.harvest.soep.constants.SoepLoggingConstants;
-import de.gerdiproject.harvest.soep.constants.SoepDataCiteConstants;
-import de.gerdiproject.harvest.soep.utils.JGitUtil;
-import de.gerdiproject.harvest.soep.utils.SoepIO;
-
-import de.gerdiproject.json.datacite.DataCiteJson;
-import de.gerdiproject.json.datacite.Identifier;
-import de.gerdiproject.json.datacite.Title;
-import de.gerdiproject.json.datacite.Rights;
-import de.gerdiproject.json.datacite.Date;
-import de.gerdiproject.json.datacite.Description;
-import de.gerdiproject.json.datacite.abstr.AbstractDate;
-import de.gerdiproject.json.datacite.extension.ResearchData;
-import de.gerdiproject.json.datacite.extension.WebLink;
-
-import de.gerdiproject.json.datacite.enums.IdentifierType;
-import de.gerdiproject.json.datacite.enums.DateType;
-import de.gerdiproject.json.datacite.enums.DescriptionType;
-import de.gerdiproject.json.datacite.extension.enums.WebLinkType;
-
 import java.io.File;
 import java.io.IOException;
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.jgit.api.errors.GitAPIException;
+
+import de.gerdiproject.harvest.IDocument;
+import de.gerdiproject.harvest.soep.constants.SoepConstants;
+import de.gerdiproject.harvest.soep.constants.SoepDataCiteConstants;
+import de.gerdiproject.harvest.soep.constants.SoepLoggingConstants;
+import de.gerdiproject.harvest.soep.dataset_mapping.DatasetMetadata;
+import de.gerdiproject.harvest.soep.utils.JGitUtil;
+import de.gerdiproject.harvest.soep.utils.SoepIO;
+import de.gerdiproject.json.datacite.DataCiteJson;
+import de.gerdiproject.json.datacite.Date;
+import de.gerdiproject.json.datacite.Description;
+import de.gerdiproject.json.datacite.Identifier;
+import de.gerdiproject.json.datacite.Rights;
+import de.gerdiproject.json.datacite.Title;
+import de.gerdiproject.json.datacite.abstr.AbstractDate;
+import de.gerdiproject.json.datacite.enums.DateType;
+import de.gerdiproject.json.datacite.enums.DescriptionType;
+import de.gerdiproject.json.datacite.enums.IdentifierType;
+import de.gerdiproject.json.datacite.extension.ResearchData;
+import de.gerdiproject.json.datacite.extension.WebLink;
+import de.gerdiproject.json.datacite.extension.enums.WebLinkType;
 
 /**
  *  The main de.gerdiproject.harvest.harvester for SOEP
@@ -81,7 +78,7 @@ public class SoepHarvester extends AbstractListHarvester<File>
             logger.error(SoepLoggingConstants.GIT_API_EXCEPTION_ERROR, e);
         }
 
-        String datasetPath = String.format(SoepConstants.BASE_PATH, File.separator, "");
+        String datasetPath = String.format(SoepConstants.BASE_PATH, "");
 
         return soepIO.listFiles(datasetPath);
     }
@@ -93,7 +90,8 @@ public class SoepHarvester extends AbstractListHarvester<File>
     protected List<IDocument> harvestEntry(File soepFile)
     {
         // Specify source ID for harvested file
-        String sourceTitle = soepIO.getFileDescriptions().get(soepFile.getName()).getLabel();
+        final DatasetMetadata metadata = soepIO.getFileDescriptions().get(soepFile.getName());
+        String sourceTitle = metadata.getLabel();
 
         // Create the document to contain SOEP metadata for every given file from its dataset
         DataCiteJson document = new DataCiteJson(sourceTitle);
@@ -131,7 +129,7 @@ public class SoepHarvester extends AbstractListHarvester<File>
         /** (ID 8) Date: dateType="Collected" with individual data collection dates. PublicationYear is too "matchy" ;)
          *  If year=0 or "long", set the "1984-2016" range.
          */
-        String tempPeriod = soepIO.getFileDescriptions().get(soepFile.getName()).getPeriodName();
+        String tempPeriod = metadata.getPeriodName();
         AbstractDate dateCollected;
         dateCollected = tempPeriod.equals("0") || tempPeriod.equals("long") ?
                         SoepDataCiteConstants.PUBLICATION_RANGE : new Date(tempPeriod, DateType.Collected);
@@ -179,7 +177,7 @@ public class SoepHarvester extends AbstractListHarvester<File>
 
         // E3. ResearchData{dataIdentifier, dataURL, dataLabel, dataType}
         List<ResearchData> files = new LinkedList<>();
-        ResearchData researchData = new ResearchData(String.format(SoepConstants.BASE_PATH, "/", soepFileName),
+        ResearchData researchData = new ResearchData(String.format(SoepConstants.BASE_PATH, soepFileName),
                                                      "JSON");
         researchData.setUrl(pageLink.getUrl());
         researchData.setType("JSON");

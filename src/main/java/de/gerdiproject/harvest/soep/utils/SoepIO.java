@@ -83,8 +83,7 @@ public class SoepIO
     public void loadDatasetMetadata()
     {
         try
-            (Reader reader = Files.newBufferedReader(Paths.get(SoepConstants.FILE_TITLE_DATASET)))
-        {
+            (Reader reader = Files.newBufferedReader(Paths.get(SoepConstants.FILE_TITLE_DATASET))) {
             CsvToBean<DatasetMetadata> csvMapper = new CsvToBeanBuilder<DatasetMetadata>(reader)
             .withType(DatasetMetadata.class)
             .withIgnoreLeadingWhiteSpace(true)

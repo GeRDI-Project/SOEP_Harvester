@@ -15,24 +15,27 @@
  */
 package de.gerdiproject.harvest.soep.utils;
 
-import java.io.*;
-
-import de.gerdiproject.harvest.MainContext;
-import de.gerdiproject.harvest.soep.constants.SoepConstants;
-import de.gerdiproject.harvest.soep.constants.SoepLoggingConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.PullResult;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.errors.RepositoryNotFoundException;
 import org.eclipse.jgit.lib.ProgressMonitor;
-import org.eclipse.jgit.lib.TextProgressMonitor;
 import org.eclipse.jgit.lib.RefUpdate;
+import org.eclipse.jgit.lib.TextProgressMonitor;
 import org.eclipse.jgit.merge.MergeStrategy;
 import org.eclipse.jgit.transport.FetchResult;
 import org.eclipse.jgit.transport.TrackingRefUpdate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import de.gerdiproject.harvest.MainContext;
+import de.gerdiproject.harvest.soep.constants.SoepConstants;
+import de.gerdiproject.harvest.soep.constants.SoepLoggingConstants;
 
 /**
  * Interface with SOEP's GitHub repo: create, clone, update (if required)
@@ -161,7 +164,7 @@ public class JGitUtil
             Git.open(remoteFileRepo);
             status = true;
         } catch (RepositoryNotFoundException e) {
-            LOGGER.error(SoepLoggingConstants.REPO_MISSING_ERROR, e);
+            LOGGER.info(SoepLoggingConstants.REPO_MISSING_ERROR);
         } catch (IOException e) {
             LOGGER.error(SoepLoggingConstants.IO_EXCEPTION_ERROR, e);
         }
@@ -174,7 +177,8 @@ public class JGitUtil
      *  @param repoBranch The repo. branch of interest
      *  @return boolean Denotes whether there were any updates from the remote repo. fetched
      */
-    public boolean fetchRepo(String repoBranch) {
+    public boolean fetchRepo(String repoBranch)
+    {
         boolean status = false;
         LOGGER.info(String.format(SoepLoggingConstants.REPO_BRANCH_UPDATE, repoBranch));
         ProgressMonitor monitor = new TextProgressMonitor(new PrintWriter(new OutputStreamWriter(System.out, MainContext.getCharset())));
@@ -201,7 +205,8 @@ public class JGitUtil
      *  @throws GitAPIException That stems from unsupported encoding while tracking the repo. update
      *
      */
-    public void updateRepo() throws GitAPIException {
+    public void updateRepo() throws GitAPIException
+    {
         LOGGER.info(String.format(SoepLoggingConstants.UPDATE_LOCAL_REPO, localFileRepo.getAbsolutePath()));
         ProgressMonitor monitor = new TextProgressMonitor(new PrintWriter(new OutputStreamWriter(System.out, MainContext.getCharset())));
 
