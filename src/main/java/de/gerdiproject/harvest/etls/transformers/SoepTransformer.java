@@ -171,6 +171,9 @@ public class SoepTransformer extends AbstractIteratorTransformer<SoepFileVO, Dat
         subjects.add(new Subject(metadata.getConceptualDatasetName()));
         document.addSubjects(subjects);
 
+        // Sizes
+        document.addSizes(Arrays.asList(String.format(SoepDataCiteConstants.SIZE_BYTES, vo.getContent().getSize())));
+
         return document;
     }
 }
