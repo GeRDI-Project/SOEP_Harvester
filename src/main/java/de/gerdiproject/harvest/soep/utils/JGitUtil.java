@@ -19,6 +19,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.PullResult;
@@ -33,9 +35,9 @@ import org.eclipse.jgit.transport.TrackingRefUpdate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.gerdiproject.harvest.MainContext;
 import de.gerdiproject.harvest.soep.constants.SoepConstants;
 import de.gerdiproject.harvest.soep.constants.SoepLoggingConstants;
+import de.gerdiproject.harvest.utils.file.FileUtils;
 
 /**
  * Interface with SOEP's GitHub repo: create, clone, update (if required)
@@ -46,7 +48,7 @@ public class JGitUtil
     // Local base GitHub dir
     private final File gitDir;
 
-    private final SoepIO sIO;
+    private final Charset charset;
     private final String repoName;
     private final String repoRemoteUri;
     private final File localFileRepo;
@@ -66,10 +68,14 @@ public class JGitUtil
     */
     public JGitUtil(String repoName, String repoRemoteUri) throws IOException
     {
-        this.sIO = new SoepIO();
+        this.charset = StandardCharsets.UTF_8;
 
         // The base GitHub directory created on [user.home] path
-        this.gitDir = sIO.createWorkingDir();
+        this.gitDir = new File(SoepConstants.GIT_HUB_PATH);
+        FileUtils.createDirectories(gitDir);
+
+        if (!gitDir.exists())
+            throw new IOException(gitDir + SoepLoggingConstants.DIR_NOT_CREATED);
 
         this.repoName = repoName;
         this.repoRemoteUri = repoRemoteUri;
@@ -143,7 +149,7 @@ public class JGitUtil
     {
         LOGGER.info(String.format(SoepLoggingConstants.CLONE_REPO, repoRemoteUri));
         return Git.cloneRepository()
-               .setProgressMonitor(new TextProgressMonitor(new PrintWriter(new OutputStreamWriter(System.out, MainContext.getCharset()))))
+               .setProgressMonitor(new TextProgressMonitor(new PrintWriter(new OutputStreamWriter(System.out, charset))))
                .setURI(repoRemoteUri)
                .setDirectory(localFileRepo)
                .call();
@@ -191,7 +197,7 @@ public class JGitUtil
     {
         boolean status = false;
         LOGGER.info(String.format(SoepLoggingConstants.REPO_BRANCH_UPDATE, repoBranch));
-        ProgressMonitor monitor = new TextProgressMonitor(new PrintWriter(new OutputStreamWriter(System.out, MainContext.getCharset())));
+        ProgressMonitor monitor = new TextProgressMonitor(new PrintWriter(new OutputStreamWriter(System.out, charset)));
 
         try {
             FetchResult fetch = getLocalGit().fetch().setCheckFetchedObjects(true).setProgressMonitor(monitor).call();
@@ -219,7 +225,7 @@ public class JGitUtil
     private void updateRepo() throws GitAPIException
     {
         LOGGER.info(String.format(SoepLoggingConstants.UPDATE_LOCAL_REPO, localFileRepo.getAbsolutePath()));
-        ProgressMonitor monitor = new TextProgressMonitor(new PrintWriter(new OutputStreamWriter(System.out, MainContext.getCharset())));
+        ProgressMonitor monitor = new TextProgressMonitor(new PrintWriter(new OutputStreamWriter(System.out, charset)));
 
         // Check out the dataset of interest before pulling resources to local repo. (Future work!)
         // checkOut();

@@ -19,4 +19,4 @@
  * @author Fidan Limani
  */
 
-package de.gerdiproject.harvest.harvester;
+package de.gerdiproject.harvest.etls;

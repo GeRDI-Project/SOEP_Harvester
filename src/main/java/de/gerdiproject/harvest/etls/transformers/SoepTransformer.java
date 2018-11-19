@@ -1,36 +1,29 @@
-/**
- * Copyright © 2017 Fidan Limani (http://www.gerdi-project.de)
+/*
+ *  Copyright © 2018 Robin Weiss (http://www.gerdi-project.de/)
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ *  Unless required by applicable law or agreed to in writing,
+ *  software distributed under the License is distributed on an
+ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *  KIND, either express or implied.  See the License for the
+ *  specific language governing permissions and limitations
+ *  under the License.
  */
-package de.gerdiproject.harvest.harvester;
+package de.gerdiproject.harvest.etls.transformers;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.eclipse.jgit.api.errors.GitAPIException;
-
-import de.gerdiproject.harvest.IDocument;
+import de.gerdiproject.harvest.etls.extractors.SoepFileVO;
 import de.gerdiproject.harvest.soep.constants.SoepConstants;
 import de.gerdiproject.harvest.soep.constants.SoepDataCiteConstants;
-import de.gerdiproject.harvest.soep.constants.SoepLoggingConstants;
 import de.gerdiproject.harvest.soep.dataset_mapping.DatasetMetadata;
-import de.gerdiproject.harvest.soep.utils.JGitUtil;
-import de.gerdiproject.harvest.soep.utils.SoepIO;
 import de.gerdiproject.json.datacite.DataCiteJson;
 import de.gerdiproject.json.datacite.Date;
 import de.gerdiproject.json.datacite.Description;
@@ -47,53 +40,17 @@ import de.gerdiproject.json.datacite.extension.WebLink;
 import de.gerdiproject.json.datacite.extension.enums.WebLinkType;
 
 /**
- *  The main de.gerdiproject.harvest.harvester for SOEP
- *  This harvester harvests SOEP datasets, stored in their GitHub repository.
- *  @author Fidan Limani
-*/
-public class SoepHarvester extends AbstractListHarvester<File>
+ * This transformer transforms Soep {@linkplain SoepFileVO}s to {@linkplain DataCiteJson} objects.
+ *
+ * @author Fidan Limani, Robin Weiss
+ */
+public class SoepTransformer extends AbstractIteratorTransformer<SoepFileVO, DataCiteJson>
 {
-    private final SoepIO soepIO;
-    private final JGitUtil soepGitHub;
-
-    /**
-     * Constructor As suggested, the constructor should be in a "default" style
-     */
-    public SoepHarvester() throws IOException
-    {
-        super("SOEP Harvester", 1);
-        soepIO = new SoepIO();
-        soepGitHub = new JGitUtil(SoepConstants.SOEP_REMOTE_REPO_NAME, SoepConstants.SOEP_REMOTE_REPO_URL);
-    }
-
     @Override
-    protected Collection<File> loadEntries()
+    protected DataCiteJson transformElement(SoepFileVO vo) throws TransformerException
     {
-        // Repo-related operations based on JGit library.
-        try {
-            soepGitHub.collect();
-            soepIO.loadDatasetMetadata();
-        } catch (IOException e) {
-            logger.error(SoepLoggingConstants.IO_EXCEPTION_ERROR, e);
-        } catch (GitAPIException e) {
-            logger.error(SoepLoggingConstants.GIT_API_EXCEPTION_ERROR, e);
-        }
-
-        String datasetPath = String.format(SoepConstants.BASE_PATH, "");
-
-        return soepIO.listFiles(datasetPath);
-    }
-
-
-    /**
-     * This method is to be invoked after loadEntries()
-    */
-    @Override
-    protected List<IDocument> harvestEntry(File soepFile)
-    {
-
         // Specify source ID for harvested file
-        final DatasetMetadata metadata = soepIO.getFileMetadata(soepFile);
+        final DatasetMetadata metadata = vo.getMetadata();
 
         // abort if there is no metadata
         if (metadata == null)
@@ -102,10 +59,10 @@ public class SoepHarvester extends AbstractListHarvester<File>
         String sourceTitle = metadata.getLabel();
 
         // Create the document to contain SOEP metadata for every given file from its dataset
-        final DataCiteJson document = new DataCiteJson(soepFile.getAbsolutePath());
+        final DataCiteJson document = new DataCiteJson(vo.getFile().getAbsolutePath());
 
         // "Static" SOEP metadata
-        document.setFormats(SoepDataCiteConstants.FORMATS);
+        document.addFormats(SoepDataCiteConstants.FORMATS);
 
         /*
          * GeRDI DataCite Mandatory properties
@@ -115,13 +72,13 @@ public class SoepHarvester extends AbstractListHarvester<File>
         document.setIdentifier(soepID);
 
         // (ID 2) Creators
-        document.setCreators(SoepDataCiteConstants.CREATORS);
+        document.addCreators(SoepDataCiteConstants.CREATORS);
 
         /**
          * (ID 3 Title) Individual file descriptions
          */
         Title title = new Title(sourceTitle);
-        document.setTitles(Arrays.asList(title));
+        document.addTitles(Arrays.asList(title));
 
         // (ID 4) Publisher
         document.setPublisher(SoepDataCiteConstants.PROVIDER);
@@ -129,10 +86,10 @@ public class SoepHarvester extends AbstractListHarvester<File>
         // (ID 5) PublicationYear: 2017
         List<AbstractDate> dates = new LinkedList<>();
         dates.add(SoepDataCiteConstants.PUBLICATION_YEAR);
-        document.setDates(dates);
+        document.addDates(dates);
 
         // (ID 7) Contributor
-        document.setContributors(Arrays.asList(SoepDataCiteConstants.COLLECTOR_CONTRIBUTOR));
+        document.addContributors(Arrays.asList(SoepDataCiteConstants.COLLECTOR_CONTRIBUTOR));
 
         /** (ID 8) Date: dateType="Collected" with individual data collection dates. PublicationYear is too "matchy" ;)
          *  If year=0 or "long", set the "1984-2016" range.
@@ -141,7 +98,7 @@ public class SoepHarvester extends AbstractListHarvester<File>
         AbstractDate dateCollected;
         dateCollected = tempPeriod.equals("0") || tempPeriod.equals("long") ?
                         SoepDataCiteConstants.PUBLICATION_RANGE : new Date(tempPeriod, DateType.Collected);
-        document.setDates(Arrays.asList(dateCollected));
+        document.addDates(Arrays.asList(dateCollected));
 
         // (ID 10) ResourceType
         document.setResourceType(SoepDataCiteConstants.RESOURCE_TYPE);
@@ -151,7 +108,7 @@ public class SoepHarvester extends AbstractListHarvester<File>
 
         // (ID 16) Rights
         Rights soepRights = new Rights(SoepDataCiteConstants.RIGHTS_VALUE);
-        document.setRightsList(Arrays.asList(soepRights));
+        document.addRights(Arrays.asList(soepRights));
 
         // (ID 17) Description, type "Abstract"
         final List<Description> descriptions = new LinkedList<>();
@@ -169,13 +126,13 @@ public class SoepHarvester extends AbstractListHarvester<File>
                     DescriptionType.Other,
                     SoepDataCiteConstants.DESCRIPTION_LANGUAGE));
 
-        document.setDescriptions(descriptions);
+        document.addDescriptions(descriptions);
 
         // GeRDI Extension
         List<WebLink> links = new LinkedList<>();
 
         // View SOEP dataset file on GitHub
-        String soepFileName = soepFile.getName();
+        String soepFileName = vo.getFile().getName();
         WebLink pageLink = new WebLink(String.format(SoepConstants.ACCESS_FILE_URL, SoepConstants.TREE, soepFileName));
         pageLink.setName(SoepConstants.VIEW_TREE);
         pageLink.setType(WebLinkType.ViewURL);
@@ -191,7 +148,7 @@ public class SoepHarvester extends AbstractListHarvester<File>
         links.add(SoepDataCiteConstants.LOGO_WEB_LINK);
 
         // Add all the links to the document;
-        document.setWebLinks(links);
+        document.addWebLinks(links);
 
         // E2: RepositoryIdentifier
         document.setRepositoryIdentifier(SoepDataCiteConstants.REPOSITORY_ID);
@@ -203,18 +160,18 @@ public class SoepHarvester extends AbstractListHarvester<File>
         researchData.setUrl(pageLink.getUrl());
         researchData.setType("JSON");
         files.add(researchData);
-        document.setResearchDataList(files);
+        document.addResearchDataList(files);
 
         // E4: ResearchDiscipline
-        document.setResearchDisciplines(SoepDataCiteConstants.DISCIPLINES);
+        document.addResearchDisciplines(SoepDataCiteConstants.DISCIPLINES);
 
         // Subjects
         List<Subject> subjects = new LinkedList<>();
         subjects.add(new Subject(metadata.getStudyName()));
         subjects.add(new Subject(metadata.getDatasetName()));
         subjects.add(new Subject(metadata.getConceptualDatasetName()));
-        document.setSubjects(subjects);
+        document.addSubjects(subjects);
 
-        return Arrays.asList(document);
+        return document;
     }
 }

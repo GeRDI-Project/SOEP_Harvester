@@ -34,13 +34,27 @@ public class SoepConstants
     public static final String SOEP_REMOTE_REPO_URL = "https://github.com/paneldata/soep-core";
     public static final String ORIGIN_MASTER = "refs/remotes/origin/master";
 
+    private static final String API_BASE_URL = "https://api.github.com/repos/paneldata/soep-core/";
+    private static final String DATASETS_PATH = "ddionrails/datasets/";
+
     // GitHub "tree" and "blob" access URL
     public static final String ACCESS_FILE_URL =
-        "https://github.com/paneldata/soep-core/%s/master/ddionrails/datasets/%s";
+        "https://github.com/paneldata/soep-core/%s/master/" + DATASETS_PATH + "%s";
 
     // Local repository dataset path
-    public static final String BASE_PATH = GIT_HUB_PATH
-                                           + "/SOEP-core/local/ddionrails/datasets/%s";
+    public static final String BASE_PATH =
+        GIT_HUB_PATH + "/SOEP-core/local/" + DATASETS_PATH  + "%s";
+
+    public static final String DATASET_COMMITS_URL =
+        API_BASE_URL
+        + "commits"
+        + "?sha=master"
+        + "&path=" + DATASETS_PATH;
+
+    public static final String DATASETS_URL =
+        API_BASE_URL
+        + "contents/"
+        + DATASETS_PATH;
 
 
     // Study title and the path to the file that contains file descriptions
@@ -50,4 +64,6 @@ public class SoepConstants
     // Local and remote repository paths
     public static final String LOCAL_REPOSITORY_PATH = "%s/%s/local";
     public static final String REMOTE_REPOSITORY_PATH = "%s/%s/remote";
+
+    public static final String SOEP_ETL_NAME = "SoepETL";
 }
