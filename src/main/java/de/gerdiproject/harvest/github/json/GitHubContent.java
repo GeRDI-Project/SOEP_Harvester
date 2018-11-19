@@ -14,20 +14,39 @@
  *  specific language governing permissions and limitations
  *  under the License.
  */
-package de.gerdiproject.harvest.etls.extractors;
+package de.gerdiproject.harvest.github.json;
 
-import de.gerdiproject.harvest.github.json.GitHubContent;
-import de.gerdiproject.harvest.soep.csv.DatasetMetadata;
+import java.util.Map;
+
+import com.google.gson.annotations.SerializedName;
+
 import lombok.Data;
 
 /**
- * This value object holds a SOEP file and corresponding metadata.
+ * This class represents a JSON object of a GitHub contents request.<br>
+ * e.g. https://api.github.com/repos/paneldata/soep-core/contents
  *
  * @author Robin Weiss
  */
 @Data
-public class SoepFileVO
+public class GitHubContent
 {
-    private final GitHubContent content;
-    private final DatasetMetadata metadata;
+    private String name;
+    private String path;
+    private String sha;
+    private int size;
+    private String url;
+    private String type;
+
+    @SerializedName("html_url")
+    private String htmlUrl;
+
+    @SerializedName("git_url")
+    private String gitUrl;
+
+    @SerializedName("download_url")
+    private String downloadUrl;
+
+    @SerializedName("_links")
+    private Map<String, String> links;
 }

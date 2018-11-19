@@ -16,21 +16,17 @@
  */
 package de.gerdiproject.harvest.etls.extractors;
 
-import java.io.File;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.io.StringReader;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import org.eclipse.jgit.api.errors.GitAPIException;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -40,11 +36,12 @@ import com.opencsv.bean.CsvToBeanBuilder;
 import de.gerdiproject.harvest.etls.AbstractETL;
 import de.gerdiproject.harvest.etls.ETLPreconditionException;
 import de.gerdiproject.harvest.github.json.GitHubCommit;
+import de.gerdiproject.harvest.github.json.GitHubContent;
 import de.gerdiproject.harvest.soep.constants.SoepConstants;
 import de.gerdiproject.harvest.soep.constants.SoepLoggingConstants;
-import de.gerdiproject.harvest.soep.dataset_mapping.DatasetMetadata;
-import de.gerdiproject.harvest.soep.utils.JGitUtil;
+import de.gerdiproject.harvest.soep.csv.DatasetMetadata;
 import de.gerdiproject.harvest.utils.data.HttpRequester;
+import de.gerdiproject.harvest.utils.data.enums.RestRequestType;
 
 /**
  * This extractor retrieves SOEP datasets from a GitHub repository.
@@ -54,10 +51,10 @@ import de.gerdiproject.harvest.utils.data.HttpRequester;
 public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
 {
     private HttpRequester httpRequester = new HttpRequester(new Gson(), StandardCharsets.UTF_8);
-    private JGitUtil soepGitHub;
     private Map<String, DatasetMetadata> metadataMap;
-    private DirectoryStream<Path> datasetStream;
+    private Iterator<GitHubContent> datasetIterator;
     private String commitHash = null;
+    private int size;
 
 
     @Override
@@ -67,25 +64,6 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
 
         this.commitHash = getLatestCommitHash();
 
-        // set up git reader if it does not exist yet
-        if (this.soepGitHub == null) {
-            try {
-                this.soepGitHub = new JGitUtil(SoepConstants.SOEP_REMOTE_REPO_NAME, SoepConstants.SOEP_REMOTE_REPO_URL);
-            } catch (IOException e) {
-                throw new ETLPreconditionException(SoepLoggingConstants.IO_EXCEPTION_ERROR, e);
-            }
-        }
-
-        // get data from remote git repository
-        try {
-            soepGitHub.collect();
-        } catch (IOException e) {
-            throw new ETLPreconditionException(SoepLoggingConstants.IO_EXCEPTION_ERROR, e);
-
-        } catch (GitAPIException e) {
-            throw new ETLPreconditionException(SoepLoggingConstants.GIT_API_EXCEPTION_ERROR, e);
-        }
-
         // get metadata from CSV
         try {
             this.metadataMap = loadDatasetMetadata();
@@ -93,15 +71,14 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
             throw new ETLPreconditionException(SoepLoggingConstants.ERROR_READING_CSV_FILE, e);
         }
 
-        // open stream to dataset folder
-        try {
-            final Path datasetDir = new File(String.format(SoepConstants.BASE_PATH, "")).toPath();
-            this.datasetStream = Files.newDirectoryStream(datasetDir);
-        } catch (IOException e) {
-            throw new ETLPreconditionException(SoepLoggingConstants.ERROR_READING_DATASET_FILES, e);
-        }
-    }
+        // get list of datasets
+        final Type listType = new TypeToken<List<GitHubContent>>() {} .getType();
+        final List<GitHubContent> datasetContents = httpRequester.getObjectFromUrl(SoepConstants.DATASETS_CONTENT_URL, listType);
 
+        // set size and iterator
+        this.size = datasetContents.size();
+        this.datasetIterator = datasetContents.iterator();
+    }
 
     /**
      * Sends a "commits" request to the GitHub REST API
@@ -131,8 +108,7 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
     @Override
     public int size()
     {
-        // TODO Auto-generated method stub
-        return super.size();
+        return size;
     }
 
 
@@ -143,24 +119,8 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
     }
 
 
-    @Override
-    public void clear()
-    {
-        super.clear();
-
-        if (datasetStream != null) {
-            try {
-                datasetStream.close();
-            } catch (IOException e) { // NOPMD - Nothing we can do. The open stream will not interfere with what we want to do
-            }
-        }
-
-        datasetStream = null;
-    }
-
-
     /**
-     * Load dataset file descriptions from a CSV spreadsheet to a Map
+     * Load dataset file descriptions from a CSV file to a Map.
      *
      * @throws IOException if the CSV file could not be read
      *
@@ -168,10 +128,17 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
      */
     public Map<String, DatasetMetadata> loadDatasetMetadata() throws IOException
     {
+        // download CSV file content
+        final String csvContent = httpRequester.getRestResponse(
+                                      RestRequestType.GET,
+                                      SoepConstants.DATASETS_CSV_DOWNLOAD_URL,
+                                      null);
+
+        // parse CSV file
         final Map<String, DatasetMetadata> metadataMap = new HashMap<>();
 
         try
-            (Reader reader = Files.newBufferedReader(Paths.get(SoepConstants.FILE_TITLE_DATASET))) {
+            (Reader reader = new BufferedReader(new StringReader(csvContent))) {
             CsvToBean<DatasetMetadata> csvMapper = new CsvToBeanBuilder<DatasetMetadata>(reader)
             .withType(DatasetMetadata.class)
             .withIgnoreLeadingWhiteSpace(true)
@@ -193,13 +160,13 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
     /**
      * Returns metadata for a specified file.
      *
-     * @param file the file for which metadata is to be retrieved
+     * @param content information about the dataset
      *
      * @return the metadata of the file
      */
-    public DatasetMetadata getFileMetadata(final File file)
+    public DatasetMetadata getDatasetMetadata(final GitHubContent content)
     {
-        final String datasetName = file.getName().substring(0, file.getName().lastIndexOf('.'));
+        final String datasetName = content.getName().substring(0, content.getName().lastIndexOf('.'));
         return metadataMap.get(datasetName);
     }
 
@@ -213,21 +180,19 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
      */
     private class SoepFileIterator implements Iterator<SoepFileVO>
     {
-        final Iterator<Path> sourceStreamIterator = datasetStream.iterator();
-
 
         @Override
         public boolean hasNext()
         {
-            return sourceStreamIterator.hasNext();
+            return datasetIterator.hasNext();
         }
 
 
         @Override
         public SoepFileVO next()
         {
-            final File file = sourceStreamIterator.next().toFile();
-            return new SoepFileVO(file, getFileMetadata(file));
+            final GitHubContent content = datasetIterator.next();
+            return new SoepFileVO(content, getDatasetMetadata(content));
         }
     }
 }

@@ -23,7 +23,7 @@ import java.util.List;
 import de.gerdiproject.harvest.etls.extractors.SoepFileVO;
 import de.gerdiproject.harvest.soep.constants.SoepConstants;
 import de.gerdiproject.harvest.soep.constants.SoepDataCiteConstants;
-import de.gerdiproject.harvest.soep.dataset_mapping.DatasetMetadata;
+import de.gerdiproject.harvest.soep.csv.DatasetMetadata;
 import de.gerdiproject.json.datacite.DataCiteJson;
 import de.gerdiproject.json.datacite.Date;
 import de.gerdiproject.json.datacite.Description;
@@ -59,7 +59,7 @@ public class SoepTransformer extends AbstractIteratorTransformer<SoepFileVO, Dat
         String sourceTitle = metadata.getLabel();
 
         // Create the document to contain SOEP metadata for every given file from its dataset
-        final DataCiteJson document = new DataCiteJson(vo.getFile().getAbsolutePath());
+        final DataCiteJson document = new DataCiteJson(vo.getContent().getPath());
 
         // "Static" SOEP metadata
         document.addFormats(SoepDataCiteConstants.FORMATS);
@@ -132,14 +132,14 @@ public class SoepTransformer extends AbstractIteratorTransformer<SoepFileVO, Dat
         List<WebLink> links = new LinkedList<>();
 
         // View SOEP dataset file on GitHub
-        String soepFileName = vo.getFile().getName();
+        String soepFileName = vo.getContent().getName();
         WebLink pageLink = new WebLink(String.format(SoepConstants.ACCESS_FILE_URL, SoepConstants.TREE, soepFileName));
         pageLink.setName(SoepConstants.VIEW_TREE);
         pageLink.setType(WebLinkType.ViewURL);
         links.add(pageLink);
 
         // View SOEP dataset file source ("raw" representation) on GitHub
-        WebLink sourceLink = new WebLink(String.format(SoepConstants.ACCESS_FILE_URL, SoepConstants.BLOB, soepFileName));
+        WebLink sourceLink = new WebLink(vo.getContent().getHtmlUrl());
         sourceLink.setName(SoepConstants.VIEW_RAW);
         sourceLink.setType(WebLinkType.SourceURL);
         links.add(sourceLink);
@@ -154,11 +154,10 @@ public class SoepTransformer extends AbstractIteratorTransformer<SoepFileVO, Dat
         document.setRepositoryIdentifier(SoepDataCiteConstants.REPOSITORY_ID);
 
         // E3. ResearchData{dataIdentifier, dataURL, dataLabel, dataType}
-        List<ResearchData> files = new LinkedList<>();
-        ResearchData researchData = new ResearchData(String.format(SoepConstants.BASE_PATH, soepFileName),
-                                                     "JSON");
-        researchData.setUrl(pageLink.getUrl());
-        researchData.setType("JSON");
+        final List<ResearchData> files = new LinkedList<>();
+        final String fileType = vo.getContent().getDownloadUrl().substring(vo.getContent().getDownloadUrl().lastIndexOf('.') + 1).toUpperCase();
+        final ResearchData researchData = new ResearchData(vo.getContent().getDownloadUrl(), fileType);
+        researchData.setType(fileType);
         files.add(researchData);
         document.addResearchDataList(files);
 
