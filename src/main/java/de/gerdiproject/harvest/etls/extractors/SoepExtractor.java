@@ -21,14 +21,12 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.lang.reflect.Type;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.DirectoryStream;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
@@ -50,7 +48,7 @@ import de.gerdiproject.harvest.utils.data.enums.RestRequestType;
  */
 public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
 {
-    private HttpRequester httpRequester = new HttpRequester(new Gson(), StandardCharsets.UTF_8);
+    private HttpRequester httpRequester = new HttpRequester();
     private Map<String, DatasetMetadata> metadataMap;
     private Iterator<GitHubContent> datasetIterator;
     private String commitHash = null;

@@ -17,7 +17,6 @@
     <inceptionYear>2017</inceptionYear>
 	
     <properties>
-        <jgit.dependency.version>4.8.0.201706111038-r</jgit.dependency.version>
         <openscv.dependency.version>4.0</openscv.dependency.version>
     </properties>
 
