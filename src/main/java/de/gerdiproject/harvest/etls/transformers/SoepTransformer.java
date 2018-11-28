@@ -159,7 +159,7 @@ public class SoepTransformer extends AbstractIteratorTransformer<SoepFileVO, Dat
         final ResearchData researchData = new ResearchData(vo.getContent().getDownloadUrl(), fileType);
         researchData.setType(fileType);
         files.add(researchData);
-        document.addResearchDataList(files);
+        document.addResearchData(files);
 
         // E4: ResearchDiscipline
         document.addResearchDisciplines(SoepDataCiteConstants.DISCIPLINES);
