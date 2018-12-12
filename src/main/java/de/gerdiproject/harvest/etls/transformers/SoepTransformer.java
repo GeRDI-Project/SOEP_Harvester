@@ -35,9 +35,9 @@ import de.gerdiproject.json.datacite.abstr.AbstractDate;
 import de.gerdiproject.json.datacite.enums.DateType;
 import de.gerdiproject.json.datacite.enums.DescriptionType;
 import de.gerdiproject.json.datacite.enums.IdentifierType;
-import de.gerdiproject.json.datacite.extension.ResearchData;
-import de.gerdiproject.json.datacite.extension.WebLink;
-import de.gerdiproject.json.datacite.extension.enums.WebLinkType;
+import de.gerdiproject.json.datacite.extension.generic.ResearchData;
+import de.gerdiproject.json.datacite.extension.generic.WebLink;
+import de.gerdiproject.json.datacite.extension.generic.enums.WebLinkType;
 
 /**
  * This transformer transforms Soep {@linkplain SoepFileVO}s to {@linkplain DataCiteJson} objects.
@@ -173,6 +173,11 @@ public class SoepTransformer extends AbstractIteratorTransformer<SoepFileVO, Dat
 
         // Sizes
         document.addSizes(Arrays.asList(String.format(SoepDataCiteConstants.SIZE_BYTES, vo.getContent().getSize())));
+
+        // Variables and Concepts
+        // TODO final SoepDataCiteExtension extension = new SoepDataCiteExtension();
+        // TODO document.addExtension(extension);
+
 
         return document;
     }
