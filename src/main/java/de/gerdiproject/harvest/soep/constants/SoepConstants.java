@@ -29,25 +29,33 @@ public class SoepConstants
     public static final String VIEW_TREE = "View tree file";
     public static final String VIEW_RAW = "View raw file";
     public static final String SOEP_REMOTE_REPO_NAME = "SOEP-core";
-    public static final String GIT_HUB_PATH = "GitHub";
 
     public static final String SOEP_REMOTE_REPO_URL = "https://github.com/paneldata/soep-core";
     public static final String ORIGIN_MASTER = "refs/remotes/origin/master";
 
+    private static final String API_BASE_URL = "https://api.github.com/repos/paneldata/soep-core/";
+    private static final String DATASETS_PATH = "ddionrails/datasets/";
+
     // GitHub "tree" and "blob" access URL
     public static final String ACCESS_FILE_URL =
-        "https://github.com/paneldata/soep-core/%s/master/ddionrails/datasets/%s";
+        SOEP_REMOTE_REPO_URL + "/%s/master/" + DATASETS_PATH + "%s";
 
     // Local repository dataset path
-    public static final String BASE_PATH = GIT_HUB_PATH
-                                           + "/SOEP-core/local/ddionrails/datasets/%s";
+    public static final String BASE_PATH =
+        "GitHub/SOEP-core/local/" + DATASETS_PATH  + "%s";
 
+    public static final String DATASET_COMMITS_URL =
+        API_BASE_URL
+        + "commits?sha=master&path="
+        + DATASETS_PATH;
 
-    // Study title and the path to the file that contains file descriptions
+    public static final String DATASETS_CONTENT_URL =
+        API_BASE_URL
+        + "contents/"
+        + DATASETS_PATH;
+
+    public static final String DATASETS_CSV_DOWNLOAD_URL = "https://raw.githubusercontent.com/paneldata/soep-core/master/ddionrails/datasets.csv";
+
     public static final String STUDY_TITLE = "Socio-Economic Panel (SOEP), data from 1984-2016";
-    public static final String FILE_TITLE_DATASET = GIT_HUB_PATH + "/SOEP-core/local/ddionrails/datasets.csv";
-
-    // Local and remote repository paths
-    public static final String LOCAL_REPOSITORY_PATH = "%s/%s/local";
-    public static final String REMOTE_REPOSITORY_PATH = "%s/%s/remote";
+    public static final String SOEP_ETL_NAME = "SoepETL";
 }

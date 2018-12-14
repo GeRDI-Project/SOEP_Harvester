@@ -42,5 +42,6 @@ public class SoepLoggingConstants
     public static final String REPO_MISSING_ERROR = "Repository does not exist. To be created next.";
     public static final String IO_EXCEPTION_ERROR = "Exception while initializing/accessing the local repository";
     public static final String GIT_API_EXCEPTION_ERROR = "Exception while setting up/cloning the repository.";
-    public static final String ERROR_READING_FILE = "Exception while reading SOEP dataset files metadata.";
+    public static final String ERROR_READING_CSV_FILE = "Exception while reading SOEP dataset files metadata.";
+    public static final String ERROR_READING_DATASET_FILES = "Exception while reading SOEP dataset files.";
 }

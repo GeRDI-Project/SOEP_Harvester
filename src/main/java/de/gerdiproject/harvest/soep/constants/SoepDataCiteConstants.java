@@ -20,22 +20,19 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import de.gerdiproject.json.datacite.ResourceType;
-import de.gerdiproject.json.datacite.Creator;
 import de.gerdiproject.json.datacite.Contributor;
+import de.gerdiproject.json.datacite.Creator;
 import de.gerdiproject.json.datacite.Date;
 import de.gerdiproject.json.datacite.DateRange;
-
+import de.gerdiproject.json.datacite.ResourceType;
 import de.gerdiproject.json.datacite.enums.ContributorType;
 import de.gerdiproject.json.datacite.enums.DateType;
 import de.gerdiproject.json.datacite.enums.NameType;
 import de.gerdiproject.json.datacite.enums.ResourceTypeGeneral;
-
-import de.gerdiproject.json.datacite.extension.WebLink;
-import de.gerdiproject.json.datacite.extension.abstr.AbstractResearch;
-import de.gerdiproject.json.datacite.extension.constants.ResearchDisciplineConstants;
-import de.gerdiproject.json.datacite.extension.enums.WebLinkType;
-
+import de.gerdiproject.json.datacite.extension.generic.AbstractResearch;
+import de.gerdiproject.json.datacite.extension.generic.WebLink;
+import de.gerdiproject.json.datacite.extension.generic.constants.ResearchDisciplineConstants;
+import de.gerdiproject.json.datacite.extension.generic.enums.WebLinkType;
 import de.gerdiproject.json.datacite.nested.PersonName;
 
 /**
@@ -112,6 +109,9 @@ public class SoepDataCiteConstants
 
     // FORMATS
     public static final List<String> FORMATS = Collections.unmodifiableList(Arrays.asList("JSON"));
+
+    // SIZES
+    public static final String SIZE_BYTES = "%d bytes";
 
     /**
      * Private constructor, because this is a static class.
