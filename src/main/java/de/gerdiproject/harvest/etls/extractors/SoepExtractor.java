@@ -20,12 +20,18 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
+
 import java.lang.reflect.Type;
 import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.util.*;
+
+import java.util.Map;
+import java.util.HashMap;
+import java.util.List;
+import java.util.LinkedList;
+import java.util.Iterator;
 
 import com.google.gson.reflect.TypeToken;
+
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.bean.CsvToBean;
@@ -40,9 +46,9 @@ import de.gerdiproject.harvest.soep.constants.SoepLoggingConstants;
 import de.gerdiproject.harvest.soep.csv.ConceptsMetadata;
 import de.gerdiproject.harvest.soep.csv.DatasetMetadata;
 import de.gerdiproject.harvest.soep.csv.VariablesMetadata;
-import de.gerdiproject.harvest.soep.disciplinary.Variable;
 import de.gerdiproject.harvest.utils.data.HttpRequester;
 import de.gerdiproject.harvest.utils.data.enums.RestRequestType;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -152,9 +158,8 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
 
             // Read records one by one in a Map<String, DatasetMetadata> instance
 
-            for (DatasetMetadata metadata : (Iterable<DatasetMetadata>) csvMapper) {
+            for (DatasetMetadata metadata : (Iterable<DatasetMetadata>) csvMapper)
                 metadataMap.put(metadata.getDatasetName(), metadata);
-            }
         }
 
         return metadataMap;
@@ -189,9 +194,6 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
                 cm = new ConceptsMetadata(nextRecord);
                 conceptsDescription.add(cm);
             }
-        } catch (IOException e) {
-            LOGGER.error(String.format(SoepLoggingConstants.ERROR_READING_CSV_FILE,
-                                        SoepLoggingConstants.ERROR_READING_CONCEPTS_FILES), e);
         }
 
         return conceptsDescription;
@@ -227,9 +229,6 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
                 vm = new VariablesMetadata(nextRecord);
                 variablesDescription.add(vm);
             }
-        } catch (IOException e) {
-            LOGGER.error(String.format(SoepLoggingConstants.ERROR_READING_CSV_FILE,
-                                        SoepLoggingConstants.ERROR_READING_VARIABLES_FILES), e);
         }
 
         return variablesDescription;
