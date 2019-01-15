@@ -15,7 +15,8 @@
  *  under the License.
  */
 /**
- * This package contains classes that represent SOEP CSV file content.
+ * This package contains classes that represent SOEP CSV file content for the dataset itself, and enclosed concepts and
+ * variables.
  *
  * @author Fidan Limani
  */

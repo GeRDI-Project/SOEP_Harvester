@@ -14,20 +14,10 @@
  *  specific language governing permissions and limitations
  *  under the License.
  */
-package de.gerdiproject.harvest.etls.extractors;
-
-import de.gerdiproject.harvest.github.json.GitHubContent;
-import de.gerdiproject.harvest.soep.csv.DatasetMetadata;
-import lombok.Data;
-
 /**
- * This value object holds a SOEP file and corresponding metadata.
+ * This package contains classes that represent SOEP concept and variable information of a dataset entry.
  *
- * @author Robin Weiss
+ * @author Fidan Limani
  */
-@Data
-public class SoepFileVO
-{
-    private final GitHubContent content;
-    private final DatasetMetadata metadata;
-}
+
+package de.gerdiproject.harvest.soep.disciplinary;

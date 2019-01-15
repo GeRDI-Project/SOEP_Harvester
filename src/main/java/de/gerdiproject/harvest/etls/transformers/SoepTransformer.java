@@ -74,7 +74,7 @@ public class SoepTransformer extends AbstractIteratorTransformer<SoepFileVO, Dat
         // (ID 2) Creators
         document.addCreators(SoepDataCiteConstants.CREATORS);
 
-        /**
+        /*
          * (ID 3 Title) Individual file descriptions
          */
         Title title = new Title(sourceTitle);
@@ -91,7 +91,7 @@ public class SoepTransformer extends AbstractIteratorTransformer<SoepFileVO, Dat
         // (ID 7) Contributor
         document.addContributors(Arrays.asList(SoepDataCiteConstants.COLLECTOR_CONTRIBUTOR));
 
-        /** (ID 8) Date: dateType="Collected" with individual data collection dates. PublicationYear is too "matchy" ;)
+        /* (ID 8) Date: dateType="Collected" with individual data collection dates. PublicationYear is too "matchy" ;)
          *  If year=0 or "long", set the "1984-2016" range.
          */
         String tempPeriod = metadata.getPeriodName();
@@ -177,6 +177,7 @@ public class SoepTransformer extends AbstractIteratorTransformer<SoepFileVO, Dat
         // Variables and Concepts
         // TODO final SoepDataCiteExtension extension = new SoepDataCiteExtension();
         // TODO document.addExtension(extension);
+
 
 
         return document;

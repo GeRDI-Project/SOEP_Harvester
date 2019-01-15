@@ -25,13 +25,10 @@ public class SoepConstants
      * GitHub-related constants
      * */
     public static final String TREE = "tree";
-    public static final String BLOB = "blob";
     public static final String VIEW_TREE = "View tree file";
     public static final String VIEW_RAW = "View raw file";
-    public static final String SOEP_REMOTE_REPO_NAME = "SOEP-core";
 
     public static final String SOEP_REMOTE_REPO_URL = "https://github.com/paneldata/soep-core";
-    public static final String ORIGIN_MASTER = "refs/remotes/origin/master";
 
     private static final String API_BASE_URL = "https://api.github.com/repos/paneldata/soep-core/";
     private static final String DATASETS_PATH = "ddionrails/datasets/";
@@ -55,7 +52,8 @@ public class SoepConstants
         + DATASETS_PATH;
 
     public static final String DATASETS_CSV_DOWNLOAD_URL = "https://raw.githubusercontent.com/paneldata/soep-core/master/ddionrails/datasets.csv";
+    public static final String VARIABLES_CSV_DOWNLOAD_URL = "https://raw.githubusercontent.com/paneldata/soep-core/master/ddionrails/variables.csv";
+    public static final String CONCEPTS_CSV_DOWNLOAD_URL = "https://raw.githubusercontent.com/paneldata/soep-core/master/ddionrails/concepts.csv";
 
-    public static final String STUDY_TITLE = "Socio-Economic Panel (SOEP), data from 1984-2016";
     public static final String SOEP_ETL_NAME = "SoepETL";
 }

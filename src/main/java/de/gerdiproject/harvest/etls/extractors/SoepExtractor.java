@@ -22,12 +22,12 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.lang.reflect.Type;
 import java.nio.file.DirectoryStream;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.nio.file.Files;
+import java.util.*;
 
 import com.google.gson.reflect.TypeToken;
+import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
 
@@ -37,9 +37,14 @@ import de.gerdiproject.harvest.github.json.GitHubCommit;
 import de.gerdiproject.harvest.github.json.GitHubContent;
 import de.gerdiproject.harvest.soep.constants.SoepConstants;
 import de.gerdiproject.harvest.soep.constants.SoepLoggingConstants;
+import de.gerdiproject.harvest.soep.csv.ConceptsMetadata;
 import de.gerdiproject.harvest.soep.csv.DatasetMetadata;
+import de.gerdiproject.harvest.soep.csv.VariablesMetadata;
+import de.gerdiproject.harvest.soep.disciplinary.Variable;
 import de.gerdiproject.harvest.utils.data.HttpRequester;
 import de.gerdiproject.harvest.utils.data.enums.RestRequestType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This extractor retrieves SOEP datasets from a GitHub repository.
@@ -48,6 +53,8 @@ import de.gerdiproject.harvest.utils.data.enums.RestRequestType;
  */
 public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
 {
+    private static final Logger LOGGER = LoggerFactory.getLogger(SoepExtractor.class);
+
     private HttpRequester httpRequester = new HttpRequester();
     private Map<String, DatasetMetadata> metadataMap;
     private Iterator<GitHubContent> datasetIterator;
@@ -69,11 +76,11 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
             throw new ETLPreconditionException(SoepLoggingConstants.ERROR_READING_CSV_FILE, e);
         }
 
-        // get list of datasets
+        // Get list of datasets
         final Type listType = new TypeToken<List<GitHubContent>>() {} .getType();
         final List<GitHubContent> datasetContents = httpRequester.getObjectFromUrl(SoepConstants.DATASETS_CONTENT_URL, listType);
 
-        // set size and iterator
+        // Set size and iterator
         this.size = datasetContents.size();
         this.datasetIterator = datasetContents.iterator();
     }
@@ -126,32 +133,106 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
      */
     public Map<String, DatasetMetadata> loadDatasetMetadata() throws IOException
     {
-        // download CSV file content
+        // Download dataset CSV file content
+        LOGGER.info("Loading the SOEP datasets...");
         final String csvContent = httpRequester.getRestResponse(
                                       RestRequestType.GET,
                                       SoepConstants.DATASETS_CSV_DOWNLOAD_URL,
                                       null);
 
-        // parse CSV file
+        // Parse "datasets" CSV file
         final Map<String, DatasetMetadata> metadataMap = new HashMap<>();
 
-        try
-            (Reader reader = new BufferedReader(new StringReader(csvContent))) {
+        try (Reader reader = new BufferedReader(new StringReader(csvContent)))
+        {
             CsvToBean<DatasetMetadata> csvMapper = new CsvToBeanBuilder<DatasetMetadata>(reader)
             .withType(DatasetMetadata.class)
             .withIgnoreLeadingWhiteSpace(true)
             .build();
 
-            // Read records one by one in a Map<String, DatasetMetadata>
-            Iterator<DatasetMetadata> csvIterator = csvMapper.iterator();
+            // Read records one by one in a Map<String, DatasetMetadata> instance
 
-            while (csvIterator.hasNext()) {
-                final DatasetMetadata metadata = csvIterator.next();
+            for (DatasetMetadata metadata : (Iterable<DatasetMetadata>) csvMapper) {
                 metadataMap.put(metadata.getDatasetName(), metadata);
             }
         }
 
         return metadataMap;
+    }
+
+    /**
+     * Load concept file descriptions from a CSV file to a List.
+     *
+     * @throws IOException if the CSV file could not be read
+     *
+     * @return a List of concept names to {@linkplain DatasetMetadata}
+     */
+    public List<ConceptsMetadata> loadConceptsMetadata() throws IOException {
+        // Download concepts CSV file content
+        LOGGER.info("Loading SOEP concepts...");
+        final String csvContent = httpRequester.getRestResponse(
+                                        RestRequestType.GET,
+                                        SoepConstants.CONCEPTS_CSV_DOWNLOAD_URL,
+                                        null);
+
+        // Parse "concepts" CSV file
+        final List<ConceptsMetadata> conceptsDescription = new LinkedList<>();
+
+        // When reading CSV content, skip table header, hence: withSkipLines(1)
+        try (Reader reader = new BufferedReader(new StringReader(csvContent));
+             CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build())
+        {
+            // Read records one by one; put them in a List<ConceptsMetadata>
+            ConceptsMetadata cm;
+            String[] nextRecord;
+            while((nextRecord = csvReader.readNext()) != null){
+                cm = new ConceptsMetadata(nextRecord);
+                conceptsDescription.add(cm);
+            }
+        } catch (IOException e) {
+            LOGGER.error(String.format(SoepLoggingConstants.ERROR_READING_CSV_FILE,
+                                        SoepLoggingConstants.ERROR_READING_CONCEPTS_FILES), e);
+        }
+
+        return conceptsDescription;
+    }
+
+    /**
+     * Load concept file descriptions from a CSV file to a List.
+     *
+     * @throws IOException if the CSV file could not be read
+     *
+     * @return a List of concept names to {@linkplain DatasetMetadata}
+     */
+    public List<VariablesMetadata> loadVariablesMetadata() throws IOException
+    {
+        // Download variables CSV file content
+        LOGGER.info("Loading SOEP variables...");
+        final String csvContent = httpRequester.getRestResponse(
+                                        RestRequestType.GET,
+                                        SoepConstants.VARIABLES_CSV_DOWNLOAD_URL,
+                                        null);
+
+        // Parse "variables" CSV file
+        final List<VariablesMetadata> variablesDescription = new LinkedList<>();
+
+        // When reading CSV content, skip table header, hence: withSkipLines(1)
+        try (Reader reader = new BufferedReader(new StringReader(csvContent));
+             CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build())
+        {
+            // Read records one by one; put them in a List<VariablesMetadata>
+            VariablesMetadata vm;
+            String[] nextRecord;
+            while((nextRecord = csvReader.readNext()) != null){
+                vm = new VariablesMetadata(nextRecord);
+                variablesDescription.add(vm);
+            }
+        } catch (IOException e) {
+            LOGGER.error(String.format(SoepLoggingConstants.ERROR_READING_CSV_FILE,
+                                        SoepLoggingConstants.ERROR_READING_VARIABLES_FILES), e);
+        }
+
+        return variablesDescription;
     }
 
 
@@ -170,7 +251,7 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
 
 
     /**
-     * This iterator uses a {@linkplain DirectoryStream} to iterate through local Soep datasets
+     * This iterator uses a {@linkplain DirectoryStream} to iterate through local SOEP datasets
      * and generates a {@linkplain SoepFileVO} for each file.
      *
      * @author Robin Weiss
@@ -178,7 +259,6 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
      */
     private class SoepFileIterator implements Iterator<SoepFileVO>
     {
-
         @Override
         public boolean hasNext()
         {
