@@ -20,6 +20,8 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import de.gerdiproject.harvest.etls.AbstractETL;
+import de.gerdiproject.harvest.etls.extractors.SoepExtractor;
 import de.gerdiproject.harvest.etls.extractors.SoepFileVO;
 import de.gerdiproject.harvest.soep.constants.SoepConstants;
 import de.gerdiproject.harvest.soep.constants.SoepDataCiteConstants;
@@ -29,7 +31,6 @@ import de.gerdiproject.json.datacite.Date;
 import de.gerdiproject.json.datacite.Description;
 import de.gerdiproject.json.datacite.Identifier;
 import de.gerdiproject.json.datacite.Rights;
-import de.gerdiproject.json.datacite.Subject;
 import de.gerdiproject.json.datacite.Title;
 import de.gerdiproject.json.datacite.abstr.AbstractDate;
 import de.gerdiproject.json.datacite.enums.DateType;
@@ -38,6 +39,8 @@ import de.gerdiproject.json.datacite.enums.IdentifierType;
 import de.gerdiproject.json.datacite.extension.generic.ResearchData;
 import de.gerdiproject.json.datacite.extension.generic.WebLink;
 import de.gerdiproject.json.datacite.extension.generic.enums.WebLinkType;
+import de.gerdiproject.json.datacite.extension.soep.SoepDataCiteExtension;
+import de.gerdiproject.json.datacite.extension.soep.SoepVariable;
 
 /**
  * This transformer transforms Soep {@linkplain SoepFileVO}s to {@linkplain DataCiteJson} objects.
@@ -46,13 +49,23 @@ import de.gerdiproject.json.datacite.extension.generic.enums.WebLinkType;
  */
 public class SoepTransformer extends AbstractIteratorTransformer<SoepFileVO, DataCiteJson>
 {
+    SoepExtractor soepExtractor;
+
+    @Override
+    public void init(AbstractETL<?, ?> etl)
+    {
+        super.init(etl);
+
+        this.soepExtractor = new SoepExtractor();
+    }
+
     @Override
     protected DataCiteJson transformElement(SoepFileVO vo) throws TransformerException
     {
         // Specify source ID for harvested file
         final DatasetMetadata metadata = vo.getMetadata();
 
-        // abort if there is no metadata
+        // Abort if there is no metadata
         if (metadata == null)
             return null;
 
@@ -155,7 +168,8 @@ public class SoepTransformer extends AbstractIteratorTransformer<SoepFileVO, Dat
 
         // E3. ResearchData{dataIdentifier, dataURL, dataLabel, dataType}
         final List<ResearchData> files = new LinkedList<>();
-        final String fileType = vo.getContent().getDownloadUrl().substring(vo.getContent().getDownloadUrl().lastIndexOf('.') + 1).toUpperCase();
+        final String fileType = vo.getContent().getDownloadUrl().substring(vo.getContent().getDownloadUrl()
+                                    .lastIndexOf('.') + 1).toUpperCase();
         final ResearchData researchData = new ResearchData(vo.getContent().getDownloadUrl(), fileType);
         researchData.setType(fileType);
         files.add(researchData);
@@ -165,20 +179,16 @@ public class SoepTransformer extends AbstractIteratorTransformer<SoepFileVO, Dat
         document.addResearchDisciplines(SoepDataCiteConstants.DISCIPLINES);
 
         // Subjects
-        List<Subject> subjects = new LinkedList<>();
-        subjects.add(new Subject(metadata.getStudyName()));
-        subjects.add(new Subject(metadata.getDatasetName()));
-        subjects.add(new Subject(metadata.getConceptualDatasetName()));
-        document.addSubjects(subjects);
+        document.addSubjects(SoepDataCiteConstants.SUBJECTS);
 
         // Sizes
         document.addSizes(Arrays.asList(String.format(SoepDataCiteConstants.SIZE_BYTES, vo.getContent().getSize())));
 
-        // Variables and Concepts
-        // TODO final SoepDataCiteExtension extension = new SoepDataCiteExtension();
-        // TODO document.addExtension(extension);
-
-
+        // Add SOEP variables and concepts
+        final SoepDataCiteExtension extension = new SoepDataCiteExtension();
+        List<SoepVariable> soepVariables = new LinkedList<>();
+        extension.addSoepDatasetVariables(soepExtractor.getDatasetVariables(metadata.getDatasetName()));
+        document.addExtension(extension);
 
         return document;
     }

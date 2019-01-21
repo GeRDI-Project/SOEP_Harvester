@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright © 2017 Fidan Limani (http://www.gerdi-project.de)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -56,4 +56,8 @@ public class SoepConstants
     public static final String CONCEPTS_CSV_DOWNLOAD_URL = "https://raw.githubusercontent.com/paneldata/soep-core/master/ddionrails/concepts.csv";
 
     public static final String SOEP_ETL_NAME = "SoepETL";
+
+    // The concept label language
+    public static final String CONCEPT_LABEL_EN = "en";
+    public static final String CONCEPT_LABEL_DE = "de";
 }

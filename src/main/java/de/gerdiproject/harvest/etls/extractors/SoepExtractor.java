@@ -24,11 +24,7 @@ import java.io.StringReader;
 import java.lang.reflect.Type;
 import java.nio.file.DirectoryStream;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.List;
-import java.util.LinkedList;
-import java.util.Iterator;
+import java.util.*;
 
 import com.google.gson.reflect.TypeToken;
 
@@ -49,6 +45,8 @@ import de.gerdiproject.harvest.soep.csv.VariablesMetadata;
 import de.gerdiproject.harvest.utils.data.HttpRequester;
 import de.gerdiproject.harvest.utils.data.enums.RestRequestType;
 
+import de.gerdiproject.json.datacite.extension.soep.SoepConcept;
+import de.gerdiproject.json.datacite.extension.soep.SoepVariable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,6 +61,8 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
 
     private HttpRequester httpRequester = new HttpRequester();
     private Map<String, DatasetMetadata> metadataMap;
+    private List<VariablesMetadata> variablesDescription;
+    private List<ConceptsMetadata> conceptsDescription;
     private Iterator<GitHubContent> datasetIterator;
     private String commitHash = null;
     private int size;
@@ -75,9 +75,11 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
 
         this.commitHash = getLatestCommitHash();
 
-        // get metadata from CSV
+        // Get metadata from CSV, including datasets, variables that describe them, and concepts of these variables
         try {
             this.metadataMap = loadDatasetMetadata();
+            this.variablesDescription = loadVariablesMetadata();
+            this.conceptsDescription = loadConceptsMetadata();
         } catch (IOException e) {
             throw new ETLPreconditionException(SoepLoggingConstants.ERROR_READING_CSV_FILE, e);
         }
@@ -133,9 +135,8 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
     /**
      * Load dataset file descriptions from a CSV file to a Map.
      *
-     * @throws IOException if the CSV file could not be read
-     *
      * @return a Map of dataset names to {@linkplain DatasetMetadata}
+     * @throws IOException if the CSV file could not be read
      */
     public Map<String, DatasetMetadata> loadDatasetMetadata() throws IOException
     {
@@ -157,7 +158,6 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
             .build();
 
             // Read records one by one in a Map<String, DatasetMetadata> instance
-
             for (DatasetMetadata metadata : (Iterable<DatasetMetadata>) csvMapper)
                 metadataMap.put(metadata.getDatasetName(), metadata);
         }
@@ -168,9 +168,8 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
     /**
      * Load concept file descriptions from a CSV file to a List.
      *
-     * @throws IOException if the CSV file could not be read
-     *
      * @return a List of concept names to {@linkplain DatasetMetadata}
+     * @throws IOException if the CSV file could not be read
      */
     public List<ConceptsMetadata> loadConceptsMetadata() throws IOException {
         // Download concepts CSV file content
@@ -271,5 +270,69 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
             final GitHubContent content = datasetIterator.next();
             return new SoepFileVO(content, getDatasetMetadata(content));
         }
+    }
+
+    /**
+     * Retrieve variables associated to a dataset.
+     * @param datasetName The name of the dataset for which variables are used in SOEP collection
+     * @return List<VariablesMetadata> A list of variables
+     */
+    public List<SoepVariable> getDatasetVariables(String datasetName){
+        // Remove dataset name file extension, if present
+        String tempDatasetName = datasetName.substring(0, datasetName.lastIndexOf('.'));
+
+        /* These fields store {@link SoepVariable} instances of a dataset */
+        SoepVariable variable;
+
+        /* We decided to store a concept both in DE and EN labels, effectively creating two SoepConcepts per SOEP
+            concept entry. */
+        Optional<Set<SoepConcept>> conceptSet;
+        List<SoepVariable> variableList = new LinkedList<>();
+
+        // Filter variables per datasets to which they are associated with; extract Variable instances from this list
+        for(VariablesMetadata vm : variablesDescription)
+            if (vm.getDatasetName().equalsIgnoreCase(tempDatasetName)) {
+                /* The concept contains both DE and EN concept labels, as present in the CSV. We need to "reformat" it
+                and store it */
+                conceptSet = getVariableConcept(vm.getConceptName());
+
+                /* Create and add a SOEP variable instance to the list */
+                variable = new SoepVariable(vm.getVariableName(), vm.getSource(), conceptSet.orElse(null));
+                variableList.add(variable);
+            }
+
+        return variableList;
+    }
+
+
+    /**
+     * Retrieve the concept associated to a variable in DE and EN versions.
+     *
+     * @param conceptName The name of the concept which a variables refers to
+     * @return Concept The target concept associated to the variable
+     */
+    public Optional<Set<SoepConcept>> getVariableConcept(String conceptName){
+        Set<SoepConcept> conceptSet = new HashSet<>();
+        SoepConcept concept;
+
+        // Filter concepts per concept name they are associated with; extract Concept instances from this list
+        for(ConceptsMetadata cm : conceptsDescription){
+            if(cm.getConceptName().equalsIgnoreCase(conceptName)){
+                /* For efficiency's sake, we use the argument to this method instead of invoking cm.getConceptName()
+                 * again. Also, note the slightly misguiding labeling from the CSV:
+                 *      getLabelDE() -> returns the DE label of the concept;
+                 *      getLabel() -> returns the EN label of the concept
+                 * */
+                concept = new SoepConcept(conceptName, cm.getLabelDE(), SoepConstants.CONCEPT_LABEL_DE);
+                conceptSet.add(concept);
+
+                concept = new SoepConcept(conceptName, cm.getLabel(), SoepConstants.CONCEPT_LABEL_EN);
+                conceptSet.add(concept);
+
+                return Optional.of(conceptSet);
+            }
+        }
+
+        return Optional.empty();
     }
 }

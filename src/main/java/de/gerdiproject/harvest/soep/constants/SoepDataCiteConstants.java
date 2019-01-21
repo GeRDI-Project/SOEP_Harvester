@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright © 2017 Fidan Limani (http://www.gerdi-project.de)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,11 +20,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import de.gerdiproject.json.datacite.Contributor;
-import de.gerdiproject.json.datacite.Creator;
-import de.gerdiproject.json.datacite.Date;
-import de.gerdiproject.json.datacite.DateRange;
-import de.gerdiproject.json.datacite.ResourceType;
+import de.gerdiproject.json.datacite.*;
 import de.gerdiproject.json.datacite.enums.ContributorType;
 import de.gerdiproject.json.datacite.enums.DateType;
 import de.gerdiproject.json.datacite.enums.NameType;
@@ -61,6 +57,13 @@ public class SoepDataCiteConstants
     // SOURCE
     public static final String PROVIDER = "German Socio-Economic Panel Study (SOEP)";
     public static final String REPOSITORY_ID = "SOEP";
+    public static final List<Subject> SUBJECTS = createSubjects("longitudinal study of private households",
+                                                                "household composition",
+                                                                "occupational biographies",
+                                                                "employment",
+                                                                "earnings",
+                                                                "health and satisfaction indicators",
+                                                                "Families in Germany");
     public static final List<AbstractResearch> DISCIPLINES = createResearchDisciplines();
 
     // CONTRIBUTORS
@@ -177,5 +180,20 @@ public class SoepDataCiteConstants
     {
         PersonName contributorName = new PersonName(SoepDataCiteConstants.COLLECTOR_CONTRIBUTOR_NAME, NameType.Organisational);
         return new Contributor(contributorName, ContributorType.DataCollector);
+    }
+
+    /**
+     * Add (keyword/phrases) subject descriptions for SOEP
+     * @param subjectStringList Subject keywords/phrases that describe SOEP study
+     * @return A list of Subjects
+     * */
+    private static List<Subject> createSubjects(String... subjectStringList)
+    {
+        List<Subject> subjects = new LinkedList<>();
+
+        for (String subject : subjectStringList)
+            subjects.add(new Subject(subject));
+
+        return subjects;
     }
 }
