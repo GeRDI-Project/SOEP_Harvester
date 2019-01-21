@@ -40,7 +40,6 @@ import de.gerdiproject.json.datacite.extension.generic.ResearchData;
 import de.gerdiproject.json.datacite.extension.generic.WebLink;
 import de.gerdiproject.json.datacite.extension.generic.enums.WebLinkType;
 import de.gerdiproject.json.datacite.extension.soep.SoepDataCiteExtension;
-import de.gerdiproject.json.datacite.extension.soep.SoepVariable;
 
 /**
  * This transformer transforms Soep {@linkplain SoepFileVO}s to {@linkplain DataCiteJson} objects.
@@ -49,7 +48,7 @@ import de.gerdiproject.json.datacite.extension.soep.SoepVariable;
  */
 public class SoepTransformer extends AbstractIteratorTransformer<SoepFileVO, DataCiteJson>
 {
-    SoepExtractor soepExtractor;
+    private SoepExtractor soepExtractor;
 
     @Override
     public void init(AbstractETL<?, ?> etl)
@@ -186,7 +185,6 @@ public class SoepTransformer extends AbstractIteratorTransformer<SoepFileVO, Dat
 
         // Add SOEP variables and concepts
         final SoepDataCiteExtension extension = new SoepDataCiteExtension();
-        List<SoepVariable> soepVariables = new LinkedList<>();
         extension.addSoepDatasetVariables(soepExtractor.getDatasetVariables(metadata.getDatasetName()));
         document.addExtension(extension);
 
