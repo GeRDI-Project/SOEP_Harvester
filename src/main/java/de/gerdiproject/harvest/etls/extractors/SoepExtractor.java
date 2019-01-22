@@ -151,8 +151,8 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
         // Parse "datasets" CSV file
         final Map<String, DatasetMetadata> metadataMap = new HashMap<>();
 
-        try (Reader reader = new BufferedReader(new StringReader(csvContent)))
-        {
+        try
+            (Reader reader = new BufferedReader(new StringReader(csvContent))) {
             CsvToBean<DatasetMetadata> csvMapper = new CsvToBeanBuilder<DatasetMetadata>(reader)
             .withType(DatasetMetadata.class)
             .withIgnoreLeadingWhiteSpace(true)
@@ -178,21 +178,22 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
         // Download concepts CSV file content
         LOGGER.info("Loading SOEP concepts...");
         final String csvContent = httpRequester.getRestResponse(
-                                        RestRequestType.GET,
-                                        SoepConstants.CONCEPTS_CSV_DOWNLOAD_URL,
-                                        null);
+                                      RestRequestType.GET,
+                                      SoepConstants.CONCEPTS_CSV_DOWNLOAD_URL,
+                                      null);
 
         // Parse "concepts" CSV file
         final List<ConceptsMetadata> conceptsDescription = new LinkedList<>();
 
         // When reading CSV content, skip table header, hence withSkipLines(1) invoked
-        try (Reader reader = new BufferedReader(new StringReader(csvContent));
-             CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build())
-        {
+        try
+            (Reader reader = new BufferedReader(new StringReader(csvContent));
+             CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build()) {
             // Read records one by one; put them in a List<ConceptsMetadata>
             List<String[]> stringsList = csvReader.readAll();
             ConceptsMetadata cm;
-            for(String[] str : stringsList) {
+
+            for (String[] str : stringsList) {
                 cm = new ConceptsMetadata(str);
                 conceptsDescription.add(cm);
             }
@@ -214,21 +215,22 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
         // Download variables CSV file content
         LOGGER.info("Loading SOEP variables...");
         final String csvContent = httpRequester.getRestResponse(
-                                        RestRequestType.GET,
-                                        SoepConstants.VARIABLES_CSV_DOWNLOAD_URL,
-                                        null);
+                                      RestRequestType.GET,
+                                      SoepConstants.VARIABLES_CSV_DOWNLOAD_URL,
+                                      null);
 
         // Parse "variables" CSV file
         final List<VariablesMetadata> variablesDescription = new LinkedList<>();
 
         // When reading CSV content, skip table header, hence: withSkipLines(1)
-        try (Reader reader = new BufferedReader(new StringReader(csvContent));
-             CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build())
-        {
+        try
+            (Reader reader = new BufferedReader(new StringReader(csvContent));
+             CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build()) {
             // Read records one by one; put them in a List<VariablesMetadata>
             VariablesMetadata vm;
             String[] nextRecord;
-            while((nextRecord = csvReader.readNext()) != null){
+
+            while ((nextRecord = csvReader.readNext()) != null) {
                 vm = new VariablesMetadata(nextRecord);
                 variablesDescription.add(vm);
             }
@@ -281,7 +283,8 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
      * @param datasetName The name of the dataset for which variables are used in SOEP collection
      * @return List<VariablesMetadata> A list of variables
      */
-    public List<SoepVariable> getDatasetVariables(String datasetName){
+    public List<SoepVariable> getDatasetVariables(String datasetName)
+    {
         // Remove dataset name file extension, if present
         String tempDatasetName = datasetName.substring(0, datasetName.lastIndexOf('.'));
 
@@ -294,7 +297,7 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
         List<SoepVariable> variableList = new LinkedList<>();
 
         // Filter variables per datasets to which they are associated with; extract Variable instances from this list
-        for(VariablesMetadata vm : variablesDescription)
+        for (VariablesMetadata vm : variablesDescription)
             if (vm.getDatasetName().equalsIgnoreCase(tempDatasetName)) {
                 /* The concept contains both DE and EN concept labels, as present in the CSV. We need to "reformat" it
                 and store it */
@@ -315,13 +318,14 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
      * @param conceptName The name of the concept which a variables refers to
      * @return Concept The target concept associated to the variable
      */
-    public Optional<Set<SoepConcept>> getVariableConcept(String conceptName){
+    public Optional<Set<SoepConcept>> getVariableConcept(String conceptName)
+    {
         Set<SoepConcept> conceptSet = new HashSet<>();
         SoepConcept concept;
 
         // Filter concepts per concept name they are associated with; extract Concept instances from this list
-        for(ConceptsMetadata cm : conceptsDescription){
-            if(cm.getConceptName().equalsIgnoreCase(conceptName)){
+        for (ConceptsMetadata cm : conceptsDescription) {
+            if (cm.getConceptName().equalsIgnoreCase(conceptName)) {
                 /* For efficiency's sake, we use the argument to this method instead of invoking cm.getConceptName()
                  * again. Also, note the slightly misguiding labeling from the CSV:
                  *      getLabelDE() -> returns the DE label of the concept;
