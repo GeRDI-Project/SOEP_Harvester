@@ -24,6 +24,9 @@ import java.io.StringReader;
 import java.lang.reflect.Type;
 import java.nio.file.DirectoryStream;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 import com.google.gson.reflect.TypeToken;
@@ -166,13 +169,15 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
         return metadataMap;
     }
 
+
     /**
      * Load concept file descriptions from a CSV file to a List.
      *
      * @return a List of concept names to {@linkplain DatasetMetadata}
      * @throws IOException if the CSV file could not be read
      */
-    public List<ConceptsMetadata> loadConceptsMetadata() throws IOException {
+    public List<ConceptsMetadata> loadConceptsMetadata() throws IOException
+    {
         // Download concepts CSV file content
         LOGGER.info("Loading SOEP concepts...");
         final String csvContent = httpRequester.getRestResponse(
@@ -183,21 +188,22 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
         // Parse "concepts" CSV file
         final List<ConceptsMetadata> conceptsDescription = new LinkedList<>();
 
-        // When reading CSV content, skip table header, hence: withSkipLines(1)
+        // When reading CSV content, skip table header, hence withSkipLines(1) invoked
         try (Reader reader = new BufferedReader(new StringReader(csvContent));
              CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build())
         {
             // Read records one by one; put them in a List<ConceptsMetadata>
+            List<String[]> stringsList = csvReader.readAll();
             ConceptsMetadata cm;
-            String[] nextRecord;
-            while((nextRecord = csvReader.readNext()) != null){
-                cm = new ConceptsMetadata(nextRecord);
+            for(String[] str : stringsList) {
+                cm = new ConceptsMetadata(str);
                 conceptsDescription.add(cm);
             }
         }
 
         return conceptsDescription;
     }
+
 
     /**
      * Load concept file descriptions from a CSV file to a List.
