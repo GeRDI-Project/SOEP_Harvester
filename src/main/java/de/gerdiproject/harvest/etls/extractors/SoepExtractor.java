@@ -47,6 +47,7 @@ import de.gerdiproject.harvest.utils.data.enums.RestRequestType;
 
 import de.gerdiproject.json.datacite.extension.soep.SoepConcept;
 import de.gerdiproject.json.datacite.extension.soep.SoepVariable;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

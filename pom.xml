@@ -27,6 +27,15 @@
             <artifactId>opencsv</artifactId>
             <version>${openscv.dependency.version}</version>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/javax.xml.ws/jaxws-api
+            Required if higher versions of Java JDK are deployed (JDK 11 in this case)
+        -->
+        <dependency>
+            <groupId>javax.xml.ws</groupId>
+            <artifactId>jaxws-api</artifactId>
+            <version>2.3.1</version>
+        </dependency>
     </dependencies>
 	
 	<developers>
