@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 /**
- * This package contains classes that represent SOEP CSV file content for the dataset itself, and enclosed concepts and
- * variables.
+ * This package contains classes that represent SOEP CSV files for variables, concepts and datasets.
  *
  * @author Fidan Limani
  */

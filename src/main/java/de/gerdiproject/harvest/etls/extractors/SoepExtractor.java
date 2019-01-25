@@ -206,7 +206,6 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
      * Load concept file descriptions from a CSV file to a List.
      *
      * @throws IOException if the CSV file could not be read
-     *
      * @return a List of concept names to {@linkplain DatasetMetadata}
      */
     public List<VariablesMetadata> loadVariablesMetadata() throws IOException
@@ -243,7 +242,6 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
      * Returns metadata for a specified file.
      *
      * @param content information about the dataset
-     *
      * @return the metadata of the file
      */
     public DatasetMetadata getDatasetMetadata(final GitHubContent content)
@@ -252,30 +250,6 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
         return metadataMap.get(datasetName);
     }
 
-
-    /**
-     * This iterator uses a {@linkplain DirectoryStream} to iterate through local SOEP datasets
-     * and generates a {@linkplain SoepFileVO} for each file.
-     *
-     * @author Robin Weiss
-     *
-     */
-    private class SoepFileIterator implements Iterator<SoepFileVO>
-    {
-        @Override
-        public boolean hasNext()
-        {
-            return datasetIterator.hasNext();
-        }
-
-
-        @Override
-        public SoepFileVO next()
-        {
-            final GitHubContent content = datasetIterator.next();
-            return new SoepFileVO(content, getDatasetMetadata(content));
-        }
-    }
 
     /**
      * Retrieve variables associated to a dataset.
@@ -341,5 +315,29 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
         }
 
         return Optional.empty();
+    }
+
+
+    /**
+     * This iterator uses a {@linkplain DirectoryStream} to iterate through local SOEP datasets
+     * and generates a {@linkplain SoepFileVO} for each file.
+     *
+     * @author Robin Weiss
+     */
+    private class SoepFileIterator implements Iterator<SoepFileVO>
+    {
+        @Override
+        public boolean hasNext()
+        {
+            return datasetIterator.hasNext();
+        }
+
+
+        @Override
+        public SoepFileVO next()
+        {
+            final GitHubContent content = datasetIterator.next();
+            return new SoepFileVO(content, getDatasetMetadata(content));
+        }
     }
 }

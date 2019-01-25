@@ -186,7 +186,7 @@ public class SoepDataCiteConstants
      * Add (keyword/phrases) subject descriptions for SOEP
      * @param subjectStringList Subject keywords/phrases that describe SOEP study
      * @return A list of Subjects
-     * */
+     */
     private static List<Subject> createSubjects(String... subjectStringList)
     {
         List<Subject> subjects = new LinkedList<>();
