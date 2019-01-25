@@ -61,8 +61,8 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
 
     private HttpRequester httpRequester = new HttpRequester();
     private Map<String, DatasetMetadata> metadataMap;
-    private List<VariablesMetadata> variablesDescription;
-    private List<ConceptsMetadata> conceptsDescription;
+    private List<VariablesMetadata> variableDescriptions;
+    private List<ConceptsMetadata> conceptDescriptions;
     private Iterator<GitHubContent> datasetIterator;
     private String commitHash = null;
     private int size;
@@ -78,8 +78,8 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
         // Get metadata from CSV, including datasets, variables that describe them, and concepts of these variables
         try {
             this.metadataMap = loadDatasetMetadata();
-            this.variablesDescription = loadVariablesMetadata();
-            this.conceptsDescription = loadConceptsMetadata();
+            this.variableDescriptions = loadVariablesMetadata();
+            this.conceptDescriptions = loadConceptsMetadata();
         } catch (IOException e) {
             throw new ETLPreconditionException(SoepLoggingConstants.ERROR_READING_CSV_FILE, e);
         }
@@ -158,8 +158,11 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
             .build();
 
             // Read records one by one in a Map<String, DatasetMetadata> instance
-            for (DatasetMetadata metadata : (Iterable<DatasetMetadata>) csvMapper)
+            Iterator<DatasetMetadata> csvIterator = csvMapper.iterator();
+            while(csvIterator.hasNext()){
+                final DatasetMetadata metadata = csvIterator.next();
                 metadataMap.put(metadata.getDatasetName(), metadata);
+            }
         }
 
         return metadataMap;
@@ -270,7 +273,7 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
         List<SoepVariable> variableList = new LinkedList<>();
 
         // Filter variables per datasets to which they are associated with; extract Variable instances from this list
-        for (VariablesMetadata vm : variablesDescription)
+        for (VariablesMetadata vm : variableDescriptions)
             if (vm.getDatasetName().equalsIgnoreCase(tempDatasetName)) {
                 /* The concept contains both DE and EN concept labels, as present in the CSV. We need to "reformat" it
                 and store it */
@@ -297,7 +300,7 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
         SoepConcept concept;
 
         // Filter concepts per concept name they are associated with; extract Concept instances from this list
-        for (ConceptsMetadata cm : conceptsDescription) {
+        for (ConceptsMetadata cm : conceptDescriptions) {
             if (cm.getConceptName().equalsIgnoreCase(conceptName)) {
                 /* For efficiency's sake, we use the argument to this method instead of invoking cm.getConceptName()
                  * again. Also, note the slightly misguiding labeling from the CSV:
