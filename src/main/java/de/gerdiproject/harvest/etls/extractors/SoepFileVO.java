@@ -16,7 +16,9 @@
 package de.gerdiproject.harvest.etls.extractors;
 
 import de.gerdiproject.harvest.github.json.GitHubContent;
+import de.gerdiproject.harvest.soep.csv.ConceptMetadata;
 import de.gerdiproject.harvest.soep.csv.DatasetMetadata;
+import de.gerdiproject.harvest.soep.csv.VariableMetadata;
 import lombok.Data;
 
 /**
@@ -29,4 +31,6 @@ public class SoepFileVO
 {
     private final GitHubContent content;
     private final DatasetMetadata metadata;
+    private final VariableMetadata variableMetadata;
+    private final ConceptMetadata conceptMetadata;
 }

@@ -22,7 +22,7 @@ import lombok.Data;
  *  @author Fidan Limani
  */
 @Data
-public class ConceptsMetadata
+public class ConceptMetadata
 {
     private String conceptName;
     private String topic;
@@ -34,7 +34,7 @@ public class ConceptsMetadata
      * Creates a SOEP concept based on a metadata set
      * @param datasetAttributes read from "concepts.csv".
      */
-    public ConceptsMetadata(String[] datasetAttributes)
+    public ConceptMetadata(String[] datasetAttributes)
     {
         this.conceptName = datasetAttributes[0];
         this.topic = datasetAttributes[1];
