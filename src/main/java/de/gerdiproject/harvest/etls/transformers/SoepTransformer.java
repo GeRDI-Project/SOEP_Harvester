@@ -157,7 +157,7 @@ public class SoepTransformer extends AbstractIteratorTransformer<SoepFileVO, Dat
         // E3. ResearchData{dataIdentifier, dataURL, dataLabel, dataType}
         final List<ResearchData> files = new LinkedList<>();
         final String fileType = vo.getContent().getDownloadUrl().substring(vo.getContent().getDownloadUrl()
-                                                                           .lastIndexOf('.') + 1).toUpperCase();
+                                .lastIndexOf('.') + 1).toUpperCase();
         final ResearchData researchData = new ResearchData(vo.getContent().getDownloadUrl(), fileType);
         researchData.setType(fileType);
         files.add(researchData);
@@ -188,18 +188,19 @@ public class SoepTransformer extends AbstractIteratorTransformer<SoepFileVO, Dat
      * @return Concept The target concept associated to the variable
      * @author Robin Weiss, Fidan Limani
      */
-    private Set<SoepConcept> getSoepConcepts(ConceptMetadata conceptMetadata){
+    private Set<SoepConcept> getSoepConcepts(ConceptMetadata conceptMetadata)
+    {
         final Set<SoepConcept> conceptSet = new HashSet<>();
 
-            conceptSet.add(new SoepConcept(
-                                conceptMetadata.getConceptName(),
-                                conceptMetadata.getLabelDE(),
-                                SoepConstants.CONCEPT_LABEL_DE));
+        conceptSet.add(new SoepConcept(
+                           conceptMetadata.getConceptName(),
+                           conceptMetadata.getLabelDE(),
+                           SoepConstants.CONCEPT_LABEL_DE));
 
-            conceptSet.add(new SoepConcept(
-                                conceptMetadata.getConceptName(),
-                                conceptMetadata.getLabel(),
-                                SoepConstants.CONCEPT_LABEL_EN));
+        conceptSet.add(new SoepConcept(
+                           conceptMetadata.getConceptName(),
+                           conceptMetadata.getLabel(),
+                           SoepConstants.CONCEPT_LABEL_EN));
 
         return conceptSet.isEmpty() ? null : conceptSet;
     }
@@ -220,8 +221,8 @@ public class SoepTransformer extends AbstractIteratorTransformer<SoepFileVO, Dat
         /* For every VariableMetadata record for the dataset, convert it to SOEP variable and assign it
         (a set of) SOEP concepts */
         for (VariableMetadata vm : soepFileVO.getVariableMetadataRecords()) {
-        /* The concept contains both DE and EN concept labels, as present in the CSV. We need to "reformat" it
-           and store it */
+            /* The concept contains both DE and EN concept labels, as present in the CSV. We need to "reformat" it
+               and store it */
             conceptSet = getSoepConcepts(soepFileVO.getVariableConceptRecordMap().get(vm.getConceptName()));
 
             /* Create and add a SOEP variable instance to the list */

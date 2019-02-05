@@ -45,25 +45,25 @@ public class SoepDataCiteConstants
 
     // CREATOR
     public static final List<String> CREATOR_LIST = Collections.unmodifiableList(
-                                                        Arrays.asList("Jürgen Schupp", "Jan Goebel", "Martin Kroh",
-                                                                      "Carsten Schröder", "Charlotte Bartels", "Klaudia Erhardt",
-                                                                      "Alexandra Fedorets", "Andreas Franken", "Marco Giesselmann",
-                                                                      "Markus Grabka", "Peter Krause", "Hannes Kröger", "Simon Kühne",
-                                                                      "Maria Metzing", "Jana Nebelin", "David Richter", "Diana Schacht",
-                                                                      "Paul Schmelzer", "Christian Schmitt", "Daniel Schnitzlein",
-                                                                      "Rainer Siegers", "Knut Wenzig"));
+                Arrays.asList("Jürgen Schupp", "Jan Goebel", "Martin Kroh",
+                              "Carsten Schröder", "Charlotte Bartels", "Klaudia Erhardt",
+                              "Alexandra Fedorets", "Andreas Franken", "Marco Giesselmann",
+                              "Markus Grabka", "Peter Krause", "Hannes Kröger", "Simon Kühne",
+                              "Maria Metzing", "Jana Nebelin", "David Richter", "Diana Schacht",
+                              "Paul Schmelzer", "Christian Schmitt", "Daniel Schnitzlein",
+                              "Rainer Siegers", "Knut Wenzig"));
     public static final List<Creator> CREATORS = addCreators();
 
     // SOURCE
     public static final String PROVIDER = "German Socio-Economic Panel Study (SOEP)";
     public static final String REPOSITORY_ID = "SOEP";
     public static final List<Subject> SUBJECTS = createSubjects("longitudinal study of private households",
-                                                                "household composition",
-                                                                "occupational biographies",
-                                                                "employment",
-                                                                "earnings",
-                                                                "health and satisfaction indicators",
-                                                                "Families in Germany");
+            "household composition",
+            "occupational biographies",
+            "employment",
+            "earnings",
+            "health and satisfaction indicators",
+            "Families in Germany");
     public static final List<AbstractResearch> DISCIPLINES = createResearchDisciplines();
 
     // CONTRIBUTORS
@@ -84,31 +84,31 @@ public class SoepDataCiteConstants
 
     // DESCRIPTIONS
     public static final String DESCRIPTION_VALUE = "The German Socio-Economic Panel (SOEP) study is a wide-ranging representative " +
-                                                   "longitudinal study of private households, located at the German Institute for " +
-                                                   "Economic Research, DIW Berlin. Every year, there were nearly 15,000 households, " +
-                                                   "and more than 25,000 persons sampled by the fieldwork organization TNS Infratest " +
-                                                   "Sozialforschung. The data provide information on all household members, consisting " +
-                                                   "of Germans living in the Eastern and Western German States, foreigners, and immigrants " +
-                                                   "to Germany. The Panel was started in 1984. Some of the many topics include household composition, " +
-                                                   "occupational biographies, employment, earnings, health and satisfaction indicators. As early " +
-                                                   "as June 1990—even before the Economic, Social and Monetary Union—SOEP expanded to include the " +
-                                                   "states of the former German Democratic Republic (GDR), thus seizing the rare opportunity to observe " +
-                                                   "the transformation of an entire society. Also immigrant samples were added in 1994/95 and 2013/2015 to " +
-                                                   "account for the changes that took place in Germany society. Two samples of refugees were introduced in 2016. " +
-                                                   "Further new samples were added in 1998, 2000, 2002, 2006, 2009, 2010, 2011, and 2012. The survey is constantly " +
-                                                   "being adapted and developed in response to current social developments. The international version contains 95% of " +
-                                                   "all cases surveyed (see 10.5684/soep.v33i).";
+            "longitudinal study of private households, located at the German Institute for " +
+            "Economic Research, DIW Berlin. Every year, there were nearly 15,000 households, " +
+            "and more than 25,000 persons sampled by the fieldwork organization TNS Infratest " +
+            "Sozialforschung. The data provide information on all household members, consisting " +
+            "of Germans living in the Eastern and Western German States, foreigners, and immigrants " +
+            "to Germany. The Panel was started in 1984. Some of the many topics include household composition, " +
+            "occupational biographies, employment, earnings, health and satisfaction indicators. As early " +
+            "as June 1990—even before the Economic, Social and Monetary Union—SOEP expanded to include the " +
+            "states of the former German Democratic Republic (GDR), thus seizing the rare opportunity to observe " +
+            "the transformation of an entire society. Also immigrant samples were added in 1994/95 and 2013/2015 to " +
+            "account for the changes that took place in Germany society. Two samples of refugees were introduced in 2016. " +
+            "Further new samples were added in 1998, 2000, 2002, 2006, 2009, 2010, 2011, and 2012. The survey is constantly " +
+            "being adapted and developed in response to current social developments. The international version contains 95% of " +
+            "all cases surveyed (see 10.5684/soep.v33i).";
 
     public static final String DESCRIPTION_LANGUAGE = "EN";
 
     // Rights
     public static final String RIGHTS_VALUE = "The SOEP micro data which we make available for scientific research can " +
-                                              "only be interpreted using statistical software. Direct use of SOEP data " +
-                                              "is subject to the high standards for lawful data protection in the " +
-                                              "Federal Republic of Germany. Signing a contract on data distribution " +
-                                              "with the DIW Berlin is therefore a precondition for working with SOEP " +
-                                              "data. After signing the contract, the data of every new wave will be " +
-                                              "available on request.";
+            "only be interpreted using statistical software. Direct use of SOEP data " +
+            "is subject to the high standards for lawful data protection in the " +
+            "Federal Republic of Germany. Signing a contract on data distribution " +
+            "with the DIW Berlin is therefore a precondition for working with SOEP " +
+            "data. After signing the contract, the data of every new wave will be " +
+            "available on request.";
 
     // FORMATS
     public static final List<String> FORMATS = Collections.unmodifiableList(Arrays.asList("JSON"));

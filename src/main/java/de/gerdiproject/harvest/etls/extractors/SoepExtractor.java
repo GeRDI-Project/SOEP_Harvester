@@ -186,7 +186,7 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
         // When reading CSV content, skip table header, hence withSkipLines(1) invoked
         try
             (Reader reader = new BufferedReader(new StringReader(csvContent));
-             CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build()) {
+                    CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build()) {
             // Read records one by one; put them in a List<ConceptMetadata>
             List<String[]> stringsList = csvReader.readAll();
             ConceptMetadata cm;
@@ -222,7 +222,7 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
         // When reading CSV content, skip table header, hence: withSkipLines(1)
         try
             (Reader reader = new BufferedReader(new StringReader(csvContent));
-             CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build()) {
+                    CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build()) {
 
             // Read records one by one; put them in a Map<String, VariableMetadata>
             VariableMetadata vm;
@@ -256,11 +256,12 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
      * @param datasetName Dataset name
      * @return List<VariableMetadata> A list of VariableMetadata "records"
      **/
-    private List<VariableMetadata> getVariableMetadataRecords(final String datasetName){
+    private List<VariableMetadata> getVariableMetadataRecords(final String datasetName)
+    {
         List<VariableMetadata> variableMetadataRecords = new LinkedList<>();
 
         // Loop through <variableDescriptions> and add the elements that match the dataset name
-        for(VariableMetadata vm : variableDescriptions.values()){
+        for(VariableMetadata vm : variableDescriptions.values()) {
             if(vm.getDatasetName().equalsIgnoreCase(datasetName))
                 variableMetadataRecords.add(vm);
         }
@@ -274,12 +275,13 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
      * @param variableMetadata List of VariableMetadata elements that describe the dataset at hand.
      * @return List<VariableMetadata> A map of variable name - ConceptMetadata "records"
      **/
-    private Map<String, ConceptMetadata> getVariableConceptMap(List<VariableMetadata> variableMetadata){
+    private Map<String, ConceptMetadata> getVariableConceptMap(List<VariableMetadata> variableMetadata)
+    {
         // input: Map<String, VariableMetadata> variableDescriptions
         Map<String, ConceptMetadata> conceptMetadataRecords = new HashMap<>();
 
         // 1. Loop through VariableMetadata from the input, and add the ones matching the dataset name
-        for(VariableMetadata vm : variableMetadata){
+        for(VariableMetadata vm : variableMetadata) {
             conceptMetadataRecords.put(vm.getVariableName(), conceptDescriptions.get(vm.getConceptName()));
         }
 

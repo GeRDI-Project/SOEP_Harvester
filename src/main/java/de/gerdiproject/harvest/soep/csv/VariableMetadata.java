@@ -38,7 +38,8 @@ public class VariableMetadata
      *
      * @param variablesAttributes read from "variable.csv".
      */
-    public VariableMetadata(String[] variablesAttributes) {
+    public VariableMetadata(String[] variablesAttributes)
+    {
         this.studyName = variablesAttributes[0];
         this.datasetName = variablesAttributes[1];
         this.variableName = variablesAttributes[2];
