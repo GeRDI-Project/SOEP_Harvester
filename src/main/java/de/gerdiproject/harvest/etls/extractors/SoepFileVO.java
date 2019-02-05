@@ -1,5 +1,5 @@
 /**
- * Copyright © 2017 ${owner} (http://www.gerdi-project.de)
+ * Copyright © 2019 ${owner} (http://www.gerdi-project.de)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import java.util.Map;
 /**
  * This value object holds a SOEP file and corresponding metadata.
  *
- * @author Robin Weiss
+ * @author Robin Weiss, Fidan Limani
  */
 @Data
 public class SoepFileVO
