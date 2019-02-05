@@ -21,6 +21,9 @@ import de.gerdiproject.harvest.soep.csv.DatasetMetadata;
 import de.gerdiproject.harvest.soep.csv.VariableMetadata;
 import lombok.Data;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * This value object holds a SOEP file and corresponding metadata.
  *
@@ -30,7 +33,11 @@ import lombok.Data;
 public class SoepFileVO
 {
     private final GitHubContent content;
-    private final DatasetMetadata metadata;
-    private final VariableMetadata variableMetadata;
-    private final ConceptMetadata conceptMetadata;
+    private final DatasetMetadata datasetMetadata;
+
+    // VariableMetadata records from the CSV file that describe the dataset
+    private final List<VariableMetadata> variableMetadata;
+
+    // For every variable name (as the key), relate its concept metadata (as value)
+    private final Map<String, ConceptMetadata> conceptMetadataMap;
 }

@@ -44,9 +44,6 @@ import de.gerdiproject.harvest.soep.csv.VariableMetadata;
 import de.gerdiproject.harvest.utils.data.HttpRequester;
 import de.gerdiproject.harvest.utils.data.enums.RestRequestType;
 
-import de.gerdiproject.json.datacite.extension.soep.SoepConcept;
-import de.gerdiproject.json.datacite.extension.soep.SoepVariable;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,7 +57,7 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
     private static final Logger LOGGER = LoggerFactory.getLogger(SoepExtractor.class);
 
     private HttpRequester httpRequester = new HttpRequester();
-    private Map<String, DatasetMetadata> metadataMap;
+    private Map<String, DatasetMetadata> datasetDescriptions;
     private Map<String, VariableMetadata> variableDescriptions;
     private Map<String, ConceptMetadata> conceptDescriptions;
     private Iterator<GitHubContent> datasetIterator;
@@ -77,7 +74,7 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
 
         // Get metadata from CSV, including datasets, variables that describe them, and concepts of these variables
         try {
-            this.metadataMap = loadDatasetMetadata();
+            this.datasetDescriptions = loadDatasetMetadata();
             this.variableDescriptions = loadVariableMetadata();
             this.conceptDescriptions = loadConceptMetadata();
         } catch (IOException e) {
@@ -92,6 +89,7 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
         this.size = datasetContents.size();
         this.datasetIterator = datasetContents.iterator();
     }
+
 
     /**
      * Sends a "commits" request to the GitHub REST API
@@ -251,77 +249,43 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
     public DatasetMetadata getDatasetMetadata(final GitHubContent content)
     {
         final String datasetName = content.getName().substring(0, content.getName().lastIndexOf('.'));
-        return metadataMap.get(datasetName);
+        return datasetDescriptions.get(datasetName);
     }
 
 
     /**
-     * Retrieve variables associated to a dataset.
-     * @param datasetName The name of the dataset for which variables are used in SOEP collection
-     * @return List<VariableMetadata> A list of variables
-     */
-    public List<SoepVariable> getDatasetVariables(String datasetName)
-    {
-        // Remove dataset name file extension, if present
-        String tempDatasetName = datasetName.substring(0, datasetName.lastIndexOf('.'));
+     * Retrieve records that contain the variables associated with a dataset.
+     * @param datasetName Dataset name
+     * @return List<VariableMetadata> A list of VariableMetadata "records"
+     **/
+    private List<VariableMetadata> getVariableMetadataRecords(final String datasetName){
+        List<VariableMetadata> variableMetadataRecords = new LinkedList<>();
 
-        /* These fields store {@link SoepVariable} instances of a dataset */
-        SoepVariable variable;
-
-        /* We decided to store a concept both in DE and EN labels, effectively creating two SoepConcepts per SOEP
-            concept entry. */
-        Optional<Set<SoepConcept>> conceptSet;
-        List<SoepVariable> variableList = new LinkedList<>();
-
-        // Filter variables per datasets to which they are associated with; extract Variable instances from this list
-        for (VariableMetadata vm : variableDescriptions)
-            if (vm.getDatasetName().equalsIgnoreCase(tempDatasetName)) {
-                /* The concept contains both DE and EN concept labels, as present in the CSV. We need to "reformat" it
-                and store it */
-                conceptSet = getVariableConcept(vm.getConceptName());
-
-                /* Create and add a SOEP variable instance to the list */
-                variable = new SoepVariable(vm.getVariableName(), vm.getSource(), conceptSet.orElse(null));
-                variableList.add(variable);
-            }
-
-        return variableList;
-    }
-
-
-    /**
-     * Retrieve the concept associated to a variable in DE and EN versions.
-     *
-     * @param conceptName The name of the concept which a variables refers to
-     * @return Concept The target concept associated to the variable
-     */
-    public Optional<Set<SoepConcept>> getVariableConcept(String conceptName)
-    {
-        Set<SoepConcept> conceptSet = new HashSet<>();
-        SoepConcept concept;
-        ConceptMetadata tempConceptMetadata;
-
-        // Filter concepts per concept name they are associated with; extract Concept instances from this list
-        for (Map.Entry<String, ConceptMetadata> entry : conceptDescriptions.entrySet()) {
-            if (entry.getKey().equalsIgnoreCase(conceptName)) {
-                /* For efficiency's sake, we use the argument to this method instead of invoking cm.getConceptName()
-                 * again. Also, note the slightly misguiding labeling from the CSV:
-                 *      getLabelDE() -> returns the DE label of the concept;
-                 *      getLabel() -> returns the EN label of the concept
-                 **/
-
-
-                concept = new SoepConcept(conceptName, entry.getValue().getLabelDE(), SoepConstants.CONCEPT_LABEL_DE);
-                conceptSet.add(concept);
-
-                concept = new SoepConcept(conceptName, entry.getValue().getLabel(), SoepConstants.CONCEPT_LABEL_EN);
-                conceptSet.add(concept);
-
-                return Optional.of(conceptSet);
-            }
+        // Loop through <variableDescriptions> and add the elements that match the dataset name
+        for(VariableMetadata vm : variableDescriptions.values()){
+            if(vm.getDatasetName().equalsIgnoreCase(datasetName))
+                variableMetadataRecords.add(vm);
         }
 
-        return Optional.empty();
+        return variableMetadataRecords;
+    }
+
+
+    /**
+     * Associate variable names of a dataset with ConceptMetadata.
+     * @param variableMetadata List of VariableMetadata elements that describe the dataset at hand.
+     * @return List<VariableMetadata> A map of variable name - ConceptMetadata "records"
+     **/
+    private Map<String, ConceptMetadata> getVariableConceptMap(List<VariableMetadata> variableMetadata){
+        // input: Map<String, VariableMetadata> variableDescriptions
+        Map<String, ConceptMetadata> conceptMetadataRecords = new HashMap<>();
+
+        // 1. Loop through VariableMetadata from the input, and add the ones matching the dataset name
+        for(VariableMetadata vm : variableMetadata){
+            conceptMetadataRecords.put(vm.getVariableName(), conceptDescriptions.get(vm.getConceptName()));
+        }
+
+        return conceptMetadataRecords;
     }
 
 
@@ -345,14 +309,13 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
         {
             final GitHubContent content = datasetIterator.next();
             final String datasetName = getDatasetName(content);
-            final DatasetMetadata datasetMetadata = metadataMap.get(datasetName);
-            final VariableMetadata variableMetadata = variableDescriptions.get(datasetName);
-            final ConceptMetadata conceptMetadata = conceptDescriptions.get(datasetName);
+            final DatasetMetadata datasetMetadata = datasetDescriptions.get(datasetName);
+            final List<VariableMetadata> variableMetadataRecords = getVariableMetadataRecords(datasetName);
+            final Map<String, ConceptMetadata> variableConceptMetadataRecords = getVariableConceptMap(variableMetadataRecords);
 
-            return new SoepFileVO(content, datasetMetadata, variableMetadata, conceptMetadata);
+            return new SoepFileVO(content, datasetMetadata, variableMetadataRecords, variableConceptMetadataRecords);
         }
 
-        //
         private String getDatasetName(GitHubContent content)
         {
             return content.getName().substring(0, content.getName().lastIndexOf('.')).toLowerCase();

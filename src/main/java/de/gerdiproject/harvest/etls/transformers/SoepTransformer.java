@@ -15,16 +15,16 @@
  */
 package de.gerdiproject.harvest.etls.transformers;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import de.gerdiproject.harvest.etls.AbstractETL;
 import de.gerdiproject.harvest.etls.extractors.SoepExtractor;
 import de.gerdiproject.harvest.etls.extractors.SoepFileVO;
 import de.gerdiproject.harvest.soep.constants.SoepConstants;
 import de.gerdiproject.harvest.soep.constants.SoepDataCiteConstants;
+import de.gerdiproject.harvest.soep.csv.ConceptMetadata;
 import de.gerdiproject.harvest.soep.csv.DatasetMetadata;
+import de.gerdiproject.harvest.soep.csv.VariableMetadata;
 import de.gerdiproject.json.datacite.DataCiteJson;
 import de.gerdiproject.json.datacite.Date;
 import de.gerdiproject.json.datacite.Description;
@@ -38,7 +38,9 @@ import de.gerdiproject.json.datacite.enums.IdentifierType;
 import de.gerdiproject.json.datacite.extension.generic.ResearchData;
 import de.gerdiproject.json.datacite.extension.generic.WebLink;
 import de.gerdiproject.json.datacite.extension.generic.enums.WebLinkType;
+import de.gerdiproject.json.datacite.extension.soep.SoepConcept;
 import de.gerdiproject.json.datacite.extension.soep.SoepDataCiteExtension;
+import de.gerdiproject.json.datacite.extension.soep.SoepVariable;
 
 /**
  * This transformer transforms Soep {@linkplain SoepFileVO}s to {@linkplain DataCiteJson} objects.
@@ -47,14 +49,10 @@ import de.gerdiproject.json.datacite.extension.soep.SoepDataCiteExtension;
  */
 public class SoepTransformer extends AbstractIteratorTransformer<SoepFileVO, DataCiteJson>
 {
-    private SoepExtractor soepExtractor;
-
     @Override
     public void init(AbstractETL<?, ?> etl)
     {
         super.init(etl);
-
-        this.soepExtractor = new SoepExtractor();
     }
 
     @Override
@@ -188,5 +186,67 @@ public class SoepTransformer extends AbstractIteratorTransformer<SoepFileVO, Dat
         document.addExtension(extension);
 
         return document;
+    }
+
+
+    /**
+     * Retrieve the concept associated to a variable in DE and EN versions.
+     *
+     * @param variableMetadataRecords The list of VairableMetadata records that describe the dataset.
+     * @return Concept The target concept associated to the variable
+     * @author Robin Weiss, Fidan Limani
+     */
+    private Set<SoepConcept> getSoepConcepts(List<VariableMetadata> variableMetadataRecords){
+        final Set<SoepConcept> conceptSet = new HashSet<>();
+        final ConceptMetadata conceptMetadata = vo.getConceptMetadata();
+
+        if(conceptMetadata != null){
+            conceptSet.add(new SoepConcept(
+                                conceptMetadata.getConceptName(),
+                                conceptMetadata.getLabelDE(),
+                                SoepConstants.CONCEPT_LABEL_DE));
+
+            conceptSet.add(new SoepConcept(
+                                conceptMetadata.getConceptName(),
+                                conceptMetadata.getLabel(),
+                                SoepConstants.CONCEPT_LABEL_EN));
+        }
+
+        return conceptSet.isEmpty() ? null : conceptSet;
+    }
+
+
+    /**
+     * Retrieve variables associated to a dataset.
+     * @param datasetName The name of the dataset for which variables are used in SOEP collection
+     * @return List<VariableMetadata> A list of variables
+     */
+
+    public List<SoepVariable> getDatasetVariables(String datasetName)
+    {
+        // Remove dataset name file extension, if present
+        String tempDatasetName = datasetName.substring(0, datasetName.lastIndexOf('.'));
+
+        /* These fields store {@link SoepVariable} instances of a dataset */
+        SoepVariable variable;
+
+        /* We decided to store a concept both in DE and EN labels, effectively creating two SoepConcepts per SOEP
+            concept entry. */
+        Optional<Set<SoepConcept>> conceptSet;
+        List<SoepVariable> variableList = new LinkedList<>();
+
+        // Filter variables per datasets to which they are associated with; extract Variable instances from this list
+        for (VariableMetadata vm : variableDescriptions)
+            if (vm.getDatasetName().equalsIgnoreCase(tempDatasetName)) {
+                /* The concept contains both DE and EN concept labels, as present in the CSV. We need to "reformat" it
+                and store it */
+                conceptSet = getSoepConcepts(vm.getConceptName());
+
+                /* Create and add a SOEP variable instance to the list */
+                variable = new SoepVariable(vm.getVariableName(), vm.getSource(), conceptSet.orElse(null));
+                variableList.add(variable);
+            }
+
+        return variableList;
     }
 }

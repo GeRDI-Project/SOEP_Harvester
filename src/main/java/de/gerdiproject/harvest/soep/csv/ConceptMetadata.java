@@ -26,7 +26,7 @@ public class ConceptMetadata
 {
     private String conceptName;
     private String topic;
-    private String topicPrefix;
+    private String topicName;
     private String labelDE;
     private String label;
 
@@ -38,7 +38,7 @@ public class ConceptMetadata
     {
         this.conceptName = datasetAttributes[0];
         this.topic = datasetAttributes[1];
-        this.topicPrefix = datasetAttributes[2];
+        this.topicName = datasetAttributes[2];
         this.labelDE = datasetAttributes[3];
         this.label = datasetAttributes[4];
     }
