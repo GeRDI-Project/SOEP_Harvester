@@ -1,5 +1,5 @@
-/*
- * Copyright © 2017 Fidan Limani (http://www.gerdi-project.de)
+/**
+ * Copyright © 2017 ${owner} (http://www.gerdi-project.de)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

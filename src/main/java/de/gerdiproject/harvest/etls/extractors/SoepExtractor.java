@@ -1,5 +1,5 @@
-/*
- * Copyright © 2017 Fidan Limani (http://www.gerdi-project.de)
+/**
+ * Copyright © 2017 ${owner} (http://www.gerdi-project.de)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -156,9 +156,7 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
             .build();
 
             // Read records one by one in a Map<String, DatasetMetadata> instance
-            Iterator<DatasetMetadata> csvIterator = csvMapper.iterator();
-            while(csvIterator.hasNext()){
-                final DatasetMetadata metadata = csvIterator.next();
+            for (DatasetMetadata metadata : (Iterable<DatasetMetadata>) csvMapper) {
                 metadataMap.put(metadata.getDatasetName(), metadata);
             }
         }
