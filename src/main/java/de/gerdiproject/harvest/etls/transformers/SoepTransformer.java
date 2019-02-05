@@ -18,7 +18,6 @@ package de.gerdiproject.harvest.etls.transformers;
 import java.util.*;
 
 import de.gerdiproject.harvest.etls.AbstractETL;
-import de.gerdiproject.harvest.etls.extractors.SoepExtractor;
 import de.gerdiproject.harvest.etls.extractors.SoepFileVO;
 import de.gerdiproject.harvest.soep.constants.SoepConstants;
 import de.gerdiproject.harvest.soep.constants.SoepDataCiteConstants;
@@ -182,7 +181,7 @@ public class SoepTransformer extends AbstractIteratorTransformer<SoepFileVO, Dat
 
         // Add SOEP variables and concepts
         final SoepDataCiteExtension extension = new SoepDataCiteExtension();
-        extension.addSoepDatasetVariables(soepExtractor.getDatasetVariables(metadata.getDatasetName()));
+        extension.addSoepDatasetVariables(getDatasetVariables(vo));
         document.addExtension(extension);
 
         return document;
@@ -218,7 +217,7 @@ public class SoepTransformer extends AbstractIteratorTransformer<SoepFileVO, Dat
      * @param soepFileVO The name of the dataset for which variables are used in SOEP collection
      * @return List<SoepVariable> A list of SOEP-transformed variables
      */
-    public List<SoepVariable> getDatasetVariables(SoepFileVO soepFileVO)
+    private List<SoepVariable> getDatasetVariables(SoepFileVO soepFileVO)
     {
         /* We decided to store a concept both in DE and EN labels, effectively creating two SoepConcepts per SOEP
             concept entry. */
