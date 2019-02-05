@@ -36,8 +36,8 @@ public class SoepFileVO
     private final DatasetMetadata datasetMetadata;
 
     // VariableMetadata records from the CSV file that describe the dataset
-    private final List<VariableMetadata> variableMetadata;
+    private final List<VariableMetadata> variableMetadataRecords;
 
-    // For every variable name (as the key), relate its concept metadata (as value)
-    private final Map<String, ConceptMetadata> conceptMetadataMap;
+    // Map variable name (as the key) to its concept metadata (as value)
+    private final Map<String, ConceptMetadata> variableConceptRecordMap;
 }
