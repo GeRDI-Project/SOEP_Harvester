@@ -17,7 +17,6 @@ package de.gerdiproject.harvest.etls.transformers;
 
 import java.util.*;
 
-import de.gerdiproject.harvest.etls.AbstractETL;
 import de.gerdiproject.harvest.etls.extractors.SoepFileVO;
 import de.gerdiproject.harvest.soep.constants.SoepConstants;
 import de.gerdiproject.harvest.soep.constants.SoepDataCiteConstants;
@@ -48,12 +47,6 @@ import de.gerdiproject.json.datacite.extension.soep.SoepVariable;
  */
 public class SoepTransformer extends AbstractIteratorTransformer<SoepFileVO, DataCiteJson>
 {
-    @Override
-    public void init(AbstractETL<?, ?> etl)
-    {
-        super.init(etl);
-    }
-
     @Override
     protected DataCiteJson transformElement(SoepFileVO vo) throws TransformerException
     {

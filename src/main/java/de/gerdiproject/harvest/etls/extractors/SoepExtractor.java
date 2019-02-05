@@ -307,7 +307,13 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
         {
             final GitHubContent content = datasetIterator.next();
             final String datasetName = getDatasetName(content);
+
             final DatasetMetadata datasetMetadata = datasetDescriptions.get(datasetName);
+
+            // Abort if there is no metadata
+            if(datasetMetadata == null)
+                return null;
+
             final List<VariableMetadata> variableMetadataRecords = getVariableMetadataRecords(datasetName);
             final Map<String, ConceptMetadata> variableConceptMetadataRecords = getVariableConceptMap(variableMetadataRecords);
 
