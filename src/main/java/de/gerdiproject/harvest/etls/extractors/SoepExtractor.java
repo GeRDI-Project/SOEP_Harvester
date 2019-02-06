@@ -141,7 +141,10 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
      */
     private void parseCsvFromWeb(final String url, Consumer<String[]> iterFunction) throws IOException
     {
-        LOGGER.info(String.format(SoepConstants.LOADING_FILE_INFO, url.substring(url.lastIndexOf('/') + 1)));
+        LOGGER.debug(String.format( // NOPMD this logging is wanted
+                         SoepConstants.LOADING_FILE_INFO,
+                         url.substring(url.lastIndexOf('/') + 1)));
+
         final HttpURLConnection csvConnection = webRequester.sendWebRequest(
                                                     RestRequestType.GET,
                                                     url,
