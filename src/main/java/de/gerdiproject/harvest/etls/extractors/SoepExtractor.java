@@ -17,17 +17,26 @@ package de.gerdiproject.harvest.etls.extractors;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
-
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.DirectoryStream;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
 
-import java.util.*;
+import javax.ws.rs.core.MediaType;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
-import com.opencsv.bean.CsvToBean;
-import com.opencsv.bean.CsvToBeanBuilder;
 
 import de.gerdiproject.harvest.etls.AbstractETL;
 import de.gerdiproject.harvest.etls.ETLPreconditionException;
@@ -38,11 +47,8 @@ import de.gerdiproject.harvest.soep.constants.SoepLoggingConstants;
 import de.gerdiproject.harvest.soep.csv.ConceptMetadata;
 import de.gerdiproject.harvest.soep.csv.DatasetMetadata;
 import de.gerdiproject.harvest.soep.csv.VariableMetadata;
-import de.gerdiproject.harvest.utils.data.HttpRequester;
+import de.gerdiproject.harvest.utils.data.WebDataRetriever;
 import de.gerdiproject.harvest.utils.data.enums.RestRequestType;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This extractor retrieves SOEP datasets from a GitHub repository.
@@ -53,9 +59,9 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
 {
     private static final Logger LOGGER = LoggerFactory.getLogger(SoepExtractor.class);
 
-    private HttpRequester httpRequester = new HttpRequester();
+    private WebDataRetriever webRequester = new WebDataRetriever(new Gson(), StandardCharsets.UTF_8);
     private Map<String, DatasetMetadata> datasetDescriptions;
-    private Map<String, VariableMetadata> variableDescriptions;
+    private Map<String, List<VariableMetadata>> variableDescriptions;
     private Map<String, ConceptMetadata> conceptDescriptions;
     private Iterator<GitHubContent> datasetIterator;
     private String commitHash = null;
@@ -79,8 +85,7 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
         }
 
         // Get list of datasets
-        final List<GitHubContent> datasetContents = httpRequester.getObjectFromUrl(SoepConstants.DATASETS_CONTENT_URL,
-                                                                                   SoepConstants.LIST_TYPE);
+        final List<GitHubContent> datasetContents = webRequester.getObject(SoepConstants.DATASETS_CONTENT_URL, SoepConstants.CONTENT_LIST_TYPE);
 
         // Set size and iterator
         this.size = datasetContents.size();
@@ -98,8 +103,7 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
      */
     private String getLatestCommitHash()
     {
-        final List<GitHubCommit> datasetCommits = httpRequester.getObjectFromUrl(SoepConstants.DATASET_COMMITS_URL,
-                                                                                 SoepConstants.LIST_TYPE);
+        final List<GitHubCommit> datasetCommits = webRequester.getObject(SoepConstants.DATASET_COMMITS_URL, SoepConstants.COMMIT_LIST_TYPE);
 
         // get sha of latest commit
         return datasetCommits.isEmpty() ? null : datasetCommits.get(0).getSha();
@@ -128,6 +132,36 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
 
 
     /**
+     * Iterates through the rows of a CSV file that is loaded from a specified URL.
+     *
+     * @param url a URL that points to a CSV file
+     * @param iterFunction a consumer function that accepts each row of the CSV file
+     *
+     * @throws IOException if there is an error reading the CSV file
+     */
+    private void parseCsvFromWeb(final String url, Consumer<String[]> iterFunction) throws IOException
+    {
+        LOGGER.info(String.format(SoepConstants.LOADING_FILE_INFO, url.substring(url.lastIndexOf('/') + 1)));
+        final HttpURLConnection csvConnection = webRequester.sendWebRequest(
+                                                    RestRequestType.GET,
+                                                    url,
+                                                    null, null, MediaType.TEXT_PLAIN, 0);
+
+        try
+            (InputStream inputStream = csvConnection.getInputStream();
+             InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+             CSVReader csvReader = new CSVReaderBuilder(bufferedReader).withSkipLines(1).build()) {
+
+            String[] row;
+
+            while ((row = csvReader.readNext()) != null)
+                iterFunction.accept(row);
+        }
+    }
+
+
+    /**
      * Load dataset file descriptions from a CSV file to a Map.
      *
      * @return a Map of dataset names to {@linkplain DatasetMetadata}
@@ -135,34 +169,21 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
      */
     public Map<String, DatasetMetadata> loadDatasetMetadata() throws IOException
     {
-        // Download dataset CSV file content
-        LOGGER.info("Loading the SOEP datasets...");
-        final String csvContent = httpRequester.getRestResponse(
-                                      RestRequestType.GET,
-                                      SoepConstants.DATASETS_CSV_DOWNLOAD_URL,
-                                      null);
-
-        // Parse "datasets" CSV file
         final Map<String, DatasetMetadata> metadataMap = new HashMap<>();
 
-        try
-            (Reader reader = new BufferedReader(new StringReader(csvContent))) {
-            CsvToBean<DatasetMetadata> csvMapper = new CsvToBeanBuilder<DatasetMetadata>(reader)
-            .withType(DatasetMetadata.class)
-            .withIgnoreLeadingWhiteSpace(true)
-            .build();
+        final Consumer<String[]> addFunction = (String[] row) -> {
+            final DatasetMetadata dm = new DatasetMetadata(row);
+            metadataMap.put(dm.getDatasetName(), dm);
+        };
 
-            // Read records one by one in a Map<String, DatasetMetadata> instance
-            final Iterator<DatasetMetadata> csvIterator = csvMapper.iterator();
-
-            while (csvIterator.hasNext()) {
-                final DatasetMetadata metadata = csvIterator.next();
-                metadataMap.put(metadata.getDatasetName(), metadata);
-            }
-        }
+        parseCsvFromWeb(
+            SoepConstants.DATASETS_CSV_DOWNLOAD_URL,
+            addFunction);
 
         return metadataMap;
     }
+
+
 
 
     /**
@@ -173,31 +194,19 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
      */
     public Map<String, ConceptMetadata> loadConceptMetadata() throws IOException
     {
-        // Download concepts CSV file content
-        LOGGER.info("Loading SOEP concepts dataset...");
-        final String csvContent = httpRequester.getRestResponse(
-                                      RestRequestType.GET,
-                                      SoepConstants.CONCEPTS_CSV_DOWNLOAD_URL,
-                                      null);
+        final Map<String, ConceptMetadata> conceptsDescription = new HashMap<>();
+
+        final Consumer<String[]> addFunction = (String[] row) -> {
+            final ConceptMetadata cm = new ConceptMetadata(row);
+            conceptsDescription.put(cm.getConceptName(), cm);
+        };
 
         // Parse "concepts" CSV file
-        final Map<String, ConceptMetadata> conceptDescription = new HashMap<>();
+        parseCsvFromWeb(
+            SoepConstants.CONCEPTS_CSV_DOWNLOAD_URL,
+            addFunction);
 
-        // When reading CSV content, skip table header, hence withSkipLines(1) invoked
-        try
-            (Reader reader = new BufferedReader(new StringReader(csvContent));
-             CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build()) {
-            // Read records one by one; put them in a List<ConceptMetadata>
-            ConceptMetadata cm;
-            String[] nextRecord;
-
-            while ((nextRecord = csvReader.readNext()) != null) {
-                cm = new ConceptMetadata(nextRecord);
-                conceptDescription.put(cm.getConceptName().toLowerCase(), cm);
-            }
-        }
-
-        return conceptDescription;
+        return conceptsDescription;
     }
 
 
@@ -207,66 +216,30 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
      * @throws IOException if the CSV file could not be read
      * @return a List of concept names to {@linkplain DatasetMetadata}
      */
-    public Map<String, VariableMetadata> loadVariableMetadata() throws IOException
+    public Map<String, List<VariableMetadata>> loadVariableMetadata() throws IOException
     {
-        // Download variables CSV file content
-        LOGGER.info("Loading SOEP variables...");
-        final String csvContent = httpRequester.getRestResponse(
-                                      RestRequestType.GET,
-                                      SoepConstants.VARIABLES_CSV_DOWNLOAD_URL,
-                                      null);
+        final Map<String, List<VariableMetadata>> variableMap = new HashMap<>();
+
+        final Consumer<String[]> addFunction = (String[] row) -> {
+            final VariableMetadata vm = new VariableMetadata(row);
+            final String key = vm.getDatasetName();
+            List<VariableMetadata> variableMetadata = variableMap.get(key);
+
+            if (variableMetadata == null)
+            {
+                variableMetadata = new LinkedList<>();
+                variableMap.put(key, variableMetadata);
+            }
+
+            variableMetadata.add(vm);
+        };
 
         // Parse "variables" CSV file
-        final Map<String, VariableMetadata> variablesDescription = new HashMap<>();
+        parseCsvFromWeb(
+            SoepConstants.VARIABLES_CSV_DOWNLOAD_URL,
+            addFunction);
 
-        // When reading CSV content, skip table header, hence: withSkipLines(1)
-        try
-            (Reader reader = new BufferedReader(new StringReader(csvContent));
-             CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build()) {
-
-            // Read records one by one; put them in a Map<String, VariableMetadata>
-            VariableMetadata vm;
-            String[] nextRecord;
-
-            while ((nextRecord = csvReader.readNext()) != null) {
-                vm = new VariableMetadata(nextRecord);
-                variablesDescription.put(vm.getVariableName().toLowerCase(), vm);
-            }
-        }
-
-        return variablesDescription;
-    }
-
-
-    /**
-     * Returns metadata for a specified file.
-     *
-     * @param content information about the dataset
-     * @return the metadata of the file
-     */
-    public DatasetMetadata getDatasetMetadata(final GitHubContent content)
-    {
-        final String datasetName = content.getName().substring(0, content.getName().lastIndexOf('.'));
-        return datasetDescriptions.get(datasetName);
-    }
-
-
-    /**
-     * Retrieve records that contain the variables associated with a dataset.
-     * @param datasetName Dataset name
-     * @return List<VariableMetadata> A list of VariableMetadata "records"
-     **/
-    private List<VariableMetadata> getVariableMetadataRecords(final String datasetName)
-    {
-        List<VariableMetadata> variableMetadataRecords = new LinkedList<>();
-
-        // Loop through <variableDescriptions> and add the elements that match the dataset name
-        for (VariableMetadata vm : variableDescriptions.values()) {
-            if (vm.getDatasetName().equalsIgnoreCase(datasetName))
-                variableMetadataRecords.add(vm);
-        }
-
-        return variableMetadataRecords;
+        return variableMap;
     }
 
 
@@ -281,8 +254,12 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
         Map<String, ConceptMetadata> conceptMetadataRecords = new HashMap<>();
 
         // 1. Loop through VariableMetadata from the input, and add the ones matching the dataset name
-        for (VariableMetadata vm : variableMetadata)
-            conceptMetadataRecords.put(vm.getVariableName(), conceptDescriptions.get(vm.getConceptName()));
+        for (VariableMetadata vm : variableMetadata) {
+            final String key = vm.getConceptName();
+
+            if (!key.isEmpty())
+                conceptMetadataRecords.put(key, conceptDescriptions.get(key));
+        }
 
         return conceptMetadataRecords;
     }
@@ -315,7 +292,7 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
             if (datasetMetadata == null)
                 return null;
 
-            final List<VariableMetadata> variableMetadataRecords = getVariableMetadataRecords(datasetName);
+            final List<VariableMetadata> variableMetadataRecords = variableDescriptions.get(datasetName);
             final Map<String, ConceptMetadata> variableConceptMetadataRecords = getVariableConceptMap(variableMetadataRecords);
 
             return new SoepFileVO(content, datasetMetadata, variableMetadataRecords, variableConceptMetadataRecords);
@@ -323,7 +300,7 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
 
         private String getDatasetName(GitHubContent content)
         {
-            return content.getName().substring(0, content.getName().lastIndexOf('.')).toLowerCase();
+            return content.getName().substring(0, content.getName().lastIndexOf('.'));
         }
     }
 }

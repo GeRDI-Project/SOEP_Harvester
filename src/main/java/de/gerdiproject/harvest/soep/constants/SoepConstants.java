@@ -15,11 +15,13 @@
  */
 package de.gerdiproject.harvest.soep.constants;
 
-import com.google.gson.reflect.TypeToken;
-import de.gerdiproject.harvest.github.json.GitHubContent;
-
 import java.lang.reflect.Type;
 import java.util.List;
+
+import com.google.gson.reflect.TypeToken;
+
+import de.gerdiproject.harvest.github.json.GitHubCommit;
+import de.gerdiproject.harvest.github.json.GitHubContent;
 
 /**
  * This static class contains constants that are specific to SOEP's GitHub repository.
@@ -68,5 +70,7 @@ public class SoepConstants
     public static final String CONCEPT_LABEL_DE = "de";
 
     // Type constant
-    public static final Type LIST_TYPE = new TypeToken<List<GitHubContent>>() {} .getType();
+    public static final Type CONTENT_LIST_TYPE = new TypeToken<List<GitHubContent>>() {} .getType();
+    public static final Type COMMIT_LIST_TYPE = new TypeToken<List<GitHubCommit>>() {} .getType();
+    public static final String LOADING_FILE_INFO = "Loading SOEP %s...";
 }

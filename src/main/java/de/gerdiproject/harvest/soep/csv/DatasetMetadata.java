@@ -15,8 +15,6 @@
  */
 package de.gerdiproject.harvest.soep.csv;
 
-import com.opencsv.bean.CsvBindByName;
-
 import lombok.Data;
 
 /**
@@ -26,24 +24,23 @@ import lombok.Data;
 @Data
 public class DatasetMetadata
 {
-    @CsvBindByName(column = "study_name", required = true)
     private String studyName;
-
-    @CsvBindByName(column = "dataset_name", required = true)
     private String datasetName;
-
-    @CsvBindByName(column = "period_name", required = true)
     private String periodName;
-
-    @CsvBindByName(column = "analysis_unit_name")
     private String analysisUnitName;
-
-    @CsvBindByName(column = "conceptual_dataset_name")
     private String conceptualDatasetName;
-
-    @CsvBindByName(column = "label")
     private String label;
 
-    @CsvBindByName(column = "description")
     private String description;
+
+    public DatasetMetadata(String[] row)
+    {
+        this.studyName = row[0];
+        this.datasetName = row[1];
+        this.periodName = row[2];
+        this.analysisUnitName = row[3];
+        this.conceptualDatasetName = row[4];
+        this.label = row[5];
+        this.description = row[6];
+    }
 }

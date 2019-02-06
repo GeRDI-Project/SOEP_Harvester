@@ -15,7 +15,11 @@
  */
 package de.gerdiproject.harvest.etls.transformers;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 import de.gerdiproject.harvest.etls.extractors.SoepFileVO;
 import de.gerdiproject.harvest.soep.constants.SoepConstants;
@@ -190,6 +194,9 @@ public class SoepTransformer extends AbstractIteratorTransformer<SoepFileVO, Dat
      */
     private Set<SoepConcept> getSoepConcepts(ConceptMetadata conceptMetadata)
     {
+        if (conceptMetadata == null)
+            return null;
+
         final Set<SoepConcept> conceptSet = new HashSet<>();
 
         conceptSet.add(new SoepConcept(
@@ -202,7 +209,7 @@ public class SoepTransformer extends AbstractIteratorTransformer<SoepFileVO, Dat
                            conceptMetadata.getLabel(),
                            SoepConstants.CONCEPT_LABEL_EN));
 
-        return conceptSet.isEmpty() ? null : conceptSet;
+        return conceptSet;
     }
 
 
