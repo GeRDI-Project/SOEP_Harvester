@@ -157,7 +157,7 @@ public class SoepTransformer extends AbstractIteratorTransformer<SoepFileVO, Dat
         // E3. ResearchData{dataIdentifier, dataURL, dataLabel, dataType}
         final List<ResearchData> files = new LinkedList<>();
         final String fileType = vo.getContent().getDownloadUrl().substring(vo.getContent().getDownloadUrl()
-                                .lastIndexOf('.') + 1).toUpperCase();
+                                                                           .lastIndexOf('.') + 1).toUpperCase();
         final ResearchData researchData = new ResearchData(vo.getContent().getDownloadUrl(), fileType);
         researchData.setType(fileType);
         files.add(researchData);

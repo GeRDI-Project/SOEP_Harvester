@@ -20,12 +20,9 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 
-import java.lang.reflect.Type;
 import java.nio.file.DirectoryStream;
 
 import java.util.*;
-
-import com.google.gson.reflect.TypeToken;
 
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
@@ -62,7 +59,7 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
     private Map<String, ConceptMetadata> conceptDescriptions;
     private Iterator<GitHubContent> datasetIterator;
     private String commitHash = null;
-    private int size;
+    private int size = -1;
 
 
     @Override
@@ -82,8 +79,8 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
         }
 
         // Get list of datasets
-        final Type listType = new TypeToken<List<GitHubContent>>() {} .getType();
-        final List<GitHubContent> datasetContents = httpRequester.getObjectFromUrl(SoepConstants.DATASETS_CONTENT_URL, listType);
+        final List<GitHubContent> datasetContents = httpRequester.getObjectFromUrl(SoepConstants.DATASETS_CONTENT_URL,
+                                                                                   SoepConstants.LIST_TYPE);
 
         // Set size and iterator
         this.size = datasetContents.size();
@@ -101,8 +98,8 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
      */
     private String getLatestCommitHash()
     {
-        final Type listType = new TypeToken<List<GitHubCommit>>() {} .getType();
-        final List<GitHubCommit> datasetCommits = httpRequester.getObjectFromUrl(SoepConstants.DATASET_COMMITS_URL, listType);
+        final List<GitHubCommit> datasetCommits = httpRequester.getObjectFromUrl(SoepConstants.DATASET_COMMITS_URL,
+                                                                                 SoepConstants.LIST_TYPE);
 
         // get sha of latest commit
         return datasetCommits.isEmpty() ? null : datasetCommits.get(0).getSha();
@@ -156,7 +153,10 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
             .build();
 
             // Read records one by one in a Map<String, DatasetMetadata> instance
-            for (DatasetMetadata metadata : (Iterable<DatasetMetadata>) csvMapper) {
+            final Iterator<DatasetMetadata> csvIterator = csvMapper.iterator();
+
+            while (csvIterator.hasNext()) {
+                final DatasetMetadata metadata = csvIterator.next();
                 metadataMap.put(metadata.getDatasetName(), metadata);
             }
         }
@@ -174,30 +174,30 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
     public Map<String, ConceptMetadata> loadConceptMetadata() throws IOException
     {
         // Download concepts CSV file content
-        LOGGER.info("Loading SOEP concepts...");
+        LOGGER.info("Loading SOEP concepts dataset...");
         final String csvContent = httpRequester.getRestResponse(
                                       RestRequestType.GET,
                                       SoepConstants.CONCEPTS_CSV_DOWNLOAD_URL,
                                       null);
 
         // Parse "concepts" CSV file
-        final Map<String, ConceptMetadata> conceptsDescription = new HashMap<>();
+        final Map<String, ConceptMetadata> conceptDescription = new HashMap<>();
 
         // When reading CSV content, skip table header, hence withSkipLines(1) invoked
         try
             (Reader reader = new BufferedReader(new StringReader(csvContent));
-                    CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build()) {
+             CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build()) {
             // Read records one by one; put them in a List<ConceptMetadata>
-            List<String[]> stringsList = csvReader.readAll();
             ConceptMetadata cm;
+            String[] nextRecord;
 
-            for (String[] str : stringsList) {
-                cm = new ConceptMetadata(str);
-                conceptsDescription.put(cm.getConceptName().toLowerCase(), cm);
+            while ((nextRecord = csvReader.readNext()) != null) {
+                cm = new ConceptMetadata(nextRecord);
+                conceptDescription.put(cm.getConceptName().toLowerCase(), cm);
             }
         }
 
-        return conceptsDescription;
+        return conceptDescription;
     }
 
 
@@ -222,7 +222,7 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
         // When reading CSV content, skip table header, hence: withSkipLines(1)
         try
             (Reader reader = new BufferedReader(new StringReader(csvContent));
-                    CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build()) {
+             CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build()) {
 
             // Read records one by one; put them in a Map<String, VariableMetadata>
             VariableMetadata vm;
@@ -261,8 +261,8 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
         List<VariableMetadata> variableMetadataRecords = new LinkedList<>();
 
         // Loop through <variableDescriptions> and add the elements that match the dataset name
-        for(VariableMetadata vm : variableDescriptions.values()) {
-            if(vm.getDatasetName().equalsIgnoreCase(datasetName))
+        for (VariableMetadata vm : variableDescriptions.values()) {
+            if (vm.getDatasetName().equalsIgnoreCase(datasetName))
                 variableMetadataRecords.add(vm);
         }
 
@@ -281,9 +281,8 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
         Map<String, ConceptMetadata> conceptMetadataRecords = new HashMap<>();
 
         // 1. Loop through VariableMetadata from the input, and add the ones matching the dataset name
-        for(VariableMetadata vm : variableMetadata) {
+        for (VariableMetadata vm : variableMetadata)
             conceptMetadataRecords.put(vm.getVariableName(), conceptDescriptions.get(vm.getConceptName()));
-        }
 
         return conceptMetadataRecords;
     }
@@ -313,7 +312,7 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
             final DatasetMetadata datasetMetadata = datasetDescriptions.get(datasetName);
 
             // Abort if there is no metadata
-            if(datasetMetadata == null)
+            if (datasetMetadata == null)
                 return null;
 
             final List<VariableMetadata> variableMetadataRecords = getVariableMetadataRecords(datasetName);

@@ -15,6 +15,12 @@
  */
 package de.gerdiproject.harvest.soep.constants;
 
+import com.google.gson.reflect.TypeToken;
+import de.gerdiproject.harvest.github.json.GitHubContent;
+
+import java.lang.reflect.Type;
+import java.util.List;
+
 /**
  * This static class contains constants that are specific to SOEP's GitHub repository.
  * @author Fidan Limani
@@ -60,4 +66,7 @@ public class SoepConstants
     // The concept label language
     public static final String CONCEPT_LABEL_EN = "en";
     public static final String CONCEPT_LABEL_DE = "de";
+
+    // Type constant
+    public static final Type LIST_TYPE = new TypeToken<List<GitHubContent>>() {} .getType();
 }
