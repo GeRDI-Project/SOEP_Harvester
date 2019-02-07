@@ -15,11 +15,15 @@
  */
 package de.gerdiproject.harvest.soep.constants;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 /**
  * Constants used for logging for SOEP harvester classes
  *
  * @author Fidan Limani
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class SoepLoggingConstants
 {
     public static final String DIR_EXISTS = " already exists";

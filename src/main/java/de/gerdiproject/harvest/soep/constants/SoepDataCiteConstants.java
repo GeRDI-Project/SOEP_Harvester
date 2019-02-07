@@ -20,7 +20,12 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import de.gerdiproject.json.datacite.*;
+import de.gerdiproject.json.datacite.Contributor;
+import de.gerdiproject.json.datacite.Creator;
+import de.gerdiproject.json.datacite.Date;
+import de.gerdiproject.json.datacite.DateRange;
+import de.gerdiproject.json.datacite.ResourceType;
+import de.gerdiproject.json.datacite.Subject;
 import de.gerdiproject.json.datacite.enums.ContributorType;
 import de.gerdiproject.json.datacite.enums.DateType;
 import de.gerdiproject.json.datacite.enums.NameType;
@@ -30,11 +35,14 @@ import de.gerdiproject.json.datacite.extension.generic.WebLink;
 import de.gerdiproject.json.datacite.extension.generic.constants.ResearchDisciplineConstants;
 import de.gerdiproject.json.datacite.extension.generic.enums.WebLinkType;
 import de.gerdiproject.json.datacite.nested.PersonName;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
  * This static class contains constants that are used for creating DataCite documents of SOEP.
  * @author Fidan Limani
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class SoepDataCiteConstants
 {
     // Resource identifier
@@ -116,10 +124,6 @@ public class SoepDataCiteConstants
     // SIZES
     public static final String SIZE_BYTES = "%d bytes";
 
-    /**
-     * Private constructor, because this is a static class.
-     */
-    private SoepDataCiteConstants() {}
 
     /**
      * Initializes a WebLink that leads to SOEP logo.
@@ -133,6 +137,7 @@ public class SoepDataCiteConstants
         logoLink.setType(WebLinkType.ProviderLogoURL);
         return logoLink;
     }
+
 
     /**
      * Initializes a Creator dummy for all SOEP documents.
@@ -152,6 +157,7 @@ public class SoepDataCiteConstants
         return tempCreatorList;
     }
 
+
     /**
      * Initializes the only ResourceType of all SOEP documents;
      * @return a ResourceType representing JSON datasets;
@@ -160,6 +166,7 @@ public class SoepDataCiteConstants
     {
         return  new ResourceType("JSON", ResourceTypeGeneral.Dataset);
     }
+
 
     /**
      * This method assign the two closest matching research disciplines for SOEP
@@ -172,6 +179,7 @@ public class SoepDataCiteConstants
                                                 ResearchDisciplineConstants.STATISTICS_AND_ECONOMETRICS));
     }
 
+
     /**
      * Create a Contributor instance specifying SOEP dataset collector
      * @return A Contributor
@@ -181,6 +189,7 @@ public class SoepDataCiteConstants
         PersonName contributorName = new PersonName(SoepDataCiteConstants.COLLECTOR_CONTRIBUTOR_NAME, NameType.Organisational);
         return new Contributor(contributorName, ContributorType.DataCollector);
     }
+
 
     /**
      * Add (keyword/phrases) subject descriptions for SOEP

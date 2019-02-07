@@ -187,8 +187,6 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
     }
 
 
-
-
     /**
      * Load concept file descriptions from a CSV file to a List.
      *

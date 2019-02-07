@@ -22,11 +22,14 @@ import com.google.gson.reflect.TypeToken;
 
 import de.gerdiproject.harvest.github.json.GitHubCommit;
 import de.gerdiproject.harvest.github.json.GitHubContent;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
  * This static class contains constants that are specific to SOEP's GitHub repository.
  * @author Fidan Limani
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class SoepConstants
 {
     /**
