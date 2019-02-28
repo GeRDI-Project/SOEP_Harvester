@@ -212,10 +212,11 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
 
 
     /**
+     * Load the variable descriptions for every dataset.
      * Load concept file descriptions from a CSV file to a List.
      *
      * @throws IOException if the CSV file could not be read
-     * @return a List of concept names to {@linkplain DatasetMetadata}
+     * @return a Map of datasets and their corresponding variable metadata {@linkplain VariableMetadata}
      */
     public Map<String, List<VariableMetadata>> loadVariableMetadata() throws IOException
     {

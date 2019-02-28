@@ -57,10 +57,6 @@ public class SoepTransformer extends AbstractIteratorTransformer<SoepFileVO, Dat
         // Specify source ID for harvested file
         final DatasetMetadata metadata = vo.getDatasetMetadata();
 
-        // Abort if there is no metadata
-        if (metadata == null)
-            return null;
-
         String sourceTitle = metadata.getLabel();
 
         // Create the document to contain SOEP metadata for every given file from its dataset
