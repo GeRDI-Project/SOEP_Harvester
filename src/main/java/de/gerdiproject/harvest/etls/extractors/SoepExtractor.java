@@ -213,7 +213,6 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
 
     /**
      * Load the variable descriptions for every dataset.
-     * Load concept file descriptions from a CSV file to a List.
      *
      * @throws IOException if the CSV file could not be read
      * @return a Map of datasets and their corresponding variable metadata {@linkplain VariableMetadata}
@@ -225,13 +224,7 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
         final Consumer<String[]> addFunction = (String[] row) -> {
             final VariableMetadata vm = new VariableMetadata(row);
             final String key = vm.getDatasetName();
-            List<VariableMetadata> variableMetadata = variableMap.get(key);
-
-            if (variableMetadata == null)
-            {
-                variableMetadata = new LinkedList<>();
-                variableMap.put(key, variableMetadata);
-            }
+            List<VariableMetadata> variableMetadata = variableMap.computeIfAbsent(key, k -> new LinkedList<>());
 
             variableMetadata.add(vm);
         };
@@ -247,6 +240,7 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
 
     /**
      * Associate variable names of a dataset with ConceptMetadata.
+     *
      * @param variableMetadata List of VariableMetadata elements that describe the dataset at hand.
      * @return List<VariableMetadata> A map of variable name - ConceptMetadata "records"
      **/
@@ -268,8 +262,8 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
 
 
     /**
-     * This iterator uses a {@linkplain DirectoryStream} to iterate through local SOEP datasets
-     * and generates a {@linkplain SoepFileVO} for each file.
+     * This iterator uses a {@linkplain DirectoryStream} to iterate through local SOEP datasets and generates a
+     * {@linkplain SoepFileVO} for each file.
      *
      * @author Robin Weiss
      */
