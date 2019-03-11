@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>SOEP-Harvester</artifactId>
-	<version>7.3.1-SNAPSHOT</version>
+	<version>7.3.4-SNAPSHOT</version>
     <packaging>war</packaging>
     <name>SOEP Harvester Service</name>
     <description>A harvester service for retrieving data from: https://github.com/paneldata/soep-core/</description>
@@ -26,6 +26,15 @@
             <groupId>com.opencsv</groupId>
             <artifactId>opencsv</artifactId>
             <version>${openscv.dependency.version}</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/javax.xml.ws/jaxws-api
+            Required if higher versions of Java JDK are deployed (JDK 11 in this case)
+        -->
+        <dependency>
+            <groupId>javax.xml.ws</groupId>
+            <artifactId>jaxws-api</artifactId>
+            <version>2.3.1</version>
         </dependency>
     </dependencies>
 	

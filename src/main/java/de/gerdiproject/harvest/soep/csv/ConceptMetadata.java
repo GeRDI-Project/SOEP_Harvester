@@ -18,29 +18,28 @@ package de.gerdiproject.harvest.soep.csv;
 import lombok.Data;
 
 /**
- *  This class retrieves SOEP dataset file attributes, to be used during harvesting.
+ *  This class models and maps SOEP concepts from a repository file, to be retrieved during harvesting.
  *  @author Fidan Limani
  */
 @Data
-public class DatasetMetadata
+public class ConceptMetadata
 {
-    private String studyName;
-    private String datasetName;
-    private String periodName;
-    private String analysisUnitName;
-    private String conceptualDatasetName;
+    private String conceptName;
+    private String topic;
+    private String topicName;
+    private String labelDE;
     private String label;
 
-    private String description;
-
-    public DatasetMetadata(String[] row)
+    /**
+     * Creates a SOEP concept based on a metadata set
+     * @param datasetAttributes read from "concepts.csv".
+     */
+    public ConceptMetadata(String[] datasetAttributes)
     {
-        this.studyName = row[0];
-        this.datasetName = row[1];
-        this.periodName = row[2];
-        this.analysisUnitName = row[3];
-        this.conceptualDatasetName = row[4];
-        this.label = row[5];
-        this.description = row[6];
+        this.conceptName = datasetAttributes[0];
+        this.topic = datasetAttributes[1];
+        this.topicName = datasetAttributes[2];
+        this.labelDE = datasetAttributes[3];
+        this.label = datasetAttributes[4];
     }
 }

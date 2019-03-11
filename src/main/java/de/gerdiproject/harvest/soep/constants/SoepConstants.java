@@ -1,5 +1,5 @@
 /**
- * Copyright © 2017 Fidan Limani (http://www.gerdi-project.de)
+ * Copyright © 2017 Fidan Limani, Robin Weiss (http://www.gerdi-project.de)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,23 +15,31 @@
  */
 package de.gerdiproject.harvest.soep.constants;
 
+import java.lang.reflect.Type;
+import java.util.List;
+
+import com.google.gson.reflect.TypeToken;
+
+import de.gerdiproject.harvest.github.json.GitHubCommit;
+import de.gerdiproject.harvest.github.json.GitHubContent;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 /**
  * This static class contains constants that are specific to SOEP's GitHub repository.
  * @author Fidan Limani
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class SoepConstants
 {
     /**
      * GitHub-related constants
      * */
     public static final String TREE = "tree";
-    public static final String BLOB = "blob";
     public static final String VIEW_TREE = "View tree file";
     public static final String VIEW_RAW = "View raw file";
-    public static final String SOEP_REMOTE_REPO_NAME = "SOEP-core";
 
     public static final String SOEP_REMOTE_REPO_URL = "https://github.com/paneldata/soep-core";
-    public static final String ORIGIN_MASTER = "refs/remotes/origin/master";
 
     private static final String API_BASE_URL = "https://api.github.com/repos/paneldata/soep-core/";
     private static final String DATASETS_PATH = "ddionrails/datasets/";
@@ -55,7 +63,17 @@ public class SoepConstants
         + DATASETS_PATH;
 
     public static final String DATASETS_CSV_DOWNLOAD_URL = "https://raw.githubusercontent.com/paneldata/soep-core/master/ddionrails/datasets.csv";
+    public static final String VARIABLES_CSV_DOWNLOAD_URL = "https://raw.githubusercontent.com/paneldata/soep-core/master/ddionrails/variables.csv";
+    public static final String CONCEPTS_CSV_DOWNLOAD_URL = "https://raw.githubusercontent.com/paneldata/soep-core/master/ddionrails/concepts.csv";
 
-    public static final String STUDY_TITLE = "Socio-Economic Panel (SOEP), data from 1984-2016";
     public static final String SOEP_ETL_NAME = "SoepETL";
+
+    // The concept label language
+    public static final String CONCEPT_LABEL_EN = "en";
+    public static final String CONCEPT_LABEL_DE = "de";
+
+    // Type constant
+    public static final Type CONTENT_LIST_TYPE = new TypeToken<List<GitHubContent>>() {} .getType();
+    public static final Type COMMIT_LIST_TYPE = new TypeToken<List<GitHubCommit>>() {} .getType();
+    public static final String LOADING_FILE_INFO = "Loading SOEP %s...";
 }

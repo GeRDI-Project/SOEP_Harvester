@@ -1,5 +1,5 @@
 /**
- * Copyright © 2017 Fidan Limani (http://www.gerdi-project.de)
+ * Copyright © 2017 Fidan Limani, Robin Weiss (http://www.gerdi-project.de)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import de.gerdiproject.json.datacite.Creator;
 import de.gerdiproject.json.datacite.Date;
 import de.gerdiproject.json.datacite.DateRange;
 import de.gerdiproject.json.datacite.ResourceType;
+import de.gerdiproject.json.datacite.Subject;
 import de.gerdiproject.json.datacite.enums.ContributorType;
 import de.gerdiproject.json.datacite.enums.DateType;
 import de.gerdiproject.json.datacite.enums.NameType;
@@ -34,11 +35,14 @@ import de.gerdiproject.json.datacite.extension.generic.WebLink;
 import de.gerdiproject.json.datacite.extension.generic.constants.ResearchDisciplineConstants;
 import de.gerdiproject.json.datacite.extension.generic.enums.WebLinkType;
 import de.gerdiproject.json.datacite.nested.PersonName;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
  * This static class contains constants that are used for creating DataCite documents of SOEP.
  * @author Fidan Limani
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class SoepDataCiteConstants
 {
     // Resource identifier
@@ -61,6 +65,13 @@ public class SoepDataCiteConstants
     // SOURCE
     public static final String PROVIDER = "German Socio-Economic Panel Study (SOEP)";
     public static final String REPOSITORY_ID = "SOEP";
+    public static final List<Subject> SUBJECTS = createSubjects("longitudinal study of private households",
+                                                                "household composition",
+                                                                "occupational biographies",
+                                                                "employment",
+                                                                "earnings",
+                                                                "health and satisfaction indicators",
+                                                                "Families in Germany");
     public static final List<AbstractResearch> DISCIPLINES = createResearchDisciplines();
 
     // CONTRIBUTORS
@@ -113,10 +124,6 @@ public class SoepDataCiteConstants
     // SIZES
     public static final String SIZE_BYTES = "%d bytes";
 
-    /**
-     * Private constructor, because this is a static class.
-     */
-    private SoepDataCiteConstants() {}
 
     /**
      * Initializes a WebLink that leads to SOEP logo.
@@ -130,6 +137,7 @@ public class SoepDataCiteConstants
         logoLink.setType(WebLinkType.ProviderLogoURL);
         return logoLink;
     }
+
 
     /**
      * Initializes a Creator dummy for all SOEP documents.
@@ -149,6 +157,7 @@ public class SoepDataCiteConstants
         return tempCreatorList;
     }
 
+
     /**
      * Initializes the only ResourceType of all SOEP documents;
      * @return a ResourceType representing JSON datasets;
@@ -157,6 +166,7 @@ public class SoepDataCiteConstants
     {
         return  new ResourceType("JSON", ResourceTypeGeneral.Dataset);
     }
+
 
     /**
      * This method assign the two closest matching research disciplines for SOEP
@@ -169,6 +179,7 @@ public class SoepDataCiteConstants
                                                 ResearchDisciplineConstants.STATISTICS_AND_ECONOMETRICS));
     }
 
+
     /**
      * Create a Contributor instance specifying SOEP dataset collector
      * @return A Contributor
@@ -177,5 +188,21 @@ public class SoepDataCiteConstants
     {
         PersonName contributorName = new PersonName(SoepDataCiteConstants.COLLECTOR_CONTRIBUTOR_NAME, NameType.Organisational);
         return new Contributor(contributorName, ContributorType.DataCollector);
+    }
+
+
+    /**
+     * Add (keyword/phrases) subject descriptions for SOEP
+     * @param subjectStringList Subject keywords/phrases that describe SOEP study
+     * @return A list of Subjects
+     */
+    private static List<Subject> createSubjects(String... subjectStringList)
+    {
+        List<Subject> subjects = new LinkedList<>();
+
+        for (String subject : subjectStringList)
+            subjects.add(new Subject(subject));
+
+        return subjects;
     }
 }

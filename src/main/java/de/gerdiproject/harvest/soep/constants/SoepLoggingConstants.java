@@ -1,5 +1,5 @@
 /**
- * Copyright © 2017 Fidan Limani (http://www.gerdi-project.de)
+ * Copyright © 2017 Fidan Limani, Robin Weiss (http://www.gerdi-project.de)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,15 @@
  */
 package de.gerdiproject.harvest.soep.constants;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 /**
  * Constants used for logging for SOEP harvester classes
  *
  * @author Fidan Limani
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class SoepLoggingConstants
 {
     public static final String DIR_EXISTS = " already exists";
@@ -42,6 +46,8 @@ public class SoepLoggingConstants
     public static final String REPO_MISSING_ERROR = "Repository does not exist. To be created next.";
     public static final String IO_EXCEPTION_ERROR = "Exception while initializing/accessing the local repository";
     public static final String GIT_API_EXCEPTION_ERROR = "Exception while setting up/cloning the repository.";
-    public static final String ERROR_READING_CSV_FILE = "Exception while reading SOEP dataset files metadata.";
-    public static final String ERROR_READING_DATASET_FILES = "Exception while reading SOEP dataset files.";
+    public static final String ERROR_READING_CSV_FILE = "Exception while reading SOEP CSV files.";
+    public static final String ERROR_READING_DATASET_FILES = "Exception while reading SOEP <dataset> files.";
+    public static final String ERROR_READING_CONCEPTS_FILES = "Exception while reading SOEP <concepts> files.";
+    public static final String ERROR_READING_VARIABLES_FILES = "Exception while reading SOEP <variables> files.";
 }
