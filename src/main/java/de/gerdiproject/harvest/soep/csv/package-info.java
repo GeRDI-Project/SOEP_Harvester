@@ -1,5 +1,5 @@
 /**
- * Copyright © 2017 Fidan Limani (http://www.gerdi-project.de)
+ * Copyright © 2017 Fidan Limani, Robin Weiss (http://www.gerdi-project.de)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 /**
- * This package contains the SOEP harvester class.
+ * This package contains classes that represent SOEP CSV files for variables, concepts and datasets.
  *
  * @author Fidan Limani
  */
-
-package de.gerdiproject.harvest.harvester;
+package de.gerdiproject.harvest.soep.csv;

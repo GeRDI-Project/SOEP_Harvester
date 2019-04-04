@@ -13,10 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/**
- * This package contains constants classes that support constants for SOEP, DataCite, and logging.
- *
- * @author Fidan Limani
- */
+package de.gerdiproject.harvest.github.json;
 
-package de.gerdiproject.harvest.soep.constants;
+import com.google.gson.JsonObject;
+import com.google.gson.annotations.SerializedName;
+
+import lombok.Data;
+
+/**
+ * This JSON object is part of a GitHub API response.
+ * It contains details about a GitHub commit.
+ *
+ * @author Robin Weiss
+ */
+@Data
+public class GitHubCommitDetails
+{
+    private String url;
+    private String message;
+
+    @SerializedName("comment_count")
+    private int commentCount;
+
+    private GitHubCommitter author;
+    private GitHubCommitter committer;
+
+    // seemingly unimportant information for now:
+    private JsonObject verification;
+    private JsonObject tree;
+}

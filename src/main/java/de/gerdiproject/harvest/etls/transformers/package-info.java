@@ -1,5 +1,5 @@
 /**
- * Copyright © 2017 Fidan Limani (http://www.gerdi-project.de)
+ * Copyright © 2017 Fidan Limani, Robin Weiss (http://www.gerdi-project.de)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 /**
- * This package contains a class that supports operations related to a local Git repository.
+ * This package contains {@linkplain de.gerdiproject.harvest.etls.transformers.ITransformer}s
+ * for SOEP data.
  *
- * @author Fidan Limani
+ * @author Robin Weiss
  */
-
-package de.gerdiproject.harvest.soep.utils;
+package de.gerdiproject.harvest.etls.transformers;

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 /**
- * This package contains constants classes that support constants for SOEP, DataCite, and logging.
+ * This package contains the SOEP harvester class.
  *
  * @author Fidan Limani
  */
 
-package de.gerdiproject.harvest.soep.constants;
+package de.gerdiproject.harvest.etls;

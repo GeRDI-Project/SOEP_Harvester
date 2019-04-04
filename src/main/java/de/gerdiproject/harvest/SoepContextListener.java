@@ -1,5 +1,5 @@
 /**
- * Copyright © 2017 Fidan Limani (http://www.gerdi-project.de)
+ * Copyright © 2017 Fidan Limani, Robin Weiss (http://www.gerdi-project.de)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,20 +15,30 @@
  */
 package de.gerdiproject.harvest;
 
-import de.gerdiproject.harvest.harvester.SoepHarvester;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.servlet.annotation.WebListener;
+
+import de.gerdiproject.harvest.application.ContextListener;
+import de.gerdiproject.harvest.etls.AbstractETL;
+import de.gerdiproject.harvest.etls.StaticIteratorETL;
+import de.gerdiproject.harvest.etls.extractors.SoepExtractor;
+import de.gerdiproject.harvest.etls.transformers.SoepTransformer;
+import de.gerdiproject.harvest.soep.constants.SoepConstants;
 
 /**
  * This class initializes the SOEP de.gerdiproject.harvest.harvester and all objects that are required.
  */
 
 @WebListener
-public class SoepContextListener extends ContextListener<SoepHarvester>
+public class SoepContextListener extends ContextListener
 {
     @Override
-    protected String getServiceName()
+    protected List<? extends AbstractETL<?, ?>> createETLs()
     {
-        return "SOEP Harvester Service";
+        return Arrays.asList(
+                   new StaticIteratorETL<>(SoepConstants.SOEP_ETL_NAME, new SoepExtractor(), new SoepTransformer())
+               );
     }
 }

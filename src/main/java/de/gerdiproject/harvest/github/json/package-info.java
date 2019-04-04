@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 /**
- * This package contains constants classes that support constants for SOEP, DataCite, and logging.
+ * This package contains GitHub JSON responses.
  *
- * @author Fidan Limani
+ * @author Robin Weiss
  */
-
-package de.gerdiproject.harvest.soep.constants;
+package de.gerdiproject.harvest.github.json;
