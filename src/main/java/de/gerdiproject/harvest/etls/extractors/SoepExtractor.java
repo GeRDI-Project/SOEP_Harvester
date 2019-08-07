@@ -28,7 +28,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
-import java.util.zip.GZIPInputStream;
 
 import javax.ws.rs.core.MediaType;
 
@@ -152,7 +151,7 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
                                                     null, null, MediaType.TEXT_PLAIN, 0);
 
         try
-            (InputStream inputStream = new GZIPInputStream(csvConnection.getInputStream());
+            (InputStream inputStream = webRequester.getInputStream(csvConnection);
              InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
              BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
              CSVReader csvReader = new CSVReaderBuilder(bufferedReader).withSkipLines(1).build()) {
@@ -299,5 +298,13 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
         {
             return content.getName().substring(0, content.getName().lastIndexOf('.'));
         }
+    }
+
+
+    @Override
+    public void clear()
+    {
+        // nothing to clean up
+        
     }
 }
