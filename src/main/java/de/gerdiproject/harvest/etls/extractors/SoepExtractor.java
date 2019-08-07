@@ -60,12 +60,13 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
     private static final Logger LOGGER = LoggerFactory.getLogger(SoepExtractor.class);
 
     private final WebDataRetriever webRequester = new WebDataRetriever(new Gson(), StandardCharsets.UTF_8);
-    private Map<String, DatasetMetadata> datasetDescriptions;
-    private Map<String, List<VariableMetadata>> variableDescriptions;
-    private Map<String, ConceptMetadata> conceptDescriptions;
-    private Iterator<GitHubContent> datasetIterator;
-    private String commitHash = null;
-    private int size = -1;
+    protected Map<String, DatasetMetadata> datasetDescriptions;
+    protected Map<String, List<VariableMetadata>> variableDescriptions;
+    protected Map<String, ConceptMetadata> conceptDescriptions;
+    protected Iterator<GitHubContent> datasetIterator;
+
+    private String commitHash;
+    private int datasetCount = -1;
 
 
     @Override
@@ -88,7 +89,7 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
         final List<GitHubContent> datasetContents = webRequester.getObject(SoepConstants.DATASETS_CONTENT_URL, SoepConstants.CONTENT_LIST_TYPE);
 
         // Set size and iterator
-        this.size = datasetContents.size();
+        this.datasetCount = datasetContents.size();
         this.datasetIterator = datasetContents.iterator();
     }
 
@@ -120,7 +121,7 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
     @Override
     public int size()
     {
-        return size;
+        return datasetCount;
     }
 
 
@@ -156,10 +157,15 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
              BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
              CSVReader csvReader = new CSVReaderBuilder(bufferedReader).withSkipLines(1).build()) {
 
-            String[] row;
 
-            while ((row = csvReader.readNext()) != null)
-                iterFunction.accept(row);
+            while (true) {
+                final String[] row = csvReader.readNext();
+
+                if (row == null)
+                    break;
+                else
+                    iterFunction.accept(row);
+            }
         }
     }
 
@@ -174,7 +180,7 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
     {
         final Map<String, DatasetMetadata> metadataMap = new HashMap<>();
 
-        final Consumer<String[]> addFunction = (final String[] row) -> {
+        final Consumer<String[]> addFunction = (final String... row) -> {
             final DatasetMetadata dm = new DatasetMetadata(row);
             metadataMap.put(dm.getDatasetName(), dm);
         };
@@ -197,7 +203,7 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
     {
         final Map<String, ConceptMetadata> conceptsDescription = new HashMap<>();
 
-        final Consumer<String[]> addFunction = (final String[] row) -> {
+        final Consumer<String[]> addFunction = (final String... row) -> {
             final ConceptMetadata cm = new ConceptMetadata(row);
             conceptsDescription.put(cm.getConceptName(), cm);
         };
@@ -221,7 +227,7 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
     {
         final Map<String, List<VariableMetadata>> variableMap = new HashMap<>();
 
-        final Consumer<String[]> addFunction = (final String[] row) -> {
+        final Consumer<String[]> addFunction = (final String... row) -> {
             final VariableMetadata vm = new VariableMetadata(row);
             final String key = vm.getDatasetName();
             final List<VariableMetadata> variableMetadata = variableMap.computeIfAbsent(key, k -> new LinkedList<>());
@@ -235,29 +241,6 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
             addFunction);
 
         return variableMap;
-    }
-
-
-    /**
-     * Associate variable names of a dataset with ConceptMetadata.
-     *
-     * @param variableMetadata List of VariableMetadata elements that describe the dataset at hand.
-     * @return List<VariableMetadata> A map of variable name - ConceptMetadata "records"
-     **/
-    private Map<String, ConceptMetadata> getVariableConceptMap(final List<VariableMetadata> variableMetadata)
-    {
-        // input: Map<String, VariableMetadata> variableDescriptions
-        final Map<String, ConceptMetadata> conceptMetadataRecords = new HashMap<>();
-
-        // 1. Loop through VariableMetadata from the input, and add the ones matching the dataset name
-        for (final VariableMetadata vm : variableMetadata) {
-            final String key = vm.getConceptName();
-
-            if (!key.isEmpty())
-                conceptMetadataRecords.put(key, conceptDescriptions.get(key));
-        }
-
-        return conceptMetadataRecords;
     }
 
 
@@ -294,9 +277,33 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
             return new SoepFileVO(content, datasetMetadata, variableMetadataRecords, variableConceptMetadataRecords);
         }
 
+
         private String getDatasetName(final GitHubContent content)
         {
             return content.getName().substring(0, content.getName().lastIndexOf('.'));
+        }
+
+
+        /**
+         * Associate variable names of a dataset with ConceptMetadata.
+         *
+         * @param variableMetadata List of VariableMetadata elements that describe the dataset at hand.
+         * @return List<VariableMetadata> A map of variable name - ConceptMetadata "records"
+         **/
+        private Map<String, ConceptMetadata> getVariableConceptMap(final List<VariableMetadata> variableMetadata)
+        {
+            // input: Map<String, VariableMetadata> variableDescriptions
+            final Map<String, ConceptMetadata> conceptMetadataRecords = new HashMap<>();
+
+            // 1. Loop through VariableMetadata from the input, and add the ones matching the dataset name
+            for (final VariableMetadata vm : variableMetadata) {
+                final String key = vm.getConceptName();
+
+                if (!key.isEmpty())
+                    conceptMetadataRecords.put(key, conceptDescriptions.get(key));
+            }
+
+            return conceptMetadataRecords;
         }
     }
 
@@ -305,6 +312,5 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
     public void clear()
     {
         // nothing to clean up
-
     }
 }

@@ -83,9 +83,10 @@ public class SoepDataCiteConstants
     public static final WebLink LOGO_WEB_LINK = createLogoWebLink();
 
     // DATES
-    public static final short EARLIEST_PUBLICATION_YEAR = 1984;
-    public static final Date PUBLICATION_YEAR = new Date("2017-11-29", DateType.Available);
+    public static final int EARLIEST_PUBLICATION_YEAR = 1984;
+    public static final Date PUBLICATION_DATE = new Date("2017-11-29", DateType.Available);
     public static final DateRange PUBLICATION_RANGE = new DateRange("1984/2016", DateType.Available);
+    public static final Integer PUBLICATION_YEAR = PUBLICATION_DATE.getValueAsDateTime().getYear();
 
     // Dataset version
     public static final String VERSION = "33";

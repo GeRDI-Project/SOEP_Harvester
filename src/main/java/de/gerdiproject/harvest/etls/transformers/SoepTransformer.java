@@ -16,13 +16,16 @@
 package de.gerdiproject.harvest.etls.transformers;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import de.gerdiproject.harvest.etls.AbstractETL;
 import de.gerdiproject.harvest.etls.extractors.SoepFileVO;
+import de.gerdiproject.harvest.github.json.GitHubContent;
 import de.gerdiproject.harvest.soep.constants.SoepConstants;
 import de.gerdiproject.harvest.soep.constants.SoepDataCiteConstants;
 import de.gerdiproject.harvest.soep.csv.ConceptMetadata;
@@ -66,61 +69,114 @@ public class SoepTransformer extends AbstractIteratorTransformer<SoepFileVO, Dat
         final DatasetMetadata metadata = vo.getDatasetMetadata();
 
         final String sourceTitle = metadata.getLabel();
+        final GitHubContent content = vo.getContent();
 
         // Create the document to contain SOEP metadata for every given file from its dataset
-        final DataCiteJson document = new DataCiteJson(vo.getContent().getPath());
+        final DataCiteJson document = new DataCiteJson(content.getPath());
 
-        // "Static" SOEP metadata
         document.addFormats(SoepDataCiteConstants.FORMATS);
 
-        /*
-         * GeRDI DataCite Mandatory properties
-         * (ID 1) Identifier: This is the DOI identifier for v33 of the dataset
-         */
-        final Identifier soepID = new Identifier(SoepDataCiteConstants.IDENTIFIER, IdentifierType.DOI);
-        document.setIdentifier(soepID);
+        // (ID  1) Identifier: This is the DOI identifier for v33 of the dataset
+        document.setIdentifier(new Identifier(SoepDataCiteConstants.IDENTIFIER, IdentifierType.DOI));
 
-        // (ID 2) Creators
+        // (ID  2) Creators
         document.addCreators(SoepDataCiteConstants.CREATORS);
 
-        /*
-         * (ID 3 Title) Individual file descriptions
-         */
-        final Title title = new Title(sourceTitle);
-        document.addTitles(Arrays.asList(title));
+        // (ID  3 Title) Individual file descriptions
+        document.addTitles(Arrays.asList(new Title(sourceTitle)));
 
-        // (ID 4) Publisher
+        // (ID  4) Publisher
         document.setPublisher(SoepDataCiteConstants.PROVIDER);
 
-        // (ID 5) PublicationYear: 2017
-        final List<AbstractDate> dates = new LinkedList<>();
-        dates.add(SoepDataCiteConstants.PUBLICATION_YEAR);
-        document.addDates(dates);
+        // (ID  5) PublicationYear: 2017
+        document.setPublicationYear(SoepDataCiteConstants.PUBLICATION_YEAR);
 
-        // (ID 7) Contributor
+        // (ID  6) Subjects
+        document.addSubjects(SoepDataCiteConstants.SUBJECTS);
+
+        // (ID  7) Contributor
         document.addContributors(Arrays.asList(SoepDataCiteConstants.COLLECTOR_CONTRIBUTOR));
 
-        /* (ID 8) Date: dateType="Collected" with individual data collection dates. PublicationYear is too "matchy" ;)
-         *  If year=0 or "long", set the "1984-2016" range.
-         */
-        final String tempPeriod = metadata.getPeriodName();
-        AbstractDate dateCollected;
-        dateCollected = tempPeriod.equals("0") || tempPeriod.equals("long") ?
-                        SoepDataCiteConstants.PUBLICATION_RANGE : new Date(tempPeriod, DateType.Collected);
-        document.addDates(Arrays.asList(dateCollected));
+        // (ID  8) Date: dateType="Collected" with individual data collection dates.
+        document.addDates(getDates(metadata));
 
         // (ID 10) ResourceType
         document.setResourceType(SoepDataCiteConstants.RESOURCE_TYPE);
+
+        // (ID 13) Size
+        document.addSizes(Arrays.asList(String.format(SoepDataCiteConstants.SIZE_BYTES, content.getSize())));
 
         // (ID 15) Dataset version
         document.setVersion(SoepDataCiteConstants.VERSION);
 
         // (ID 16) Rights
-        final Rights soepRights = new Rights(SoepDataCiteConstants.RIGHTS_VALUE);
-        document.addRights(Arrays.asList(soepRights));
+        document.addRights(Arrays.asList(new Rights(SoepDataCiteConstants.RIGHTS_VALUE)));
 
         // (ID 17) Description, type "Abstract"
+        document.addDescriptions(getDescriptions(metadata));
+
+        // GeRDI Extension
+
+        // (E 1) WebLinks
+        document.addWebLinks(getWebLinks(content));
+
+        // (E 2) RepositoryIdentifier
+        document.setRepositoryIdentifier(SoepDataCiteConstants.REPOSITORY_ID);
+
+        // (E 3) ResearchData
+        document.addResearchData(getResearchData(content));
+
+        // (E 4) ResearchDiscipline
+        document.addResearchDisciplines(SoepDataCiteConstants.DISCIPLINES);
+
+        // (E 5) Extensions
+        final SoepDataCiteExtension extension = new SoepDataCiteExtension();
+        extension.addSoepDatasetVariables(getDatasetVariables(vo));
+        document.addExtension(extension);
+
+        return document;
+    }
+
+
+    /**
+     * Retrieves dates of the SOEP document.
+     *
+     * @param metadata metadata that contains relevant information
+     *
+     * @return a list of {@linkplain AbstractDate}s
+     */
+    private Collection<AbstractDate> getDates(final DatasetMetadata metadata)
+    {
+        final List<AbstractDate> dates = new LinkedList<>();
+
+        dates.add(SoepDataCiteConstants.PUBLICATION_DATE);
+
+        /* (ID 8) Date: dateType="Collected" with individual data collection dates. PublicationYear is too "matchy" ;)
+         *  If year=0 or "long", set the "1984-2016" range.
+         */
+        final String tempPeriod = metadata.getPeriodName();
+
+        if ("0".equals(tempPeriod) || "long".equals(tempPeriod))
+            dates.add(SoepDataCiteConstants.PUBLICATION_RANGE);
+        else
+            dates.add(new Date(tempPeriod, DateType.Collected));
+
+        return dates;
+    }
+
+
+    /**
+     * Retrieves descriptions of the SOEP document.
+     *
+     * @param metadata metadata that contains relevant information
+     *
+     * @return a list of {@linkplain Description}s
+     */
+    private List<Description> getDescriptions(final DatasetMetadata metadata)
+    {
         final List<Description> descriptions = new LinkedList<>();
+
+        // add default description
         descriptions.add(
             new Description(
                 SoepDataCiteConstants.DESCRIPTION_VALUE,
@@ -128,64 +184,61 @@ public class SoepTransformer extends AbstractIteratorTransformer<SoepFileVO, Dat
                 SoepDataCiteConstants.DESCRIPTION_LANGUAGE));
 
         // add optional description from metadata
-        if (metadata.getDescription() != null && !metadata.getDescription().isEmpty())
-            descriptions.add(
-                new Description(
-                    metadata.getDescription(),
-                    DescriptionType.Other,
-                    SoepDataCiteConstants.DESCRIPTION_LANGUAGE));
+        final String metadataDesc = metadata.getDescription();
 
-        document.addDescriptions(descriptions);
+        if (metadataDesc != null && !metadataDesc.isEmpty())
+            descriptions.add(new Description(
+                                 metadataDesc,
+                                 DescriptionType.Other,
+                                 SoepDataCiteConstants.DESCRIPTION_LANGUAGE));
 
-        // GeRDI Extension
+        return descriptions;
+    }
+
+
+    /**
+     * Retrieves research data related to the SOEP document.
+     *
+     * @param content GitHub content that contains relevant information
+     *
+     * @return a list of {@linkplain ResearchData}
+     */
+    private List<ResearchData> getResearchData(final GitHubContent content)
+    {
+        final List<ResearchData> researchDataList = new LinkedList<>();
+
+        final String downloadUrl = content.getDownloadUrl();
+        final String fileType = downloadUrl
+                                .substring(downloadUrl.lastIndexOf('.') + 1)
+                                .toUpperCase(Locale.ENGLISH);
+
+        researchDataList.add(new ResearchData(downloadUrl, fileType, fileType));
+        return researchDataList;
+    }
+
+
+    /**
+     * Retrieves links related to the SOEP document.
+     *
+     * @param content GitHub content that contains relevant information
+     *
+     * @return a list of {@linkplain WebLink}s
+     */
+    private List<WebLink> getWebLinks(final GitHubContent content)
+    {
         final List<WebLink> links = new LinkedList<>();
 
         // View SOEP dataset file on GitHub
-        final String soepFileName = vo.getContent().getName();
-        final WebLink pageLink = new WebLink(String.format(SoepConstants.ACCESS_FILE_URL, SoepConstants.TREE, soepFileName));
-        pageLink.setName(SoepConstants.VIEW_TREE);
-        pageLink.setType(WebLinkType.ViewURL);
-        links.add(pageLink);
+        final String pageUrl = String.format(
+                                   SoepConstants.ACCESS_FILE_URL,
+                                   SoepConstants.TREE,
+                                   content.getName());
 
-        // View SOEP dataset file source ("raw" representation) on GitHub
-        final WebLink sourceLink = new WebLink(vo.getContent().getHtmlUrl());
-        sourceLink.setName(SoepConstants.VIEW_RAW);
-        sourceLink.setType(WebLinkType.SourceURL);
-        links.add(sourceLink);
-
-        // The logo link
+        links.add(new WebLink(pageUrl, SoepConstants.VIEW_TREE, WebLinkType.ViewURL));
+        links.add(new WebLink(content.getHtmlUrl(), SoepConstants.VIEW_RAW, WebLinkType.SourceURL));
         links.add(SoepDataCiteConstants.LOGO_WEB_LINK);
 
-        // Add all the links to the document;
-        document.addWebLinks(links);
-
-        // E2: RepositoryIdentifier
-        document.setRepositoryIdentifier(SoepDataCiteConstants.REPOSITORY_ID);
-
-        // E3. ResearchData{dataIdentifier, dataURL, dataLabel, dataType}
-        final List<ResearchData> files = new LinkedList<>();
-        final String fileType = vo.getContent().getDownloadUrl().substring(vo.getContent().getDownloadUrl()
-                                                                           .lastIndexOf('.') + 1).toUpperCase();
-        final ResearchData researchData = new ResearchData(vo.getContent().getDownloadUrl(), fileType);
-        researchData.setType(fileType);
-        files.add(researchData);
-        document.addResearchData(files);
-
-        // E4: ResearchDiscipline
-        document.addResearchDisciplines(SoepDataCiteConstants.DISCIPLINES);
-
-        // Subjects
-        document.addSubjects(SoepDataCiteConstants.SUBJECTS);
-
-        // Sizes
-        document.addSizes(Arrays.asList(String.format(SoepDataCiteConstants.SIZE_BYTES, vo.getContent().getSize())));
-
-        // Add SOEP variables and concepts
-        final SoepDataCiteExtension extension = new SoepDataCiteExtension();
-        extension.addSoepDatasetVariables(getDatasetVariables(vo));
-        document.addExtension(extension);
-
-        return document;
+        return links;
     }
 
 
