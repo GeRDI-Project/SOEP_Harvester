@@ -33,7 +33,7 @@ public class DatasetMetadata
 
     private String description;
 
-    public DatasetMetadata(String[] row)
+    public DatasetMetadata(final String[] row)
     {
         this.studyName = row[0];
         this.datasetName = row[1];

@@ -132,7 +132,7 @@ public class SoepDataCiteConstants
      */
     private static WebLink createLogoWebLink()
     {
-        WebLink logoLink = new WebLink("https://www.diw.de/documents/bildarchiv/37/diw_02.c.239717.de/de.gerdiproject.harvest.soep-logo.jpg");
+        final WebLink logoLink = new WebLink("https://www.diw.de/documents/bildarchiv/37/diw_02.c.239717.de/de.gerdiproject.harvest.soep-logo.jpg");
         logoLink.setName("Logo");
         logoLink.setType(WebLinkType.ProviderLogoURL);
         return logoLink;
@@ -147,9 +147,9 @@ public class SoepDataCiteConstants
     private static List<Creator> addCreators()
     {
         Creator creator;
-        List<Creator> tempCreatorList = new LinkedList<>();
+        final List<Creator> tempCreatorList = new LinkedList<>();
 
-        for (String s : CREATOR_LIST) {
+        for (final String s : CREATOR_LIST) {
             creator = new Creator(new PersonName(s, NameType.Personal));
             tempCreatorList.add(creator);
         }
@@ -186,7 +186,7 @@ public class SoepDataCiteConstants
      */
     private static Contributor createCollectorContributor()
     {
-        PersonName contributorName = new PersonName(SoepDataCiteConstants.COLLECTOR_CONTRIBUTOR_NAME, NameType.Organisational);
+        final PersonName contributorName = new PersonName(SoepDataCiteConstants.COLLECTOR_CONTRIBUTOR_NAME, NameType.Organisational);
         return new Contributor(contributorName, ContributorType.DataCollector);
     }
 
@@ -196,11 +196,11 @@ public class SoepDataCiteConstants
      * @param subjectStringList Subject keywords/phrases that describe SOEP study
      * @return A list of Subjects
      */
-    private static List<Subject> createSubjects(String... subjectStringList)
+    private static List<Subject> createSubjects(final String... subjectStringList)
     {
-        List<Subject> subjects = new LinkedList<>();
+        final List<Subject> subjects = new LinkedList<>();
 
-        for (String subject : subjectStringList)
+        for (final String subject : subjectStringList)
             subjects.add(new Subject(subject));
 
         return subjects;

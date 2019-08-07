@@ -53,19 +53,19 @@ import de.gerdiproject.json.datacite.extension.soep.SoepVariable;
 public class SoepTransformer extends AbstractIteratorTransformer<SoepFileVO, DataCiteJson>
 {
     @Override
-    public void init(AbstractETL<?, ?> etl)
+    public void init(final AbstractETL<?, ?> etl)
     {
         // nothing to retrieve from the ETL
     }
-    
-    
+
+
     @Override
-    protected DataCiteJson transformElement(SoepFileVO vo) throws TransformerException
+    protected DataCiteJson transformElement(final SoepFileVO vo) throws TransformerException
     {
         // Specify source ID for harvested file
         final DatasetMetadata metadata = vo.getDatasetMetadata();
 
-        String sourceTitle = metadata.getLabel();
+        final String sourceTitle = metadata.getLabel();
 
         // Create the document to contain SOEP metadata for every given file from its dataset
         final DataCiteJson document = new DataCiteJson(vo.getContent().getPath());
@@ -77,7 +77,7 @@ public class SoepTransformer extends AbstractIteratorTransformer<SoepFileVO, Dat
          * GeRDI DataCite Mandatory properties
          * (ID 1) Identifier: This is the DOI identifier for v33 of the dataset
          */
-        Identifier soepID = new Identifier(SoepDataCiteConstants.IDENTIFIER, IdentifierType.DOI);
+        final Identifier soepID = new Identifier(SoepDataCiteConstants.IDENTIFIER, IdentifierType.DOI);
         document.setIdentifier(soepID);
 
         // (ID 2) Creators
@@ -86,14 +86,14 @@ public class SoepTransformer extends AbstractIteratorTransformer<SoepFileVO, Dat
         /*
          * (ID 3 Title) Individual file descriptions
          */
-        Title title = new Title(sourceTitle);
+        final Title title = new Title(sourceTitle);
         document.addTitles(Arrays.asList(title));
 
         // (ID 4) Publisher
         document.setPublisher(SoepDataCiteConstants.PROVIDER);
 
         // (ID 5) PublicationYear: 2017
-        List<AbstractDate> dates = new LinkedList<>();
+        final List<AbstractDate> dates = new LinkedList<>();
         dates.add(SoepDataCiteConstants.PUBLICATION_YEAR);
         document.addDates(dates);
 
@@ -103,7 +103,7 @@ public class SoepTransformer extends AbstractIteratorTransformer<SoepFileVO, Dat
         /* (ID 8) Date: dateType="Collected" with individual data collection dates. PublicationYear is too "matchy" ;)
          *  If year=0 or "long", set the "1984-2016" range.
          */
-        String tempPeriod = metadata.getPeriodName();
+        final String tempPeriod = metadata.getPeriodName();
         AbstractDate dateCollected;
         dateCollected = tempPeriod.equals("0") || tempPeriod.equals("long") ?
                         SoepDataCiteConstants.PUBLICATION_RANGE : new Date(tempPeriod, DateType.Collected);
@@ -116,7 +116,7 @@ public class SoepTransformer extends AbstractIteratorTransformer<SoepFileVO, Dat
         document.setVersion(SoepDataCiteConstants.VERSION);
 
         // (ID 16) Rights
-        Rights soepRights = new Rights(SoepDataCiteConstants.RIGHTS_VALUE);
+        final Rights soepRights = new Rights(SoepDataCiteConstants.RIGHTS_VALUE);
         document.addRights(Arrays.asList(soepRights));
 
         // (ID 17) Description, type "Abstract"
@@ -138,17 +138,17 @@ public class SoepTransformer extends AbstractIteratorTransformer<SoepFileVO, Dat
         document.addDescriptions(descriptions);
 
         // GeRDI Extension
-        List<WebLink> links = new LinkedList<>();
+        final List<WebLink> links = new LinkedList<>();
 
         // View SOEP dataset file on GitHub
-        String soepFileName = vo.getContent().getName();
-        WebLink pageLink = new WebLink(String.format(SoepConstants.ACCESS_FILE_URL, SoepConstants.TREE, soepFileName));
+        final String soepFileName = vo.getContent().getName();
+        final WebLink pageLink = new WebLink(String.format(SoepConstants.ACCESS_FILE_URL, SoepConstants.TREE, soepFileName));
         pageLink.setName(SoepConstants.VIEW_TREE);
         pageLink.setType(WebLinkType.ViewURL);
         links.add(pageLink);
 
         // View SOEP dataset file source ("raw" representation) on GitHub
-        WebLink sourceLink = new WebLink(vo.getContent().getHtmlUrl());
+        final WebLink sourceLink = new WebLink(vo.getContent().getHtmlUrl());
         sourceLink.setName(SoepConstants.VIEW_RAW);
         sourceLink.setType(WebLinkType.SourceURL);
         links.add(sourceLink);
@@ -196,7 +196,7 @@ public class SoepTransformer extends AbstractIteratorTransformer<SoepFileVO, Dat
      * @return Concept The target concept associated to the variable
      * @author Robin Weiss, Fidan Limani
      */
-    private Set<SoepConcept> getSoepConcepts(ConceptMetadata conceptMetadata)
+    private Set<SoepConcept> getSoepConcepts(final ConceptMetadata conceptMetadata)
     {
         if (conceptMetadata == null)
             return null;
@@ -222,16 +222,16 @@ public class SoepTransformer extends AbstractIteratorTransformer<SoepFileVO, Dat
      * @param soepFileVO The name of the dataset for which variables are used in SOEP collection
      * @return List<SoepVariable> A list of SOEP-transformed variables
      */
-    private List<SoepVariable> getDatasetVariables(SoepFileVO soepFileVO)
+    private List<SoepVariable> getDatasetVariables(final SoepFileVO soepFileVO)
     {
         /* We decided to store a concept both in DE and EN labels, effectively creating two SoepConcepts per SOEP
             concept entry. */
         Set<SoepConcept> conceptSet;
-        List<SoepVariable> soepVariableList = new LinkedList<>();
+        final List<SoepVariable> soepVariableList = new LinkedList<>();
 
         /* For every VariableMetadata record for the dataset, convert it to SOEP variable and assign it
         (a set of) SOEP concepts */
-        for (VariableMetadata vm : soepFileVO.getVariableMetadataRecords()) {
+        for (final VariableMetadata vm : soepFileVO.getVariableMetadataRecords()) {
             /* The concept contains both DE and EN concept labels, as present in the CSV. We need to "reformat" it
                and store it */
             conceptSet = getSoepConcepts(soepFileVO.getVariableConceptRecordMap().get(vm.getConceptName()));

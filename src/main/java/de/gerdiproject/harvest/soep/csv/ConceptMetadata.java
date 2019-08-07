@@ -34,7 +34,7 @@ public class ConceptMetadata
      * Creates a SOEP concept based on a metadata set
      * @param datasetAttributes read from "concepts.csv".
      */
-    public ConceptMetadata(String[] datasetAttributes)
+    public ConceptMetadata(final String[] datasetAttributes)
     {
         this.conceptName = datasetAttributes[0];
         this.topic = datasetAttributes[1];
