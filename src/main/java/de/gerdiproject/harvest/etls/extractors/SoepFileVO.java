@@ -15,14 +15,14 @@
  */
 package de.gerdiproject.harvest.etls.extractors;
 
+import java.util.List;
+import java.util.Map;
+
 import de.gerdiproject.harvest.github.json.GitHubContent;
 import de.gerdiproject.harvest.soep.csv.ConceptMetadata;
 import de.gerdiproject.harvest.soep.csv.DatasetMetadata;
 import de.gerdiproject.harvest.soep.csv.VariableMetadata;
 import lombok.Data;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * This value object holds a SOEP file and corresponding metadata.

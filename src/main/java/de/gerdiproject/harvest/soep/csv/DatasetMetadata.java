@@ -33,7 +33,13 @@ public class DatasetMetadata
 
     private String description;
 
-    public DatasetMetadata(String[] row)
+
+    /**
+     * Creates a SOEP variable based on a metadata set.
+     *
+     * @param row a row read from "datasets.csv"
+     */
+    public DatasetMetadata(final String... row)
     {
         this.studyName = row[0];
         this.datasetName = row[1];

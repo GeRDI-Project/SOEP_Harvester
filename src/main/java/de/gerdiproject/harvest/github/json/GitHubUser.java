@@ -70,7 +70,7 @@ public class GitHubUser
     private String eventsUrl;
 
     @SerializedName("received_events_url")
-    private String received_eventsUrl;
+    private String receivedEventsUrl;
 
     @SerializedName("site_admin")
     private boolean siteAdmin;

@@ -34,18 +34,18 @@ public class VariableMetadata
     private String id;
 
     /**
-     * Creates a SOEP variable based on a metadata set
+     * Creates a SOEP variable based on a metadata set.
      *
-     * @param variablesAttributes read from "variable.csv".
+     * @param row a row read from "variable.csv"
      */
-    public VariableMetadata(String[] variablesAttributes)
+    public VariableMetadata(final String... row)
     {
-        this.studyName = variablesAttributes[0];
-        this.datasetName = variablesAttributes[1];
-        this.variableName = variablesAttributes[2];
-        this.conceptName = variablesAttributes[3];
-        this.source = variablesAttributes[4];
-        this.itemID = variablesAttributes[5];
-        this.id = variablesAttributes[6];
+        this.studyName = row[0];
+        this.datasetName = row[1];
+        this.variableName = row[2];
+        this.conceptName = row[3];
+        this.source = row[4];
+        this.itemID = row[5];
+        this.id = row[6];
     }
 }

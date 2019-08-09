@@ -31,15 +31,16 @@ public class ConceptMetadata
     private String label;
 
     /**
-     * Creates a SOEP concept based on a metadata set
-     * @param datasetAttributes read from "concepts.csv".
+     * Creates a SOEP concept based on a metadata set.
+     *
+     * @param row read from "concepts.csv"
      */
-    public ConceptMetadata(String[] datasetAttributes)
+    public ConceptMetadata(final String... row)
     {
-        this.conceptName = datasetAttributes[0];
-        this.topic = datasetAttributes[1];
-        this.topicName = datasetAttributes[2];
-        this.labelDE = datasetAttributes[3];
-        this.label = datasetAttributes[4];
+        this.conceptName = row[0];
+        this.topic = row[1];
+        this.topicName = row[2];
+        this.labelDE = row[3];
+        this.label = row[4];
     }
 }
