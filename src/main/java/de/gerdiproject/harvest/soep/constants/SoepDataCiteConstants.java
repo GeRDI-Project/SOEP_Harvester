@@ -35,6 +35,7 @@ import de.gerdiproject.json.datacite.extension.generic.WebLink;
 import de.gerdiproject.json.datacite.extension.generic.constants.ResearchDisciplineConstants;
 import de.gerdiproject.json.datacite.extension.generic.enums.WebLinkType;
 import de.gerdiproject.json.datacite.nested.PersonName;
+import de.gerdiproject.json.datacite.nested.Publisher;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -63,7 +64,7 @@ public class SoepDataCiteConstants
     public static final List<Creator> CREATORS = addCreators();
 
     // SOURCE
-    public static final String PROVIDER = "German Socio-Economic Panel Study (SOEP)";
+    public static final Publisher PROVIDER = new Publisher("German Socio-Economic Panel Study (SOEP)");
     public static final String REPOSITORY_ID = "SOEP";
     public static final List<Subject> SUBJECTS = createSubjects("longitudinal study of private households",
                                                                 "household composition",

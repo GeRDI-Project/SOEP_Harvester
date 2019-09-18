@@ -18,5 +18,5 @@ Dev notes.txt
 **/*.iml
 
 # Harvester Utilities
-/scripts/
+/debug/
 /bamboo-specs/
