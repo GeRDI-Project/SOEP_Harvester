@@ -22,14 +22,14 @@ import de.gerdiproject.harvest.github.json.GitHubContent;
 import de.gerdiproject.harvest.soep.csv.ConceptMetadata;
 import de.gerdiproject.harvest.soep.csv.DatasetMetadata;
 import de.gerdiproject.harvest.soep.csv.VariableMetadata;
-import lombok.Data;
+import lombok.Value;
 
 /**
  * This value object holds a SOEP file and corresponding metadata.
  *
  * @author Robin Weiss, Fidan Limani
  */
-@Data
+@Value
 public class SoepFileVO
 {
     private final GitHubContent content;
