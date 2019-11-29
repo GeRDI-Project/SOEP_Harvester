@@ -22,10 +22,7 @@ import javax.servlet.annotation.WebListener;
 
 import de.gerdiproject.harvest.application.ContextListener;
 import de.gerdiproject.harvest.etls.AbstractETL;
-import de.gerdiproject.harvest.etls.StaticIteratorETL;
-import de.gerdiproject.harvest.etls.extractors.SoepExtractor;
-import de.gerdiproject.harvest.etls.transformers.SoepTransformer;
-import de.gerdiproject.harvest.soep.constants.SoepConstants;
+import de.gerdiproject.harvest.etls.SoepETL;
 
 /**
  * This class initializes the SOEP de.gerdiproject.harvest.harvester and all objects that are required.
@@ -37,8 +34,6 @@ public class SoepContextListener extends ContextListener
     @Override
     protected List<? extends AbstractETL<?, ?>> createETLs()
     {
-        return Arrays.asList(
-                   new StaticIteratorETL<>(SoepConstants.SOEP_ETL_NAME, new SoepExtractor(), new SoepTransformer())
-               );
+        return Arrays.asList(new SoepETL());
     }
 }

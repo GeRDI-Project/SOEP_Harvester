@@ -22,9 +22,7 @@ import java.nio.charset.StandardCharsets;
 import de.gerdiproject.harvest.SoepContextListener;
 import de.gerdiproject.harvest.application.ContextListener;
 import de.gerdiproject.harvest.etls.AbstractIteratorETL;
-import de.gerdiproject.harvest.etls.StaticIteratorETL;
-import de.gerdiproject.harvest.etls.transformers.SoepTransformer;
-import de.gerdiproject.harvest.soep.constants.SoepConstants;
+import de.gerdiproject.harvest.etls.SoepETL;
 import de.gerdiproject.harvest.utils.data.DiskIO;
 import de.gerdiproject.json.GsonUtils;
 import de.gerdiproject.json.datacite.DataCiteJson;
@@ -49,7 +47,7 @@ public class SoepExtractorTest extends AbstractIteratorExtractorTest<SoepFileVO>
     @Override
     protected AbstractIteratorETL<SoepFileVO, DataCiteJson> getEtl()
     {
-        return new StaticIteratorETL<>(SoepConstants.SOEP_ETL_NAME, new SoepExtractor(), new SoepTransformer());
+        return new SoepETL();
     }
 
 

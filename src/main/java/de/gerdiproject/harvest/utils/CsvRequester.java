@@ -47,16 +47,6 @@ import de.gerdiproject.harvest.utils.file.FileUtils;
 public class CsvRequester extends HttpRequester
 {
     /**
-     * Constructor that forwards the constructor
-     * of the {@linkplain HttpRequester} super class.
-     */
-    public CsvRequester()
-    {
-        super();
-    }
-
-
-    /**
      * Iterates through the rows of a CSV file that is loaded from a specified URL.
      *
      * @param url a URL that points to a CSV file
