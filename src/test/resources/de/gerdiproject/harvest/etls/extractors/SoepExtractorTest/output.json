@@ -1,0 +1,63 @@
+{ 
+	"content" : { 
+		"name" : "mocked dataset name.json",
+		"path" : "ddionrails/datasets/mock.json",
+		"sha" : "9000ABC",
+		"size" : 1234567890,
+		"url" : "https://mo.ck/mock.json",
+		"type" : "file",
+		"html_url" : "https://mo.ck/html/mock.json",
+		"git_url" : "https://mo.ck/git",
+		"download_url" : "https://mo.ck/download/mock.json",
+		"_links" : { 
+			"self" : "https://mo.ck/link/self/mock.json",
+			"git" : "https://mo.ck/link/git",
+			"html" : "https://mo.ck/link/html/mock.json"
+		}
+	},
+	"datasetMetadata" : { 
+		"studyName" : "mocked study name",
+		"datasetName" : "mocked dataset name",
+		"periodName" : "mocked period name",
+		"analysisUnitName" : "mocked analysis unit name",
+		"conceptualDatasetName" : "mocked conceptual dataset name",
+		"label" : "mocked label",
+		"description" : "mocked description"
+	},
+	"variableMetadataRecords" : [
+		{ 
+			"studyName" : "mocked study name",
+			"datasetName" : "mocked dataset name",
+			"variableName" : "mocked variable name 1",
+			"conceptName" : "item_42",
+			"source" : "v123",
+			"itemID" : "42.42",
+			"id" : "mocked id 1"
+		},
+		{ 
+			"studyName" : "mocked study name",
+			"datasetName" : "mocked dataset name",
+			"variableName" : "mocked variable name 2",
+			"conceptName" : "item_1337",
+			"source" : "v456",
+			"itemID" : "1337.1337",
+			"id" : "mocked id 2"
+		}
+	],
+	"variableConceptRecordMap" : {
+		"item_42" : { 
+			"conceptName" : "item_42",
+			"topic" : "mocked concept topic 1",
+			"topicName" : "mocked concept topic name 1",
+			"labelDE" : "mocked label de 1",
+			"label" : "mocked label en 1"
+		},
+		"item_1337" : { 
+			"conceptName" : "item_1337",
+			"topic" : "mocked concept topic 2",
+			"topicName" : "mocked concept topic name 2",
+			"labelDE" : "mocked label de 2",
+			"label" : "mocked label en 2"
+		}
+	}
+}

@@ -34,7 +34,6 @@ import de.gerdiproject.harvest.soep.csv.ConceptMetadata;
 import de.gerdiproject.harvest.soep.csv.DatasetMetadata;
 import de.gerdiproject.harvest.soep.csv.VariableMetadata;
 import de.gerdiproject.harvest.utils.CsvRequester;
-import de.gerdiproject.json.GsonUtils;
 
 /**
  * This extractor retrieves SOEP datasets from a GitHub repository.
@@ -224,7 +223,6 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
             final List<VariableMetadata> variableMetadataRecords = variableDescriptions.get(datasetName);
             final Map<String, ConceptMetadata> variableConceptMetadataRecords = getVariableConceptMap(variableMetadataRecords);
 
-            System.out.println(GsonUtils.createGerdiDocumentGsonBuilder().create().toJson(new SoepFileVO(content, datasetMetadata, variableMetadataRecords, variableConceptMetadataRecords)));
             return new SoepFileVO(content, datasetMetadata, variableMetadataRecords, variableConceptMetadataRecords);
         }
 
