@@ -1,0 +1,18 @@
+[
+	{
+		"name" : "mock.json",
+		"path" : "ddionrails/datasets/mock.json",
+		"sha" : "9000ABC",
+		"size" : 1234567890,
+		"url" : "https://mo.ck/mock.json",
+		"type" : "file",
+		"html_url" : "https://mo.ck/html/mock.json",
+		"git_url" : "https://mo.ck/git",
+		"download_url" : "https://mo.ck/download/mock.json",
+		"_links" : {
+			"self" : "https://mo.ck/link/self/mock.json",
+			"git" : "https://mo.ck/link/git",
+			"html" : "https://mo.ck/link/html/mock.json"
+		}
+	}
+]

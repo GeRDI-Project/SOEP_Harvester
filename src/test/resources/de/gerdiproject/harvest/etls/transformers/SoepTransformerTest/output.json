@@ -1,0 +1,291 @@
+{
+	"identifier" : {
+		"value" : "10.5684/soep.v33",
+		"identifierType" : "DOI"
+	},
+	"creators" : [
+		{
+			"creatorName" : {
+				"value" : "Jürgen Schupp",
+				"nameType" : "Personal"
+			}
+		},
+		{
+			"creatorName" : {
+				"value" : "Jan Goebel",
+				"nameType" : "Personal"
+			}
+		},
+		{
+			"creatorName" : {
+				"value" : "Martin Kroh",
+				"nameType" : "Personal"
+			}
+		},
+		{
+			"creatorName" : {
+				"value" : "Carsten Schröder",
+				"nameType" : "Personal"
+			}
+		},
+		{
+			"creatorName" : {
+				"value" : "Charlotte Bartels",
+				"nameType" : "Personal"
+			}
+		},
+		{
+			"creatorName" : {
+				"value" : "Klaudia Erhardt",
+				"nameType" : "Personal"
+			}
+		},
+		{
+			"creatorName" : {
+				"value" : "Alexandra Fedorets",
+				"nameType" : "Personal"
+			}
+		},
+		{
+			"creatorName" : {
+				"value" : "Andreas Franken",
+				"nameType" : "Personal"
+			}
+		},
+		{
+			"creatorName" : {
+				"value" : "Marco Giesselmann",
+				"nameType" : "Personal"
+			}
+		},
+		{
+			"creatorName" : {
+				"value" : "Markus Grabka",
+				"nameType" : "Personal"
+			}
+		},
+		{
+			"creatorName" : {
+				"value" : "Peter Krause",
+				"nameType" : "Personal"
+			}
+		},
+		{
+			"creatorName" : {
+				"value" : "Hannes Kröger",
+				"nameType" : "Personal"
+			}
+		},
+		{
+			"creatorName" : {
+				"value" : "Simon Kühne",
+				"nameType" : "Personal"
+			}
+		},
+		{
+			"creatorName" : {
+				"value" : "Maria Metzing",
+				"nameType" : "Personal"
+			}
+		},
+		{
+			"creatorName" : {
+				"value" : "Jana Nebelin",
+				"nameType" : "Personal"
+			}
+		},
+		{
+			"creatorName" : {
+				"value" : "David Richter",
+				"nameType" : "Personal"
+			}
+		},
+		{
+			"creatorName" : {
+				"value" : "Diana Schacht",
+				"nameType" : "Personal"
+			}
+		},
+		{
+			"creatorName" : {
+				"value" : "Paul Schmelzer",
+				"nameType" : "Personal"
+			}
+		},
+		{
+			"creatorName" : {
+				"value" : "Christian Schmitt",
+				"nameType" : "Personal"
+			}
+		},
+		{
+			"creatorName" : {
+				"value" : "Daniel Schnitzlein",
+				"nameType" : "Personal"
+			}
+		},
+		{
+			"creatorName" : {
+				"value" : "Rainer Siegers",
+				"nameType" : "Personal"
+			}
+		},
+		{
+			"creatorName" : {
+				"value" : "Knut Wenzig",
+				"nameType" : "Personal"
+			}
+		}
+	],
+	"titles" : [
+		{
+			"value" : "mocked label"
+		}
+	],
+	"publisher" : {
+		"value" : "German Socio-Economic Panel Study (SOEP)"
+	},
+	"publicationYear" : 2017,
+	"resourceType" : {
+		"value" : "JSON",
+		"resourceTypeGeneral" : "Dataset"
+	},
+	"subjects" : [
+		{
+			"value" : "longitudinal study of private households"
+		},
+		{
+			"value" : "health and satisfaction indicators"
+		},
+		{
+			"value" : "earnings"
+		},
+		{
+			"value" : "household composition"
+		},
+		{
+			"value" : "Families in Germany"
+		},
+		{
+			"value" : "occupational biographies"
+		},
+		{
+			"value" : "employment"
+		}
+	],
+	"contributors" : [
+		{
+			"contributorName" : {
+				"value" : "Kantar Deutschland GmbH",
+				"nameType" : "Organisational"
+			},
+			"contributorType" : "DataCollector"
+		}
+	],
+	"dates" : [
+		{
+			"value" : "2017-11-29T00:00:00Z",
+			"dateType" : "Available"
+		}
+	],
+	"sizes" : [
+		"1234567890 bytes"
+	],
+	"formats" : [
+		"JSON"
+	],
+	"version" : "33",
+	"rightsList" : [
+		{
+			"value" : "The SOEP micro data which we make available for scientific research can only be interpreted using statistical software. Direct use of SOEP data is subject to the high standards for lawful data protection in the Federal Republic of Germany. Signing a contract on data distribution with the DIW Berlin is therefore a precondition for working with SOEP data. After signing the contract, the data of every new wave will be available on request."
+		}
+	],
+	"descriptions" : [
+		{
+			"value" : "mocked description",
+			"descriptionType" : "Other",
+			"lang" : "EN"
+		},
+		{
+			"value" : "The German Socio-Economic Panel (SOEP) study is a wide-ranging representative longitudinal study of private households, located at the German Institute for Economic Research, DIW Berlin. Every year, there were nearly 15,000 households, and more than 25,000 persons sampled by the fieldwork organization TNS Infratest Sozialforschung. The data provide information on all household members, consisting of Germans living in the Eastern and Western German States, foreigners, and immigrants to Germany. The Panel was started in 1984. Some of the many topics include household composition, occupational biographies, employment, earnings, health and satisfaction indicators. As early as June 1990—even before the Economic, Social and Monetary Union—SOEP expanded to include the states of the former German Democratic Republic (GDR), thus seizing the rare opportunity to observe the transformation of an entire society. Also immigrant samples were added in 1994/95 and 2013/2015 to account for the changes that took place in Germany society. Two samples of refugees were introduced in 2016. Further new samples were added in 1998, 2000, 2002, 2006, 2009, 2010, 2011, and 2012. The survey is constantly being adapted and developed in response to current social developments. The international version contains 95% of all cases surveyed (see 10.5684/soep.v33i).",
+			"descriptionType" : "Abstract",
+			"lang" : "EN"
+		}
+	],
+	"repositoryIdentifier" : "SOEP",
+	"webLinks" : [
+		{
+			"webLinkURI" : "https://github.com/paneldata/soep-core/tree/master/ddionrails/datasets/mock.json",
+			"webLinkName" : "View tree file",
+			"webLinkType" : "ViewURL"
+		},
+		{
+			"webLinkURI" : "https://mo.ck/html/mock.json",
+			"webLinkName" : "View raw file",
+			"webLinkType" : "SourceURL"
+		},
+		{
+			"webLinkURI" : "https://www.diw.de/documents/bildarchiv/37/diw_02.c.239717.de/de.gerdiproject.harvest.soep-logo.jpg",
+			"webLinkName" : "Logo",
+			"webLinkType" : "ProviderLogoURL"
+		}
+	],
+	"researchDataList" : [
+		{
+			"researchDataURL" : "https://mo.ck/download/mock.json",
+			"researchDataLabel" : "JSON",
+			"researchDataIdentifier" : "1072697743",
+			"researchDataType" : "JSON"
+		}
+	],
+	"researchDisciplines" : [
+		{
+			"area" : "Social Sciences",
+			"category" : "Humanities and Social Sciences",
+			"rnbr" : "111-02",
+			"discipline" : "Empirical Social Research"
+		},
+		{
+			"area" : "Economics",
+			"category" : "Humanities and Social Sciences",
+			"rnbr" : "112-04",
+			"discipline" : "Statistics and Econometrics"
+		}
+	],
+	"extensions" : {
+		"soep" : [
+			{
+				"variableName" : "mocked variable name 2",
+				"source" : "v456",
+				"concepts" : [
+					{
+						"name" : "item_1337",
+						"label" : "mocked label de 2",
+						"lang" : "de"
+					},
+					{
+						"name" : "item_1337",
+						"label" : "mocked label en 2",
+						"lang" : "en"
+					}
+				]
+			},
+			{
+				"variableName" : "mocked variable name 1",
+				"source" : "v123",
+				"concepts" : [
+					{
+						"name" : "item_42",
+						"label" : "mocked label en 1",
+						"lang" : "en"
+					},
+					{
+						"name" : "item_42",
+						"label" : "mocked label de 1",
+						"lang" : "de"
+					}
+				]
+			}
+		]
+	}
+}
