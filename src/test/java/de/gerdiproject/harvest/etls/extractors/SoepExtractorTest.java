@@ -16,15 +16,10 @@
  */
 package de.gerdiproject.harvest.etls.extractors;
 
-import java.io.File;
-import java.nio.charset.StandardCharsets;
-
 import de.gerdiproject.harvest.SoepContextListener;
 import de.gerdiproject.harvest.application.ContextListener;
 import de.gerdiproject.harvest.etls.AbstractIteratorETL;
 import de.gerdiproject.harvest.etls.SoepETL;
-import de.gerdiproject.harvest.utils.data.DiskIO;
-import de.gerdiproject.json.GsonUtils;
 import de.gerdiproject.json.datacite.DataCiteJson;
 
 /**
@@ -34,9 +29,6 @@ import de.gerdiproject.json.datacite.DataCiteJson;
  */
 public class SoepExtractorTest extends AbstractIteratorExtractorTest<SoepFileVO>
 {
-    final DiskIO diskReader = new DiskIO(GsonUtils.createGerdiDocumentGsonBuilder().create(), StandardCharsets.UTF_8);
-
-
     @Override
     protected ContextListener getContextListener()
     {
@@ -48,27 +40,5 @@ public class SoepExtractorTest extends AbstractIteratorExtractorTest<SoepFileVO>
     protected AbstractIteratorETL<SoepFileVO, DataCiteJson> getEtl()
     {
         return new SoepETL();
-    }
-
-
-    @Override
-    protected File getConfigFile()
-    {
-        return getResource("config.json");
-    }
-
-
-    @Override
-    protected File getMockedHttpResponseFolder()
-    {
-        return getResource("mockedHttpResponses");
-    }
-
-
-    @Override
-    protected SoepFileVO getExpectedOutput()
-    {
-        final File resource = getResource("output.json");
-        return diskReader.getObject(resource, SoepFileVO.class);
     }
 }
