@@ -1,0 +1,3 @@
+study_name,dataset_name,variable_name,concept_name,source,item_id,ID
+mocked study name,mocked dataset name,mocked variable name 1,item_42,v123,42.42,mocked id 1
+mocked study name,mocked dataset name,mocked variable name 2,item_1337,v456,1337.1337,mocked id 2

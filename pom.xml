@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>SOEP-Harvester</artifactId>
-	<version>8.1.1</version>
+	<version>8.1.2</version>
     <packaging>war</packaging>
     <name>SOEP Harvester Service</name>
     <description>A harvester service for retrieving data from: https://github.com/paneldata/soep-core/</description>
@@ -18,7 +18,7 @@
 	
     <properties>
         <opencsv.dependency.version>4.0</opencsv.dependency.version>
-		<restfulharvester.dependency.version>8.1.1</restfulharvester.dependency.version>
+		<restfulharvester.dependency.version>8.1.6</restfulharvester.dependency.version>
     </properties>
 
     <dependencies>
@@ -26,6 +26,13 @@
 			<groupId>de.gerdi-project</groupId>
 			<artifactId>RestfulHarvester-Library</artifactId>
 			<version>${restfulharvester.dependency.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>de.gerdi-project</groupId>
+			<artifactId>RestfulHarvester-Library</artifactId>
+			<version>${restfulharvester.dependency.version}</version>
+			<type>test-jar</type>
+			<scope>test</scope>
 		</dependency>
 		
         <!-- https://mvnrepository.com/artifact/com.opencsv/opencsv -->

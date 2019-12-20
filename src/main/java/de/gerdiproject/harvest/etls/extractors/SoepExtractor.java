@@ -15,12 +15,7 @@
  */
 package de.gerdiproject.harvest.etls.extractors;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.DirectoryStream;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -28,15 +23,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
-
-import javax.ws.rs.core.MediaType;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.gson.Gson;
-import com.opencsv.CSVReader;
-import com.opencsv.CSVReaderBuilder;
 
 import de.gerdiproject.harvest.etls.AbstractETL;
 import de.gerdiproject.harvest.etls.ETLPreconditionException;
@@ -47,8 +33,7 @@ import de.gerdiproject.harvest.soep.constants.SoepLoggingConstants;
 import de.gerdiproject.harvest.soep.csv.ConceptMetadata;
 import de.gerdiproject.harvest.soep.csv.DatasetMetadata;
 import de.gerdiproject.harvest.soep.csv.VariableMetadata;
-import de.gerdiproject.harvest.utils.data.WebDataRetriever;
-import de.gerdiproject.harvest.utils.data.enums.RestRequestType;
+import de.gerdiproject.harvest.utils.CsvRequester;
 
 /**
  * This extractor retrieves SOEP datasets from a GitHub repository.
@@ -57,9 +42,7 @@ import de.gerdiproject.harvest.utils.data.enums.RestRequestType;
  */
 public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
 {
-    private static final Logger LOGGER = LoggerFactory.getLogger(SoepExtractor.class);
-
-    private final WebDataRetriever webRequester = new WebDataRetriever(new Gson(), StandardCharsets.UTF_8);
+    private final CsvRequester csvRequester = new CsvRequester();
     protected Map<String, DatasetMetadata> datasetDescriptions;
     protected Map<String, List<VariableMetadata>> variableDescriptions;
     protected Map<String, ConceptMetadata> conceptDescriptions;
@@ -86,7 +69,9 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
         }
 
         // Get list of datasets
-        final List<GitHubContent> datasetContents = webRequester.getObject(SoepConstants.DATASETS_CONTENT_URL, SoepConstants.CONTENT_LIST_TYPE);
+        final List<GitHubContent> datasetContents = csvRequester.getObjectFromUrl(
+                                                        SoepConstants.DATASETS_CONTENT_URL,
+                                                        SoepConstants.CONTENT_LIST_TYPE);
 
         // Set size and iterator
         this.datasetCount = datasetContents.size();
@@ -104,7 +89,9 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
      */
     private String getLatestCommitHash()
     {
-        final List<GitHubCommit> datasetCommits = webRequester.getObject(SoepConstants.DATASET_COMMITS_URL, SoepConstants.COMMIT_LIST_TYPE);
+        final List<GitHubCommit> datasetCommits = csvRequester.getObjectFromUrl(
+                                                      SoepConstants.DATASET_COMMITS_URL,
+                                                      SoepConstants.COMMIT_LIST_TYPE);
 
         // get sha of latest commit
         return datasetCommits.isEmpty() ? null : datasetCommits.get(0).getSha();
@@ -133,44 +120,6 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
 
 
     /**
-     * Iterates through the rows of a CSV file that is loaded from a specified URL.
-     *
-     * @param url a URL that points to a CSV file
-     * @param iterFunction a consumer function that accepts each row of the CSV file
-     *
-     * @throws IOException if there is an error reading the CSV file
-     */
-    private void parseCsvFromWeb(final String url, final Consumer<String[]> iterFunction) throws IOException
-    {
-        LOGGER.debug(String.format( // NOPMD this logging is wanted
-                         SoepConstants.LOADING_FILE_INFO,
-                         url.substring(url.lastIndexOf('/') + 1)));
-
-        final HttpURLConnection csvConnection = webRequester.sendWebRequest(
-                                                    RestRequestType.GET,
-                                                    url,
-                                                    null, null, MediaType.TEXT_PLAIN, 0);
-
-        try
-            (InputStream inputStream = webRequester.getInputStream(csvConnection);
-             InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
-             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-             CSVReader csvReader = new CSVReaderBuilder(bufferedReader).withSkipLines(1).build()) {
-
-
-            while (true) {
-                final String[] row = csvReader.readNext();
-
-                if (row == null)
-                    break;
-                else
-                    iterFunction.accept(row);
-            }
-        }
-    }
-
-
-    /**
      * Load dataset file descriptions from a CSV file to a Map.
      *
      * @return a Map of dataset names to {@linkplain DatasetMetadata}
@@ -185,7 +134,7 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
             metadataMap.put(dm.getDatasetName(), dm);
         };
 
-        parseCsvFromWeb(
+        csvRequester.parseCsv(
             SoepConstants.DATASETS_CSV_DOWNLOAD_URL,
             addFunction);
 
@@ -209,7 +158,7 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
         };
 
         // Parse "concepts" CSV file
-        parseCsvFromWeb(
+        csvRequester.parseCsv(
             SoepConstants.CONCEPTS_CSV_DOWNLOAD_URL,
             addFunction);
 
@@ -236,7 +185,7 @@ public class SoepExtractor extends AbstractIteratorExtractor<SoepFileVO>
         };
 
         // Parse "variables" CSV file
-        parseCsvFromWeb(
+        csvRequester.parseCsv(
             SoepConstants.VARIABLES_CSV_DOWNLOAD_URL,
             addFunction);
 
